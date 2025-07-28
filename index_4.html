@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOST - Платформа по поиску микроблогеров</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --red: #D20001;
+            --pink: #FEC6E9;
+            --blue: #0212EE;
+            --light-blue: rgba(2, 18, 238, 0.1);
+            --beige: #F3F3E9;
+            --dark-blue: #0109a3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        body {
+            background-color: var(--beige);
+            color: var(--blue);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--blue);
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--beige);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: var(--red);
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--beige);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 0;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--beige);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--pink);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--beige);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark-blue) 100%);
+            color: var(--beige);
+        }
+        
+        .hero-content {
+            max-width: 700px;
+            z-index: 2;
+            margin-top: 60px;
+        }
+        
+        .hero h1 {
+            font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -1.5px;
+        }
+        
+        .hero p {
+            font-size: clamp(1.2rem, 2.2vw, 1.4rem);
+            margin-bottom: 40px;
+            max-width: 600px;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 42px;
+            background-color: var(--red);
+            color: var(--beige);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(210, 0, 1, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover {
+            background-color: #b80001;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(210, 0, 1, 0.5);
+        }
+        
+        .btn:hover:after {
+            left: 100%;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--beige);
+            color: var(--beige);
+            margin-left: 20px;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--beige);
+            color: var(--blue);
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, var(--beige), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        
+        .hero-shapes {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--pink) 0%, rgba(254, 198, 233, 0.3) 100%);
+            border-radius: 0 0 0 100px;
+            z-index: 1;
+            opacity: 0.15;
+        }
+        
+        /* About Section */
+        .about {
+            background-color: var(--beige);
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: clamp(2.2rem, 4.2vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+            letter-spacing: -1px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 70px;
+            height: 5px;
+            background-color: var(--red);
+            border-radius: 10px;
+        }
+        
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-text p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .about-features {
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue);
+        }
+        
+        .about-image {
+            flex: 1;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark-blue) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(2, 18, 238, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .graph-container {
+            background-color: var(--beige);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .graph-bar {
+            width: 50px;
+            background: linear-gradient(to top, var(--blue), var(--dark-blue));
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: height 1s ease;
+        }
+        
+        .graph-label {
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--beige);
+            font-weight: 500;
+        }
+        
+        /* How It Works */
+        #how-it-works {
+            background-color: var(--beige);
+        }
+        
+        .process-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 60px;
+        }
+        
+        .process-line {
+            position: absolute;
+            top: 70px;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background-color: var(--light-blue);
+            z-index: 1;
+        }
+        
+        .process-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 30%;
+        }
+        
+        .step-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: var(--beige);
+            border: 4px solid var(--blue);
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .step-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(2, 18, 238, 0.2);
+            background-color: var(--blue);
+        }
+        
+        .step-circle:hover .step-icon {
+            color: var(--beige);
+        }
+        
+        .step-icon {
+            font-size: 3.5rem;
+            color: var(--blue);
+            transition: all 0.4s ease;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--red);
+            color: var(--beige);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .process-step h3 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: var(--blue);
+        }
+        
+        .process-step p {
+            color: var(--blue);
+            opacity: 0.9;
+        }
+        
+        /* Benefits */
+        .benefits {
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark-blue) 100%);
+            color: var(--beige);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .benefits .section-title:after {
+            background-color: var(--pink);
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .benefit-card {
+            background-color: rgba(243, 243, 233, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(254, 198, 233, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .benefit-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--red), var(--pink));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .benefit-card:hover:before {
+            transform: scaleX(1);
+        }
+        
+        .benefit-icon {
+            font-size: 2.8rem;
+            color: var(--pink);
+            margin-bottom: 25px;
+            transition: all 0.4s ease;
+        }
+        
+        .benefit-card:hover .benefit-icon {
+            transform: scale(1.1);
+            color: var(--beige);
+        }
+        
+        .benefit-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Form Section */
+        #application {
+            background-color: var(--beige);
+        }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark-blue) 100%);
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(2, 18, 238, 0.2);
+            color: var(--beige);
+        }
+        
+        .form-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--pink);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: var(--beige);
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: rgba(243, 243, 233, 0.7);
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--beige);
+            box-shadow: 0 0 0 3px rgba(254, 198, 233, 0.3);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+            background: var(--red);
+            border: none;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--blue);
+            color: var(--beige);
+            padding: 80px 0 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--beige);
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .footer-about {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .footer-about p {
+            opacity: 0.8;
+            max-width: 400px;
+            line-height: 1.7;
+        }
+        
+        .footer-contact {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-social {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-title {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--red);
+            border-radius: 3px;
+        }
+        
+        .contact-info {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .contact-icon {
+            font-size: 1.2rem;
+            color: var(--pink);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--beige);
+            color: var(--blue);
+            border-radius: 50%;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .social-link:hover {
+            background-color: var(--pink);
+            color: var(--blue);
+            transform: translateY(-5px) rotate(5deg);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(243, 243, 233, 0.2);
+            font-size: 0.95rem;
+            opacity: 0.7;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Interactive Elements */
+        .interactive-card {
+            background: var(--beige);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(2, 18, 238, 0.1);
+            margin: 40px 0;
+            border: 1px solid var(--light-blue);
+            transition: all 0.4s ease;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(2, 18, 238, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark-blue) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--beige);
+            font-size: 1.8rem;
+            margin-right: 20px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .process-step {
+                width: 28%;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .process-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 60px;
+            }
+            
+            .process-line {
+                display: none;
+            }
+            
+            .process-step {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .form-container {
+                padding: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                background-color: var(--blue);
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                padding: 30px 0;
+                gap: 20px;
+                clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+                transition: clip-path 0.4s ease;
+            }
+            
+            .nav-links.active {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+            
+            .hero-content {
+                text-align: center;
+                margin: 0 auto;
+            }
+            
+            .hero-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn-outline {
+                margin-left: 0;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .hero-shapes {
+                width: 100%;
+                height: 50%;
+                top: auto;
+                bottom: 0;
+                border-radius: 100px 100px 0 0;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            section {
+                padding: 80px 0;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            .graph-container {
+                padding: 10px;
+                height: 250px;
+            }
+            
+            .graph-bar {
+                width: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">MOST<span class="logo-dot"></span></a>
+                <div class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <a href="#about">О платформе</a>
+                    <a href="#how-it-works">Как работает</a>
+                    <a href="#benefits">Преимущества</a>
+                    <a href="#application">Оставить заявку</a>
+                    <a href="#contact">Контакты</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h1>Платформа для поиска микроблогеров</h1>
+                <p>MOST соединяет бренды с микро-инфлюенсерами для создания аутентичных рекламных кампаний с высокой конверсией.</p>
+                <div class="hero-buttons">
+                    <a href="#application" class="btn">Оставить заявку</a>
+                    <a href="#how-it-works" class="btn btn-outline">Как это работает</a>
+                </div>
+                
+                <div class="hero-stats fade-in">
+                    <div class="stat-item">
+                        <div class="stat-number">1500+</div>
+                        <div class="stat-label">Микроблогеров</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">Успешных кампаний</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.8</div>
+                        <div class="stat-label">Средний рейтинг</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-shapes"></div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title fade-in">О платформе</h2>
+            <div class="about-content">
+                <div class="about-text fade-in">
+                    <p>MOST — это инновационная платформа, созданная для решения проблемы поиска и сотрудничества с микро-инфлюенсерами. Мы понимаем, что настоящая вовлеченность и доверие аудитории строятся через аутентичный контент.</p>
+                    <p>Наша миссия — создать мост между брендами, которые хотят рассказать о себе, и талантливыми создателями контента, которые могут сделать это искренне и креативно.</p>
+                    
+                    <div class="about-features">
+                        <div class="feature-item fade-in">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <h3>Только реальные показатели</h3>
+                                <p>Никаких накруток — только настоящая вовлеченность</p>
+                            </div>
+                        </div>
+                        <div class="feature-item fade-in">
+                            <div class="feature-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <h3>Точный подбор</h3>
+                                <p>Алгоритмы учитывают нишу, аудиторию и стиль блогера</p>
+                            </div>
+                        </div>
+                        <div class="feature-item fade-in">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h3>Безопасные сделки</h3>
+                                <p>Гарантия выполнения обязательств с обеих сторон</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image fade-in">
+                    <div class="graph-container" id="graph">
+                        <div class="graph-bar" style="height: 40%;"><div class="graph-label">Instagram</div></div>
+                        <div class="graph-bar" style="height: 70%;"><div class="graph-label">TikTok</div></div>
+                        <div class="graph-bar" style="height: 55%;"><div class="graph-label">YouTube</div></div>
+                        <div class="graph-bar" style="height: 35%;"><div class="graph-label">Telegram</div></div>
+                        <div class="graph-bar" style="height: 65%;"><div class="graph-label">VK</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interactive Card -->
+            <div class="interactive-card fade-in">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div>
+                        <h3>Запустите свою первую кампанию уже сегодня</h3>
+                        <p>Получите подборку из 10 релевантных блогеров бесплатно</p>
+                    </div>
+                </div>
+                <a href="#application" class="btn">Начать сейчас</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works">
+        <div class="container">
+            <h2 class="section-title fade-in">Как работает MOST</h2>
+            
+            <div class="process-container">
+                <div class="process-line"></div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-circle">
+                        <div class="step-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="step-number">1</div>
+                    </div>
+                    <h3>Заявка</h3>
+                    <p>Расскажите о своем проекте через простую форму или свяжитесь с нами</p>
+                </div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-circle">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="step-number">2</div>
+                    </div>
+                    <h3>Подбор</h3>
+                    <p>Наши алгоритмы анализируют 20+ параметров для идеального совпадения</p>
+                </div>
+                
+                <div class="process-step fade-in">
+                    <div class="step-circle">
+                        <div class="step-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="step-number">3</div>
+                    </div>
+                    <h3>Запуск</h3>
+                    <p>Мы организуем взаимодействие и контролируем процесс размещения</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <h2 class="section-title fade-in">Наши преимущества</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Высокая вовлеченность</h3>
+                    <p>Микроблогеры имеют лояльную аудиторию с вовлеченностью до 8%</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3>Доступная стоимость</h3>
+                    <p>Экономия до 70% по сравнению с рекламой у топ-блогеров</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Точный таргетинг</h3>
+                    <p>Подбор по нише, геолокации, полу и возрасту аудитории</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Безопасность сделок</h3>
+                    <p>Гарантия выполнения обязательств и безопасность платежей</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>Экономия времени</h3>
+                    <p>Весь процесс от поиска до отчетности занимает 2-3 дня</p>
+                </div>
+                <div class="benefit-card fade-in">
+                    <div class="benefit-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Детальная аналитика</h3>
+                    <p>Отчеты по охвату, вовлеченности и конверсии в реальном времени</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Form -->
+    <section id="application">
+        <div class="container">
+            <h2 class="section-title fade-in">Оставить заявку</h2>
+            <div class="form-container fade-in">
+                <h3 class="form-title">Начните сотрудничество с MOST</h3>
+                <form name="application" method="POST" data-netlify="true">
+                    <div class="form-group">
+                        <label for="name">Ваше имя</label>
+                        <input type="text" id="name" name="name" placeholder="Иван Иванов" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="social">Контакт в соцсети</label>
+                        <input type="text" id="social" name="social" placeholder="@username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task">Описание задачи</label>
+                        <textarea id="task" name="task" placeholder="Расскажите о вашем проекте, целях и предпочтениях по блогерам..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn submit-btn">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <a href="#" class="footer-logo">MOST</a>
+                    <p>Платформа для эффективного сотрудничества брендов с микро-инфлюенсерами. Мы создаем мосты между бизнесом и создателями аутентичного контента.</p>
+                </div>
+                <div class="footer-contact">
+                    <h3 class="footer-title">Контакты</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span>contact@most-platform.com</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <span>+7 (999) 123-45-67</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <span>Москва, ул. Тверская, 15</span>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <h3 class="footer-title">Социальные сети</h3>
+                    <div class="social-links">
+                        <a href="https://instagram.com" class="social-link" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://t.me" class="social-link" target="_blank">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="https://vk.com" class="social-link" target="_blank">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://youtube.com" class="social-link" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://tiktok.com" class="social-link" target="_blank">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 MOST. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+        
+        // Scroll Animations
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const appearOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -100px 0px"
+        };
+        
+        const appearOnScroll = new IntersectionObserver((entries, appearOnScroll) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('appear');
+                appearOnScroll.unobserve(entry.target);
+            });
+        }, appearOptions);
+        
+        fadeElements.forEach(element => {
+            appearOnScroll.observe(element);
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.padding = '15px 0';
+                header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.padding = '20px 0';
+                header.style.boxShadow = 'none';
+            }
+        });
+        
+        // Form Submission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple validation
+                let valid = true;
+                const inputs = this.querySelectorAll('input, textarea');
+                
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        input.style.borderColor = 'var(--red)';
+                        valid = false;
+                    } else {
+                        input.style.borderColor = 'var(--pink)';
+                    }
+                });
+                
+                if (valid) {
+                    // In a real scenario, you would submit to Netlify here
+                    alert('Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
+                    this.reset();
+                } else {
+                    alert('Пожалуйста, заполните все обязательные поля.');
+                }
+            });
+        }
+        
+        // Animate graph bars
+        window.addEventListener('load', () => {
+            const graphBars = document.querySelectorAll('.graph-bar');
+            graphBars.forEach(bar => {
+                const height = bar.style.height;
+                bar.style.height = '0';
+                setTimeout(() => {
+                    bar.style.height = height;
+                }, 500);
+            });
+        });
+        
+        // Interactive graph hover effect
+        const graphBars = document.querySelectorAll('.graph-bar');
+        graphBars.forEach(bar => {
+            bar.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.opacity = '0.9';
+            });
+            
+            bar.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+                this.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>
