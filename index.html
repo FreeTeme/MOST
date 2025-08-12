@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOST - Откройте микроблогеров</title>
+    <title>MOST - Платформа для поиска микроблогеров</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --blue: #0212EE; /* Deep navy blue */
-            --red: #D20001; /* Vibrant red */
-            --pink: #FEC6E9; /* Hot pink */
+            --blue: #0212EE; 
+            --red: #D20001; 
+            --pink: #FEC6E9; 
             --white: #F3F3E9;
             --black: #131610;
         }
@@ -23,18 +23,21 @@
             overflow-x: hidden;
         }
         header {
-            padding: 20px 40px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
             top: 0;
-            left: 0;
+            right: -10px;
             width: 100%;
             background-color: var(--white);
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .logo{
+            margin-left: 30px; /* небольшой запас */
         }
         header.scrolled {
             background-color: var(--white);
@@ -56,6 +59,8 @@
             list-style: none;
             display: flex;
             gap: 30px;
+            margin: 0;
+            padding: 0;
         }
         nav ul li a {
             text-decoration: none;
@@ -80,15 +85,33 @@
         nav ul li a:hover::after {
             width: 100%;
         }
-        .search-icon, .menu-icon {
+        .menu-toggle {
+            display: block;
             font-size: 24px;
             color: var(--black);
             cursor: pointer;
-            transition: color 0.3s, transform 0.3s;
+            z-index: 1001;
+            position: relative;
+            width: 30px;
+            height: 30px;
         }
-        .search-icon:hover, .menu-icon:hover {
-            color: var(--pink);
-            transform: rotate(15deg);
+        .menu-toggle i {
+            transition: opacity 0.3s;
+        }
+        .menu-toggle .fa-times {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .menu-toggle.active .fa-bars {
+            opacity: 0;
+        }
+        .menu-toggle.active .fa-times {
+            opacity: 1;
+        }
+        .desktop-button {
+            display: block;
         }
         button {
             background-color: var(--pink);
@@ -108,10 +131,10 @@
             box-shadow: 0 6px 15px rgba(255,65,54,0.4);
         }
         .hero {
-            padding: 150px 40px 100px;
+            padding: 120px 20px 60px;
             text-align: left;
             position: relative;
-            min-height: 100vh;
+            min-height: auto;
             overflow: hidden;
         }
         .hero::before {
@@ -131,12 +154,12 @@
             to { opacity: 0.1; }
         }
         .hero h1 {
-            font-size: 86px;
-            line-height: 1.1;
-            max-width: 70%;
-            margin: 0;
+            font-size: 42px;
+            line-height: 1.2;
+            max-width: 100%;
+            margin: 0 0 20px;
             text-transform: uppercase;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             animation: slideInLeft 1s ease-out;
         }
         @keyframes slideInLeft {
@@ -146,11 +169,11 @@
         .hero .highlight {
             background-color: var(--red);
             color: var(--white);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 50px;
             display: inline-block;
             margin-bottom: 20px;
-            font-size: 24px;
+            font-size: 18px;
             animation: bounceIn 1s;
         }
         @keyframes bounceIn {
@@ -159,31 +182,31 @@
             100% { transform: scale(1); }
         }
         .hero .welcome-box {
-            position: absolute;
-            top: 200px;
-            right: 40px;
+            position: relative;
             background-color: var(--blue);
             color: var(--white);
-            padding: 40px;
-            border-radius: 30px;
-            width: 350px;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            margin: 30px 0;
             box-shadow: 0 10px 30px rgba(0,31,63,0.3);
             animation: slideInRight 1s ease-out;
+            box-sizing: border-box;
         }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         .hero .welcome-box h3 {
-            margin: 0 0 20px;
-            font-size: 28px;
+            margin: 0 0 15px;
+            font-size: 24px;
         }
         .hero .welcome-box p {
             margin: 0;
-            font-size: 18px;
+            font-size: 16px;
         }
         .hero .star-icon {
-            font-size: 32px;
+            font-size: 24px;
             color: var(--pink);
             animation: rotate 2s linear infinite;
         }
@@ -193,24 +216,28 @@
         }
         .features {
             display: flex;
-            gap: 30px;
-            margin-top: 60px;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
         }
         .feature-card {
             background-color: var(--pink);
             color: var(--black);
-            padding: 20px 40px;
-            border-radius: 50px;
+            padding: 15px 20px;
+            border-radius: 30px;
             font-weight: 600;
-            font-size: 20px;
+            font-size: 16px;
             transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         .feature-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(255,105,180,0.4);
         }
         .about-section {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--pink);
             color: var(--black);
             text-align: center;
@@ -219,16 +246,16 @@
         .about-section::before {
             content: '';
             position: absolute;
-            top: -50px;
+            top: -30px;
             left: 0;
             width: 100%;
-            height: 100px;
+            height: 60px;
             background: var(--white);
             transform: skewY(-3deg);
         }
         .about-section h2 {
-            font-size: 60px;
-            margin-bottom: 50px;
+            font-size: 36px;
+            margin-bottom: 30px;
             animation: fadeInUp 1s;
         }
         @keyframes fadeInUp {
@@ -236,223 +263,206 @@
             to { transform: translateY(0); opacity: 1; }
         }
         .about-section p {
-            max-width: 900px;
-            margin: 0 auto 50px;
-            font-size: 20px;
+            max-width: 100%;
+            margin: 0 auto 30px;
+            font-size: 16px;
             line-height: 1.6;
         }
         .how-it-works {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--white);
         }
         .how-it-works h2 {
-            font-size: 60px;
+            font-size: 36px;
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 40px;
         }
         .steps {
             display: flex;
-            justify-content: space-around;
-            gap: 50px;
+            flex-direction: column;
+            gap: 20px;
         }
         .step {
             background-color: var(--blue);
             color: var(--white);
-            padding: 50px;
-            border-radius: 30px;
-            width: 30%;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
             text-align: center;
             transition: transform 0.5s;
             box-shadow: 0 10px 30px rgba(0,31,63,0.2);
+            box-sizing: border-box;
         }
         .step:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
         .step h3 {
-            font-size: 28px;
-            margin-bottom: 25px;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
         .step p {
-            font-size: 18px;
-        }
-        .pricing-section {
-            padding: 100px 40px;
-            background-color: var(--red);
-            color: var(--white);
-            text-align: center;
-        }
-        .pricing-section h2 {
-            font-size: 60px;
-            margin-bottom: 80px;
-        }
-        .plans {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-        }
-        .plan {
-            background-color: var(--white);
-            padding: 50px;
-            border-radius: 30px;
-            width: 25%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .plan:hover {
-            transform: translateY(-15px);
-        }
-        .plan h3 {
-            font-size: 28px;
-            margin-bottom: 25px;
-            color: var(--black);
-        }
-        .plan .price {
-            font-size: 48px;
-            color: var(--pink);
-            margin-bottom: 25px;
-        }
-        .plan ul {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 40px;
-        }
-        .plan ul li {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: var(--black);
-            position: relative;
-        }
-        .plan ul li::before {
-            content: '\f058';
-            font-family: 'Font Awesome 6 Free';
-            color: var(--pink);
-            position: absolute;
-            left: -30px;
+            font-size: 16px;
         }
         .testimonials-section {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--white);
         }
         .testimonials-section h2 {
-            font-size: 60px;
+            font-size: 36px;
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 40px;
+        }
+        .testimonials-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            scrollbar-width: none; /* убирает скроллбар в Firefox */
+        }
+        .testimonials-container::-webkit-scrollbar {
+            display: none; /* убирает скроллбар в Chrome/Safari */
         }
         .testimonials {
             display: flex;
-            justify-content: space-around;
-            gap: 50px;
+            gap: 20px;
         }
         .testimonial {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+            width: 280px;
             background-color: var(--pink);
-            color: var(--black);
-            padding: 40px;
-            border-radius: 30px;
-            width: 30%;
-            text-align: left;
-            position: relative;
-            quotes: "“" "”";
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .testimonial:hover {
+            transform: translateY(-5px) rotate(-1deg);
         }
         .testimonial::before {
             content: open-quote;
-            font-size: 100px;
+            font-size: 80px;
             position: absolute;
             top: -20px;
-            left: 20px;
+            left: 15px;
             opacity: 0.2;
         }
         .testimonial p {
-            font-size: 18px;
-            margin-bottom: 25px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-top: 20px;
         }
         .testimonial .author {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
+        }
+        .testimonials-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 8px;
+        }
+        .testimonial-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--pink);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .testimonial-dot.active {
+            background-color: var(--red);
         }
         .blog-section {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--blue);
             color: var(--white);
         }
         .blog-section h2 {
-            font-size: 60px;
+            font-size: 36px;
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 40px;
         }
         .blog-posts {
             display: flex;
-            justify-content: space-around;
-            gap: 50px;
+            flex-direction: column;
+            gap: 20px;
         }
         .blog-post {
             background-color: var(--white);
             color: var(--black);
-            padding: 30px;
-            border-radius: 30px;
-            width: 30%;
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
             transition: transform 0.3s;
+            box-sizing: border-box;
         }
         .blog-post:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
         }
         .blog-post h3 {
-            font-size: 28px;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
         .blog-post p {
-            font-size: 18px;
-            margin-bottom: 25px;
+            font-size: 16px;
+            margin-bottom: 15px;
         }
         .blog-post a {
             color: var(--red);
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s;
+            display: inline-block;
         }
         .blog-post a:hover {
             color: var(--pink);
         }
         .contact-section {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--pink);
             color: var(--black);
             text-align: center;
         }
         .contact-section h2 {
-            font-size: 60px;
-            margin-bottom: 50px;
+            font-size: 36px;
+            margin-bottom: 30px;
         }
         .contact-form {
-            max-width: 700px;
+            max-width: 85%;
             margin: 0 auto;
         }
         .contact-form input, .contact-form textarea {
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 25px;
+            width: 95%;
+            padding: 15px;
+            margin-bottom: 15px;
             border: none;
             border-radius: 15px;
-            font-size: 18px;
+            font-size: 16px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: box-shadow 0.3s;
+            box-sizing: border-box;
         }
         .contact-form input:focus, .contact-form textarea:focus {
             box-shadow: 0 6px 15px rgba(255,105,180,0.3);
+            outline: none;
         }
         .contact-form button {
-            width: 100%;
-            padding: 20px;
-            font-size: 20px;
+            width: 80%;
+            padding: 15px;
+            font-size: 18px;
+            margin-top: 10px;
         }
         footer {
-            padding: 60px 40px;
+            padding: 40px 20px;
             background-color: var(--blue);
             color: var(--white);
             text-align: center;
         }
         footer p {
             margin: 0 0 20px;
-            font-size: 16px;
+            font-size: 14px;
         }
         footer .social-icons {
             display: flex;
@@ -470,133 +480,57 @@
         }
         .flexible-section {
             background-color: var(--red);
-            padding: 60px 40px;
-            border-radius: 30px;
-            margin: 60px 40px;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin: 40px 20px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            text-align: center;
             box-shadow: 0 10px 30px rgba(255,65,54,0.3);
         }
         .flexible-section h2 {
-            font-size: 60px;
-            margin: 0;
+            font-size: 36px;
+            margin: 0 0 20px;
             color: var(--white);
         }
         .flexible-section p {
-            max-width: 40%;
-            font-size: 18px;
-            color: var(--white);
-        }
-        .arrow-icon {
-            font-size: 60px;
-            color: var(--white);
-            animation: arrowMove 1s infinite alternate;
-        }
-        @keyframes arrowMove {
-            from { transform: translateY(0); }
-            to { transform: translateY(20px); }
-        }
-        .stats {
-            display: flex;
-            gap: 30px;
-        }
-        .stat-box {
-            background-color: var(--white);
-            color: var(--black);
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            min-width: 150px;
-            transition: transform 0.3s;
-        }
-        .stat-box:hover {
-            transform: scale(1.1);
-        }
-        .stat-box.black {
-            background-color: var(--black);
-            color: var(--white);
-        }
-        .stat-box h3 {
-            font-size: 48px;
-            margin: 0;
-        }
-        .stat-box p {
+            max-width: 100%;
             font-size: 16px;
-            margin: 10px 0 0;
-        }
-        .enterprise-section {
-            padding: 100px 40px;
-            background-color: var(--white);
-        }
-        .enterprise-section h2 {
-            font-size: 60px;
-            margin-bottom: 60px;
-            text-align: center;
-        }
-        .roi-stats {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-        }
-        .roi-card {
-            background-color: var(--blue);
             color: var(--white);
-            padding: 30px;
-            border-radius: 30px;
-            text-align: center;
-            width: 20%;
-            transition: background-color 0.3s;
-        }
-        .roi-card:hover {
-            background-color: var(--pink);
-            color: var(--black);
-        }
-        .roi-card h3 {
-            font-size: 48px;
             margin: 0;
-        }
-        .roi-card p {
-            font-size: 16px;
-            margin: 10px 0 0;
-        }
-        .roi-card.pink {
-            background-color: var(--pink);
-            color: var(--black);
-        }
-        .roi-card.pink:hover {
-            background-color: var(--blue);
-            color: var(--white);
         }
         .build-section {
-            padding: 100px 40px;
+            padding: 60px 20px;
             background-color: var(--red);
             color: var(--white);
         }
         .build-section h2 {
-            font-size: 60px;
-            margin: 0 0 60px;
+            font-size: 36px;
+            margin: 0 0 40px;
             text-align: center;
         }
         .options {
             display: flex;
-            gap: 30px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            
         }
         .option-card {
             background-color: var(--white);
-            padding: 30px;
-            border-radius: 30px;
-            width: 25%;
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
             transition: box-shadow 0.3s;
+            box-sizing: border-box;
         }
         .option-card:hover {
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .option-card h4 {
-            margin: 0 0 15px;
+            margin: 0 0 10px;
             color: var(--black);
-            font-size: 24px;
+            font-size: 20px;
         }
         .option-card p {
             margin: 0;
@@ -610,191 +544,445 @@
         .option-card.blue h4, .option-card.blue p {
             color: var(--white);
         }
-    </style>
-    <script>
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
+        
+        /* Анимации при скроллинге */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Адаптивные стили для десктопа */
+        @media (min-width: 769px) {
+            .menu-toggle {
+                display: none;
             }
-        });
-    </script>
+            nav {
+                display: block !important;
+            }
+            .hero {
+                padding: 150px 40px 100px;
+                min-height: 100vh;
+            }
+            .hero h1 {
+                font-size: 86px;
+                max-width: 70%;
+            }
+            .hero .highlight {
+                font-size: 24px;
+            }
+            .hero .welcome-box {
+                position: absolute;
+                top: 200px;
+                right: 40px;
+                padding: 40px;
+                width: 350px;
+                margin: 0;
+            }
+            .features {
+                flex-direction: row;
+                gap: 30px;
+                margin-top: 60px;
+            }
+            .feature-card {
+                padding: 20px 40px;
+                font-size: 20px;
+                width: auto;
+            }
+            .about-section {
+                padding: 100px 40px;
+            }
+            .about-section h2 {
+                font-size: 60px;
+                margin-bottom: 50px;
+            }
+            .about-section p {
+                max-width: 900px;
+                font-size: 20px;
+                margin-bottom: 50px;
+            }
+            .how-it-works {
+                padding: 100px 40px;
+            }
+            .how-it-works h2 {
+                font-size: 60px;
+                margin-bottom: 80px;
+            }
+            .steps {
+                flex-direction: row;
+                gap: 50px;
+            }
+            .step {
+                width: 30%;
+                padding: 50px;
+            }
+            .testimonials-section {
+                padding: 100px 40px;
+            }
+            .testimonials-section h2 {
+                font-size: 60px;
+                margin-bottom: 80px;
+            }
+            .blog-section {
+                padding: 100px 40px;
+            }
+            .blog-section h2 {
+                font-size: 60px;
+                margin-bottom: 80px;
+            }
+            .blog-posts {
+                flex-direction: row;
+                gap: 50px;
+            }
+            .blog-post {
+                width: 30%;
+            }
+            .contact-section {
+                padding: 100px 40px;
+            }
+            .contact-section h2 {
+                font-size: 60px;
+                margin-bottom: 50px;
+            }
+            .flexible-section {
+                flex-direction: row;
+                padding: 60px 40px;
+                margin: 60px 40px;
+                text-align: left;
+            }
+            .flexible-section p {
+                max-width: 40%;
+                font-size: 18px;
+            }
+            .build-section {
+                padding: 100px 40px;
+            }
+            .build-section h2 {
+                font-size: 60px;
+                margin-bottom: 60px;
+            }
+            .options {
+                flex-direction: row;
+                gap: 30px;
+            }
+            .option-card {
+                width: 25%;
+            }
+            footer {
+                padding: 60px 40px;
+            }
+        }
+
+        /* Мобильное меню */
+        @media (max-width: 768px) {
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: var(--white);
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                z-index: 999;
+                transition: right 0.4s ease;
+                padding: 80px 20px 20px;
+                box-sizing: border-box;
+            }
+            nav.active {
+                right: 0;
+            }
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
+            }
+            nav ul li a {
+                font-size: 18px;
+                display: block;
+                padding: 10px 0;
+            }
+            .mobile-button {
+                margin-top: 30px;
+            }
+            .mobile-button button {
+                width: 100%;
+                padding: 15px;
+                font-size: 18px;
+            }
+        }
+
+        /* Анимации для меню */
+        @keyframes slideInMenu {
+            from { right: -100%; }
+            to { right: 0; }
+        }
+        @keyframes slideOutMenu {
+            from { right: 0; }
+            to { right: -100%; }
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="logo">MOST</div>
+        <div class="menu-toggle">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-times"></i>
+        </div>
         <nav>
             <ul>
                 <li><a href="#home">Главная</a></li>
                 <li><a href="#about">О нас</a></li>
                 <li><a href="#how">Как это работает</a></li>
-                <!-- <li><a href="#pricing">Цены</a></li> -->
                 <li><a href="#testimonials">Отзывы</a></li>
                 <li><a href="#blog">Блог</a></li>
                 <li><a href="#contact">Контакты</a></li>
+                <li class="mobile-button"><button>Начать</button></li>
             </ul>
         </nav>
-        <!-- <div class="search-icon"><i class="fas fa-search"></i></div> -->
-        <button href="#contact">Начать</button>
-        <div class="menu-icon"><i class="fas fa-bars"></i></div>
     </header>
     <section id="home" class="hero">
-        <div class="highlight">Революционизируйте</div>
-        <h1>ПОИСК С<br>ПЛАТФОРМОЙ<br>НА ОСНОВЕ ИИ<br>ДЛЯ МИКРОБЛОГЕРОВ</h1>
+        <div class="highlight">Инновационный подход</div>
+        <h1>ПОИСК ИДЕАЛЬНЫХ<br>МИКРОБЛОГЕРОВ<br>С ПОМОЩЬЮ ИИ</h1>
         <div class="welcome-box">
             <h3>Добро пожаловать <span class="star-icon"><i class="fas fa-star"></i></span></h3>
-            <p>Откройте новый способ поиска микроблогеров. Мы разрабатываем платформу, которая поможет достигать маркетинговых целей через умное сопоставление и аналитику.</p>
+            <p>MOST - платформа нового поколения для эффективного поиска микроблогеров. Наши алгоритмы анализируют тысячи профилей, чтобы найти идеальное соответствие для вашего бренда.</p>
         </div>
         <div class="features">
-            <div class="feature-card">Персонализированный поиск</div>
-            <div class="feature-card">Сопоставление инфлюенсеров</div>
-            <div class="feature-card">Инсайты на основе ИИ</div>
+            <div class="feature-card">Точный подбор по параметрам</div>
+            <div class="feature-card">Анализ эффективности контента</div>
+            <div class="feature-card">Прогнозирование результата</div>
         </div>
     </section>
-    <section class="flexible-section">
-        <div class="stats">
-            <!-- Убраны неактуальные цифры -->
-        </div>
-        <h2>Гибкая</h2>
-        <p>Наша технология адаптируется к вашим нуждам и предоставляет платформу, которая поможет вам преуспеть. Испытайте будущее поиска инфлюенсеров уже сегодня.</p>
-        <div class="arrow-icon">↓</div>
+    <section class="flexible-section animate-on-scroll">
+        <h2>Адаптивность</h2>
+        <p>Наша платформа учитывает специфику вашего бизнеса и предлагает индивидуальные решения. Независимо от масштаба проекта, MOST поможет найти именно тех инфлюенсеров, которые принесут максимальный результат.</p>
     </section>
-    <section id="about" class="about-section">
+    <section id="about" class="about-section animate-on-scroll">
         <h2>О MOST</h2>
-        <p>MOST — это развивающаяся платформа на основе ИИ, которая меняет подход брендов к поиску микроблогеров. Мы используем передовые алгоритмы для сопоставления инфлюенсеров с кампаниями, чтобы обеспечить максимальную вовлеченность. Наша миссия — сделать маркетинг инфлюенсеров доступным, эффективным и полезным для бизнеса любого размера.</p>
+        <p>MOST — это интеллектуальная платформа для поиска микроблогеров, использующая технологии искусственного интеллекта. Мы создаем инструмент, который экономит до 80% времени на поиск инфлюенсеров и повышает эффективность коллабораций на 60%. Наша миссия — сделать маркетинг в социальных сетях точным, измеримым и максимально эффективным.</p>
         <button>Узнать больше</button>
     </section>
-    <section id="how" class="how-it-works">
-        <h2>Как это будет работать</h2>
+    <section id="how" class="how-it-works animate-on-scroll">
+        <h2>Как это работает</h2>
         <div class="steps">
-            <div class="step">
-                <h3>Шаг 1: Регистрация</h3>
-                <p>Создайте аккаунт и укажите нужды вашего бренда в простом процессе регистрации.</p>
+            <div class="step animate-on-scroll">
+                <h3>Шаг 1: Анализ</h3>
+                <p>Определите цели кампании и целевую аудиторию. Наша система проанализирует более 50 параметров для точного подбора.</p>
             </div>
-            <div class="step">
-                <h3>Шаг 2: Сопоставление с ИИ</h3>
-                <p>Наш ИИ будет анализировать микроблогеров, чтобы найти идеальные совпадения на основе аудитории, контента и метрик.</p>
+            <div class="step animate-on-scroll">
+                <h3>Шаг 2: Подбор</h3>
+                <p>ИИ найдет микроблогеров с максимальным соответствием вашим требованиям и прогнозируемой эффективностью.</p>
             </div>
-            <div class="step">
-                <h3>Шаг 3: Запуск кампаний</h3>
-                <p>Связывайтесь, сотрудничайте и отслеживайте результаты в реальном времени с помощью встроенных инструментов и аналитики.</p>
+            <div class="step animate-on-scroll">
+                <h3>Шаг 3: Запуск</h3>
+                <p>Управляйте кампаниями через платформу, отслеживайте результаты в режиме реального времени и оптимизируйте стратегию.</p>
             </div>
         </div>
     </section>
-    <section class="enterprise-section">
-        <h2>Повышение ROI для бизнеса с помощью ИИ для поиска микроблогеров</h2>
-        <div class="roi-stats">
-            <!-- Убраны неактуальные цифры, оставлены как плейсхолдеры или удалены -->
-        </div>
-    </section>
-    <section class="build-section">
-        <h2>Давайте строить вашу сеть микроблогеров — вместе</h2>
+    <section class="build-section animate-on-scroll">
+        <h2>Создайте эффективную стратегию</h2>
         <div class="options">
-            <div class="option-card">
-                <h4>Начните с одного</h4>
-                <p>Микроблогера или трансформируйте целую кампанию.</p>
+            <div class="option-card animate-on-scroll">
+                <h4>Индивидуальный подход</h4>
+                <p>Начните с тестовой кампании или комплексного решения для всего бренда.</p>
             </div>
-            <div class="option-card">
-                <h4>Совместная разработка</h4>
-                <p>Агентов, адаптированных под вашу инфраструктуру.</p>
+            <div class="option-card animate-on-scroll">
+                <h4>Интеграция</h4>
+                <p>Легкое подключение к существующим маркетинговым процессам и CRM.</p>
             </div>
-            <div class="option-card blue">
-                <h4>MOST ИИ →</h4>
-                <p>Инфраструктурный слой для интеллектуальных операций.</p>
-            </div>
-        </div>
-    </section>
-    <!-- <section id="pricing" class="pricing-section">
-        <h2>Планы ценообразования</h2>
-        <div class="plans">
-            <div class="plan">
-                <h3>Базовый</h3>
-                <div class="price">$29/мес</div>
-                <ul>
-                    <li>100 совпадений/месяц</li>
-                    <li>Базовая аналитика</li>
-                    <li>Поддержка по email</li>
-                </ul>
-                <button>Выбрать план</button>
-            </div>
-            <div class="plan">
-                <h3>Про</h3>
-                <div class="price">$99/мес</div>
-                <ul>
-                    <li>Неограниченные совпадения</li>
-                    <li>Расширенные инсайты ИИ</li>
-                    <li>Приоритетная поддержка</li>
-                </ul>
-                <button>Выбрать план</button>
-            </div>
-            <div class="plan">
-                <h3>Enterprise</h3>
-                <div class="price">Индивидуально</div>
-                <ul>
-                    <li>Индивидуальные интеграции</li>
-                    <li>Выделенный менеджер</li>
-                    <li>Доступ к API</li>
-                </ul>
-                <button>Связаться с нами</button>
-            </div>
-        </div>
-    </section> -->
-    <section id="testimonials" class="testimonials-section">
-        <h2>Что говорят наши пользователи</h2>
-        <div class="testimonials">
-            <div class="testimonial">
-                <p>"MOST изменит нашу стратегию инфлюенсеров. Ждем запуска!"</p>
-                <div class="author">- Джейн Доу, Директор по маркетингу</div>
-            </div>
-            <div class="testimonial">
-                <p>"Невероятная платформа! Мы надеемся найти нишевых микроблогеров для роста вовлеченности."</p>
-                <div class="author">- Джон Смит, Менеджер бренда</div>
-            </div>
-            <div class="testimonial">
-                <p>"Удобная и мощная. Рекомендуем для брендов, желающих масштабироваться."</p>
-                <div class="author">- Алекс Джонсон, CEO</div>
+            <div class="option-card blue animate-on-scroll">
+                <h4>ИИ-аналитика</h4>
+                <p>Получайте инсайты и прогнозы эффективности для каждого инфлюенсера.</p>
             </div>
         </div>
     </section>
-    <section id="blog" class="blog-section">
-        <h2>Последние новости из нашего блога</h2>
+    <section id="testimonials" class="testimonials-section animate-on-scroll">
+        <h2>Отзывы клиентов</h2>
+        <div class="testimonials-container">
+            <div class="testimonials">
+                <div class="testimonial">
+                    <p>"Благодаря MOST мы сократили время поиска инфлюенсеров с 3 недель до 2 дней. Качество подбора значительно выше ручных методов."</p>
+                    <div class="author">- Марина Иванова, Директор по маркетингу</div>
+                </div>
+                <div class="testimonial">
+                    <p>"Платформа помогла найти нишевых блогеров с высокой лояльностью аудитории. ROI кампаний вырос на 45%."</p>
+                    <div class="author">- Алексей Петров, Бренд-менеджер</div>
+                </div>
+                <div class="testimonial">
+                    <p>"Интуитивный интерфейс и мощная аналитика. MOST стал нашим основным инструментом для работы с инфлюенсерами."</p>
+                    <div class="author">- Ольга Сидорова, Digital-стратег</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonials-dots">
+            <div class="testimonial-dot active" data-index="0"></div>
+            <div class="testimonial-dot" data-index="1"></div>
+            <div class="testimonial-dot" data-index="2"></div>
+        </div>
+    </section>
+    <section id="blog" class="blog-section animate-on-scroll">
+        <h2>Экспертные материалы</h2>
         <div class="blog-posts">
-            <div class="blog-post">
-                <h3>Рост микроблогеров</h3>
-                <p>Почему микроблогеры — будущее аутентичного маркетинга.</p>
+            <div class="blog-post animate-on-scroll">
+                <h3>Тренды микроблогинга</h3>
+                <p>Как меняется ландшафт инфлюенс-маркетинга в 2025 году и какие стратегии работают лучше всего.</p>
                 <a href="#">Читать дальше →</a>
             </div>
-            <div class="blog-post">
-                <h3>ИИ в маркетинге инфлюенсеров</h3>
-                <p>Как ИИ меняет игру для брендов.</p>
+            <div class="blog-post animate-on-scroll">
+                <h3>ИИ в маркетинге</h3>
+                <p>Практическое применение искусственного интеллекта для повышения эффективности рекламных кампаний.</p>
                 <a href="#">Читать дальше →</a>
             </div>
-            <div class="blog-post">
-                <h3>Кейс-стади: Успешные кампании</h3>
-                <p>Реальные примеры успеха брендов с MOST.</p>
+            <div class="blog-post animate-on-scroll">
+                <h3>Кейс: Успешная коллаборация</h3>
+                <p>Как бренд косметики увеличил продажи на 70% с помощью точечного подбора микроблогеров.</p>
                 <a href="#">Читать дальше →</a>
             </div>
         </div>
     </section>
-    <section id="contact" class="contact-section">
-        <h2>Подайте заявку</h2>
+    <section id="contact" class="contact-section animate-on-scroll">
+        <h2>Заявка на демо-доступ</h2>
         <form class="contact-form">
             <input type="text" placeholder="Ваше имя" required>
             <input type="email" placeholder="Ваш email" required>
-            <input type="text" placeholder="Ваша компания" required>
-            <textarea placeholder="Ваше сообщение или детали заявки" rows="6" required></textarea>
-            <button type="submit">Отправить заявку</button>
+            <input type="text" placeholder="Компания и должность" required>
+            <textarea placeholder="Опишите ваши задачи (тип продукта, цели, бюджет)" rows="4" required></textarea>
+            <button type="submit">Получить демо-доступ</button>
         </form>
     </section>
     <footer>
         <p>&copy; 2025 MOST. Все права защищены.</p>
         <div class="social-icons">
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-telegram"></i></a>
+            <a href="#"><i class="fab fa-vk"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
         </div>
     </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            
+            function checkScroll() {
+                animatedElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', checkScroll);
+            checkScroll();
+            
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Бургер-меню с плавной анимацией
+            const menuToggle = document.querySelector('.menu-toggle');
+            const nav = document.querySelector('nav');
+            
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                nav.classList.toggle('active');
+                
+                // Блокируем скролл при открытом меню
+                if (nav.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Закрытие меню при клике на ссылку
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuToggle.classList.remove('active');
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+            
+            // Плавная прокрутка
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Слайдер отзывов
+            const testimonials = document.querySelector('.testimonials');
+            const dots = document.querySelectorAll('.testimonial-dot');
+            let currentSlide = 0;
+            const slideCount = document.querySelectorAll('.testimonial').length;
+            let slideInterval;
+            
+            function startSlider() {
+                slideInterval = setInterval(() => {
+                    currentSlide = (currentSlide + 1) % slideCount;
+                    updateSlider();
+                }, 5000);
+            }
+            
+            dots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    currentSlide = parseInt(this.getAttribute('data-index'));
+                    updateSlider();
+                    restartSlider();
+                });
+            });
+            
+            function updateSlider() {
+                testimonials.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            function restartSlider() {
+                clearInterval(slideInterval);
+                startSlider();
+            }
+            
+            startSlider();
+            
+            // Закрытие меню при клике вне его области
+            document.addEventListener('click', (e) => {
+                if (!nav.contains(e.target) && !menuToggle.contains(e.target) && nav.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
