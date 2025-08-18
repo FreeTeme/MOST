@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOST - Платформа для поиска микроблогеров</title>
-    <!-- Обновленные шрифты -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MOST - Платформа для поиска микроблогеров</title>
+<!-- Обновленные шрифты -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&amp;family=Merriweather:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+<style>
         :root {
             --blue: #0212EE; 
             --red: #D20001; 
@@ -483,24 +484,122 @@
             color: var(--white);
             text-align: center;
         }
-        footer p {
-            margin: 0 0 20px;
-            font-size: 14px;
-        }
-        footer .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        footer .social-icons a {
-            color: var(--white);
-            font-size: 24px;
-            transition: color 0.3s, transform 0.3s;
-        }
-        footer .social-icons a:hover {
-            color: var(--pink);
-            transform: scale(1.2);
-        }
+        
+.cool-footer {
+  background: #0212EE;
+  color: var(--white);
+  padding: 80px 40px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.footer-brand {
+  flex: 1 1 250px;
+  max-width: 300px;
+}
+
+.footer-character {
+  width: 180px;
+  margin-bottom: 20px;
+  transition: transform 0.4s ease;
+}
+
+.footer-character:hover {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.footer-brand h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.footer-brand p {
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.footer-links, .footer-social {
+  flex: 1 1 200px;
+  text-align: center; /* центруем содержимое */
+  
+}
+
+.footer-links h3, .footer-social h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;  
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links ul li {
+  margin-bottom: 10px;
+}
+
+.footer-links ul li a {
+  color: var(--white);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.footer-links ul li a:hover {
+  opacity: 1;
+  transform: translateX(5px);
+}
+
+.footer-social .social-icons {
+  display: flex;
+  justify-content: center; /* выравниваем по центру */
+  gap: 20px;
+  font-size: 26px;
+}
+
+.footer-social .social-icons a {
+  color: var(--white);
+  transition: transform 0.3s, color 0.3s;
+}
+
+.footer-social .social-icons a:hover {
+  transform: scale(1.2);
+  color: var(--pink);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.footer-bottom .heart {
+  color: var(--pink);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
         .flexible-section {
             background-color: var(--red);
             padding: 40px 20px;
@@ -805,150 +904,299 @@
                 display: none;
             }
         }
-    </style>
+    
+.welcome-box {
+    position: relative; /* Чтобы картинка могла позиционироваться внутри */
+    overflow: visible;  /* Чтобы персонаж мог «вылезать» за пределы блока */
+}
+
+.welcome-character {
+
+.side-character {
+    position: absolute;
+    width: 140px;
+    z-index: 10;
+    pointer-events: none;
+    transition: transform 0.6s ease;
+}
+
+/* Для "шокированного" персонажа */
+.shocked-character {
+    right: -60px;
+    top: 40px;
+}
+
+/* Для машущего */
+.waving-character {
+    left: -80px;
+    bottom: 20px;
+}
+
+/* Эффект при скролле */
+.animate-on-scroll.visible.side-character {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+
+    position: absolute;
+    top: -70px; /* регулируй, чтобы рука легла на край */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px; /* размер можно подогнать */
+    pointer-events: none; /* чтобы не мешал кликам */
+}
+</style>
 </head>
 <body>
-    <header>
-        <div class="logo">MOST</div>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-            <i class="fas fa-times"></i>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#home">Главная</a></li>
-                <li><a href="#about">О нас</a></li>
-                <li><a href="#how">Как это работает</a></li>
-                <li><a href="#testimonials">Отзывы</a></li>
-                <li><a href="#blog">Блог</a></li>
-                <li><a href="#contact">Контакты</a></li>
+<header>
+<div class="logo">MOST</div>
+<div class="menu-toggle">
+<i class="fas fa-bars"></i>
+<i class="fas fa-times"></i>
+</div>
+<nav>
+<ul>
+<li><a href="#home">Главная</a></li>
+<li><a href="#about">О нас</a></li>
+<li><a href="#how">Как это работает</a></li>
+<li><a href="#testimonials">Отзывы</a></li>
+<li><a href="#blog">Блог</a></li>
+<li><a href="#contact">Контакты</a></li>
+</ul>
+<div class="nav-button">
+<button class="scroll-to-contact">Начать</button>
+</div>
+</nav>
+</header>
+<section class="hero" id="home">
+<div class="highlight">Инновационный подход</div>
+<h1>НАЙДИТЕ РЕАЛЬНЫЕ ГОЛОСА — ЗАКАЖИТЕ UGC И ИНТЕГРАЦИИ ЗА ПАРУ КЛИКОВ<br/></h1>
+<div class="welcome-box"><img alt="Персонаж" class="welcome-character" src="20250815_1318_Playful Pink Character_remix_01k2pthsjqf2qah8pe0km7g7y6.png"/>
+<h3>Добро пожаловать <span class="star-icon"><i class="fas fa-star"></i></span></h3>
+<p>MOST — каталог нано- и микро-креаторов, где бренды бронируют людей, а не догадки. Профили с примерами работ, прозрачные цены и безопасные сделки</p>
+</div>
+<div class="features">
+<div class="feature-card">Точный подбор по параметрам</div>
+<div class="feature-card">Анализ эффективности контента</div>
+<div class="feature-card">Прогнозирование результата</div>
+</div>
+</section>
+<section class="flexible-section animate-on-scroll">
+<h2>Адаптивность</h2>
+<p>Наша платформа учитывает специфику вашего бизнеса и предлагает индивидуальные решения. Независимо от масштаба проекта, MOST поможет найти именно тех инфлюенсеров, которые принесут максимальный результат.</p>
+</section>
+<section class="about-section animate-on-scroll" id="about">
+<h2>О MOST</h2>
+<p>MOST — это интеллектуальная платформа для поиска микроблогеров, использующая технологии искусственного интеллекта. Мы создаем инструмент, который экономит до 80% времени на поиск инфлюенсеров и повышает эффективность коллабораций на 60%. Наша миссия — сделать маркетинг в социальных сетях точным, измеримым и максимально эффективным.</p>
+<button class="scroll-to-contact">Узнать больше</button>
+</section>
+<section class="how-it-works animate-on-scroll" id="how">
+<h2>Как это работает</h2>
+<div class="steps">
+<div class="step animate-on-scroll">
+<h3>Шаг 1: </br>Найдите и сравните</h3>
+<p>Открывайте профили, смотрите примеры UGC, сравнивайте цены и сроки — всё в одной карточке.</p>
+</div>
+<div class="step animate-on-scroll">
+<h3>Шаг 2: </br>Согласуйте бриф</h3>
+<p>Выберите шаблон брифа или опишите задачу в пару строк. Креатор отправит концепт и сроки — вы подтверждаете.</p>
+</div>
+<div class="step animate-on-scroll">
+<h3>Шаг 3: </br>Запуск</h3>
+<p>Оплата через эскроу, креатор загружает материалы, вы принимаете — платёж переводится. Готово: контент в вашем арсенале и отчёт по размещению.</p>
+</div>
+</div>
+</section>
+<section class="build-section animate-on-scroll">
+<h2>Создайте эффективную стратегию</h2>
+<div class="options">
+<div class="option-card animate-on-scroll">
+<h4>Индивидуальный подход</h4>
+<p>Начните с тестовой кампании или комплексного решения для всего бренда.</p>
+</div>
+<div class="option-card animate-on-scroll">
+<h4>Интеграция</h4>
+<p>Легкое подключение к существующим маркетинговым процессам и CRM.</p>
+</div>
+<div class="option-card blue animate-on-scroll">
+<h4>ИИ-аналитика</h4>
+<p>Получайте инсайты и прогнозы эффективности для каждого инфлюенсера.</p>
+</div>
+</div>
+</section>
+<section class="results-section animate-on-scroll" id="results">
+  <h2>Результаты клиентов</h2>
 
-            </ul>
-            <div class="nav-button">
-                <button>Начать</button>
-            </div>
-        </nav>
-    </header>
-    <section id="home" class="hero">
-        <div class="highlight">Инновационный подход</div>
-        <h1>ПОИСК ИДЕАЛЬНЫХ<br>МИКРОБЛОГЕРОВ<br>С ПОМОЩЬЮ ИИ</h1>
-        <div class="welcome-box">
-            <h3>Добро пожаловать <span class="star-icon"><i class="fas fa-star"></i></span></h3>
-            <p>MOST - платформа нового поколения для эффективного поиска микроблогеров. Наши алгоритмы анализируют тысячи профилей, чтобы найти идеальное соответствие для вашего бренда.</p>
-        </div>
-        <div class="features">
-            <div class="feature-card">Точный подбор по параметрам</div>
-            <div class="feature-card">Анализ эффективности контента</div>
-            <div class="feature-card">Прогнозирование результата</div>
-        </div>
-    </section>
-    <section class="flexible-section animate-on-scroll">
-        <h2>Адаптивность</h2>
-        <p>Наша платформа учитывает специфику вашего бизнеса и предлагает индивидуальные решения. Независимо от масштаба проекта, MOST поможет найти именно тех инфлюенсеров, которые принесут максимальный результат.</p>
-    </section>
-    <section id="about" class="about-section animate-on-scroll">
-        <h2>О MOST</h2>
-        <p>MOST — это интеллектуальная платформа для поиска микроблогеров, использующая технологии искусственного интеллекта. Мы создаем инструмент, который экономит до 80% времени на поиск инфлюенсеров и повышает эффективность коллабораций на 60%. Наша миссия — сделать маркетинг в социальных сетях точным, измеримым и максимально эффективным.</p>
-        <button>Узнать больше</button>
-    </section>
-    <section id="how" class="how-it-works animate-on-scroll">
-        <h2>Как это работает</h2>
-        <div class="steps">
-            <div class="step animate-on-scroll">
-                <h3>Шаг 1: Анализ</h3>
-                <p>Определите цели кампании и целевую аудиторию. Наша система проанализирует более 50 параметров для точного подбора.</p>
-            </div>
-            <div class="step animate-on-scroll">
-                <h3>Шаг 2: Подбор</h3>
-                <p>ИИ найдет микроблогеров с максимальным соответствием вашим требованиям и прогнозируемой эффективностью.</p>
-            </div>
-            <div class="step animate-on-scroll">
-                <h3>Шаг 3: Запуск</h3>
-                <p>Управляйте кампаниями через платформу, отслеживайте результаты в режиме реального времени и оптимизируйте стратегию.</p>
-            </div>
-        </div>
-    </section>
-    <section class="build-section animate-on-scroll">
-        <h2>Создайте эффективную стратегию</h2>
-        <div class="options">
-            <div class="option-card animate-on-scroll">
-                <h4>Индивидуальный подход</h4>
-                <p>Начните с тестовой кампании или комплексного решения для всего бренда.</p>
-            </div>
-            <div class="option-card animate-on-scroll">
-                <h4>Интеграция</h4>
-                <p>Легкое подключение к существующим маркетинговым процессам и CRM.</p>
-            </div>
-            <div class="option-card blue animate-on-scroll">
-                <h4>ИИ-аналитика</h4>
-                <p>Получайте инсайты и прогнозы эффективности для каждого инфлюенсера.</p>
-            </div>
-        </div>
-    </section>
-    <section id="testimonials" class="testimonials-section animate-on-scroll">
-        <h2>Отзывы клиентов</h2>
-        <div class="testimonials-container">
-            <div class="testimonials">
-                <div class="testimonial">
-                    <p>"Благодаря MOST мы сократили время поиска инфлюенсеров с 3 недель до 2 дней. Качество подбора значительно выше ручных методов."</p>
-                    <div class="author">- Марина Иванова, Директор по маркетингу</div>
-                </div>
-                <div class="testimonial">
-                    <p>"Платформа помогла найти нишевых блогеров с высокой лояльностью аудитории. ROI кампаний вырос на 45%."</p>
-                    <div class="author">- Алексей Петров, Бренд-менеджер</div>
-                </div>
-                <div class="testimonial">
-                    <p>"Интуитивный интерфейс и мощная аналитика. MOST стал нашим основным инструментом для работы с инфлюенсерами."</p>
-                    <div class="author">- Ольга Сидорова, Digital-стратег</div>
-                </div>
-            </div>
-        </div>
-        <div class="testimonials-dots">
-            <div class="testimonial-dot active" data-index="0"></div>
-            <div class="testimonial-dot" data-index="1"></div>
-            <div class="testimonial-dot" data-index="2"></div>
-        </div>
-    </section>
-    <section id="blog" class="blog-section animate-on-scroll">
-        <h2>Экспертные материалы</h2>
-        <div class="blog-posts">
-            <div class="blog-post animate-on-scroll">
-                <h3>Тренды микроблогинга</h3>
-                <p>Как меняется ландшафт инфлюенс-маркетинга в 2025 году и какие стратегии работают лучше всего.</p>
-                <a href="#">Читать дальше →</a>
-            </div>
-            <div class="blog-post animate-on-scroll">
-                <h3>ИИ в маркетинге</h3>
-                <p>Практическое применение искусственного интеллекта для повышения эффективности рекламных кампаний.</p>
-                <a href="#">Читать дальше →</a>
-            </div>
-            <div class="blog-post animate-on-scroll">
-                <h3>Кейс: Успешная коллаборация</h3>
-                <p>Как бренд косметики увеличил продажи на 70% с помощью точечного подбора микроблогеров.</p>
-                <a href="#">Читать дальше →</a>
-            </div>
-        </div>
-    </section>
-    <section id="contact" class="contact-section animate-on-scroll">
-        <h2>Заявка на демо-доступ</h2>
-        <form class="contact-form">
-            <input type="text" placeholder="Ваше имя" required>
-            <input type="email" placeholder="Ваш email" required>
-            <input type="text" placeholder="Компания и должность" required>
-            <textarea placeholder="Опишите ваши задачи (тип продукта, цели, бюджет)" rows="4" required></textarea>
-            <button type="submit">Получить демо-доступ</button>
-        </form>
-    </section>
-    <footer>
-        <p>&copy; 2025 MOST. Все права защищены.</p>
-        <div class="social-icons">
-            <a href="#"><i class="fab fa-telegram"></i></a>
-            <a href="#"><i class="fab fa-vk"></i></a>
-            <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-    </footer>
-    
-    <script>
+  <!-- уменьшенный персонаж -->
+  <!-- <img src="20250817_1020_Pink Cartoon Character_remix_01k2vn533tev3rpmh2w6yj28qc.png" 
+       alt="Персонаж в шоке" 
+       class="results-character animate-on-scroll"/> -->
+
+  <div class="results-cards">
+    <div class="result-card animate-on-scroll">
+      <h3>-80%</h3>
+      <p>Времени на поиск инфлюенсеров по сравнению с ручным подбором.</p>
+    </div>
+    <div class="result-card animate-on-scroll">
+      <h3>+45% ROI</h3>
+      <p>Рост возврата инвестиций в маркетинговых кампаниях.</p>
+    </div>
+    <div class="result-card animate-on-scroll">
+      <h3>+60%</h3>
+      <p>Повышение эффективности коллабораций с блогерами.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+.results-section {
+  padding: 60px 20px;
+  background-color: var(--white);
+  text-align: center;
+  position: relative;
+}
+.results-section h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+.results-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.result-card {
+  background-color: var(--pink);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+.result-card:hover {
+  transform: translateY(-5px);
+}
+.result-card h3 {
+  font-size: 32px;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+.result-card p {
+  font-size: 16px;
+  margin: 0;
+}
+.results-character {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 80px;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+.results-character:hover {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+@media (min-width: 769px) {
+  .results-cards {
+    flex-direction: row;
+    justify-content: center;
+    gap: 40px;
+  }
+  .result-card {
+    width: 30%;
+  }
+  .results-section h2 {
+    font-size: 60px;
+    margin-bottom: 60px;
+  }
+}
+</style>
+
+
+
+<section class="blog-section animate-on-scroll" id="blog">
+<h2>Экспертные материалы</h2>
+<div class="blog-posts">
+<div class="blog-post animate-on-scroll">
+<h3>Как запустить работу с микроблогерами</h3>
+<p>Простая пошаговая инструкция: постановка целей, выбор формата и подбор креаторов</p>
+<a href="Чек-лист.pdf">Читать дальше →</a>
+</div>
+<div class="blog-post animate-on-scroll">
+<h3>Как составить бриф и договориться с блогером</h3>
+<p>Шаблон для брифа, ключевые ошибки и рекомендации по коммуникации</p>
+<a href="Чек-лист.pdf">Читать дальше →</a>
+</div>
+<div class="blog-post animate-on-scroll">
+<h3>Что делать и чего избегать</h3>
+<p>7 типичных ошибок в инфлюенс-маркетинге и практики, которые реально работают</p>
+<a href="Чек-лист.pdf">Читать дальше →</a>
+</div>
+</div>
+</section>
+<section class="contact-section animate-on-scroll" id="contact">
+<h2>Заявка на демо-доступ</h2>
+
+
+<form class="contact-form">
+<input placeholder="Ваше имя" required="" type="text"/>
+<input placeholder="Ваш email" required="" type="email"/>
+<input placeholder="Компания и должность" required="" type="text"/>
+<textarea placeholder="Опишите ваши задачи (тип продукта, цели, бюджет)" required="" rows="4"></textarea>
+<button type="submit">Получить демо-доступ</button>
+</form>
+</section>
+<footer class="cool-footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <!-- <h2>MOST</h2> -->
+      <!-- <p>Мы соединяем бренды и микроблогеров через технологии и креатив.</p> -->
+      <img src="20250817_1013_Smiling Pink Wave_remix_01k2vmsm6bfj2addbacr6dtkzv.png" 
+           alt="Персонаж" 
+           class="footer-character"/>
+      
+    </div>
+
+    <div class="footer-links">
+      <h3>Навигация</h3>
+      <ul>
+        <li><a href="#about">О нас</a></li>
+        <li><a href="#how">Как это работает</a></li>
+        <li><a href="#blog">Блог</a></li>
+        <li><a href="#contact">Контакты</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-social">
+      <h3>Мы в сети</h3>
+      <div class="social-icons">
+        <a href="https://www.instagram.com/most.plt/"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.linkedin.com/company/most-plt/"><i class="fab fa-linkedin"></i></a>
+        <a href="mailto:most.helping@gmail.com"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 MOST</p>
+  </div>
+</footer>
+
+<script>
+
+        document.querySelectorAll('.scroll-to-contact').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.querySelector('#contact');
+    if (target) {
+      window.scrollTo({
+        top: target.offsetTop - 80, // учёт фиксированного хедера
+        behavior: 'smooth'
+      });
+    }
+  });
+});
+
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.animate-on-scroll');
             
