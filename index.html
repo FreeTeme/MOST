@@ -1,33 +1,44 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>MOST - Платформа для поиска микроблогеров</title>
-<!-- Обновленные шрифты -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&amp;family=Merriweather:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 <style>
         :root {
             --blue: #0212EE; 
             --red: #D20001; 
             --pink: #FEC6E9; 
-            --white: #F3F3E9;/*#F3F3E9 */
+            --white: #F3F3E9;
             --black: #131610;
         }
         body {
             margin: 0;
             padding: 0;
-            /* Merriweather для основного текста */
-            font-family: 'Merriweather', serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--white);
             color: var(--black);
             overflow-x: hidden;
             line-height: 1.6;
+            font-weight: 400;
         }
         
-        /* Montserrat для всех заголовков и акцентных элементов */
+        /* ОСНОВНОЕ ИСПРАВЛЕНИЕ: Уменьшено расстояние между секциями */
+        .features {
+            margin-top: 60px; /* Убрано расстояние сверху */
+            margin-bottom: 0; /* Убрано расстояние снизу */
+        }
+        
+        @media (min-width: 769px) {
+            .features {
+                margin-top: 0; /* Убрано расстояние сверху */
+                margin-bottom: 0; /* Убрано расстояние снизу */
+            }
+        }
+        
+        /* Остальные стили без изменений */
         h1, h2, h3, h4, h5, h6,
         .logo,
         nav ul li a,
@@ -40,16 +51,14 @@
         .flexible-section h2,
         .build-section h2,
         .option-card h4 {
-            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
         }
         
-        /* Уточненные стили для заголовков */
         h1, h2, h3, h4 {
             font-weight: 600;
             letter-spacing: -0.5px;
         }
         
-        /* Остальные стили без изменений */
         header {
             padding: 15px 20px;
             display: flex;
@@ -153,11 +162,17 @@
             box-shadow: 0 6px 15px rgba(255,65,54,0.4);
         }
         .hero {
-            padding: 120px 20px 60px;
+            padding: 120px 20px 0; /* Уменьшен нижний отступ */
             text-align: left;
             position: relative;
             min-height: auto;
             overflow: hidden;
+        }
+
+        @media (min-width: 769px) {
+            .hero {
+                padding: 150px 40px 20px; /* Уменьшен нижний отступ */
+            }
         }
         .hero::before {
             content: '';
@@ -197,7 +212,6 @@
             margin-bottom: 20px;
             font-size: 18px;
             animation: bounceIn 1s;
-            font-family: 'Montserrat', sans-serif;
         }
         @keyframes bounceIn {
             0% { transform: scale(0); }
@@ -227,6 +241,7 @@
         .hero .welcome-box p {
             margin: 0;
             font-size: 16px;
+            font-weight: 400;
         }
         .hero .star-icon {
             font-size: 24px;
@@ -241,7 +256,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-top: 30px;
         }
         .feature-card {
             background-color: var(--pink);
@@ -260,7 +274,7 @@
             box-shadow: 0 10px 20px rgba(255,105,180,0.4);
         }
         .about-section {
-            padding: 60px 20px;
+            padding: 30px 20px;
             background-color: var(--pink);
             color: var(--black);
             text-align: center;
@@ -290,6 +304,7 @@
             margin: 0 auto 30px;
             font-size: 16px;
             line-height: 1.6;
+            font-weight: 400;
         }
         .how-it-works {
             padding: 60px 20px;
@@ -325,6 +340,7 @@
         }
         .step p {
             font-size: 16px;
+            font-weight: 400;
         }
         .testimonials-section {
             padding: 60px 20px;
@@ -375,6 +391,7 @@
             font-size: 16px;
             margin-bottom: 15px;
             padding-top: 20px;
+            font-weight: 400;
         }
         .testimonial .author {
             font-weight: 600;
@@ -431,6 +448,7 @@
         .blog-post p {
             font-size: 16px;
             margin-bottom: 15px;
+            font-weight: 400;
         }
         .blog-post a {
             color: var(--red);
@@ -466,7 +484,8 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: box-shadow 0.3s;
             box-sizing: border-box;
-            font-family: 'Merriweather', serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
         }
         .contact-form input:focus, .contact-form textarea:focus {
             box-shadow: 0 6px 15px rgba(255,105,180,0.3);
@@ -517,7 +536,6 @@
 }
 
 .footer-brand h2 {
-  font-family: 'Montserrat', sans-serif;
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 10px;
@@ -528,12 +546,12 @@
   font-size: 16px;
   line-height: 1.5;
   opacity: 0.85;
+  font-weight: 400;
 }
 
 .footer-links, .footer-social {
   flex: 1 1 200px;
-  text-align: center; /* центруем содержимое */
-  
+  text-align: center;
 }
 
 .footer-links h3, .footer-social h3 {
@@ -557,6 +575,7 @@
   text-decoration: none;
   opacity: 0.85;
   transition: opacity 0.3s, transform 0.3s;
+  font-weight: 400;
 }
 
 .footer-links ul li a:hover {
@@ -566,7 +585,7 @@
 
 .footer-social .social-icons {
   display: flex;
-  justify-content: center; /* выравниваем по центру */
+  justify-content: center;
   gap: 20px;
   font-size: 26px;
 }
@@ -587,6 +606,7 @@
   text-align: center;
   font-size: 14px;
   opacity: 0.85;
+  font-weight: 400;
 }
 
 .footer-bottom .heart {
@@ -621,6 +641,7 @@
             font-size: 16px;
             color: var(--white);
             margin: 0;
+            font-weight: 400;
         }
         .build-section {
             padding: 60px 20px;
@@ -636,7 +657,6 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            
         }
         .option-card {
             background-color: var(--white);
@@ -658,6 +678,7 @@
             margin: 0;
             font-size: 16px;
             color: var(--black);
+            font-weight: 400;
         }
         .option-card.blue {
             background-color: var(--blue);
@@ -667,7 +688,6 @@
             color: var(--white);
         }
         
-        /* Анимации при скроллинге */
         .animate-on-scroll {
             opacity: 0;
             transform: translateY(20px);
@@ -679,7 +699,6 @@
             transform: translateY(0);
         }
 
-        /* Адаптивные стили для десктопа */
         @media (min-width: 769px) {
             .menu-toggle {
                 display: none;
@@ -689,7 +708,7 @@
                 align-items: center;
             }
             .hero {
-                padding: 150px 40px 100px;
+                padding: 150px 40px 20px; /* Уменьшен нижний отступ */
                 min-height: 100vh;
             }
             .hero h1 {
@@ -710,7 +729,6 @@
             .features {
                 flex-direction: row;
                 gap: 30px;
-                margin-top: 60px;
             }
             .feature-card {
                 padding: 20px 40px;
@@ -773,39 +791,23 @@
                 margin-bottom: 50px;
             }
             .flexible-section {
-                background-color: var(--red);
-                padding: 40px 20px;
-                border-radius: 20px;
-                margin: 40px 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(255,65,54,0.3);
+                padding: 60px 40px;
+                margin: 30px 20px;
+                text-align: left;
+                align-items: flex-start;
             }
-            /* Новые стили для десктопной версии блока "Адаптивность" */
-            @media (min-width: 769px) {
-                .flexible-section {
-                    flex-direction: row;
-                    justify-content: space-between;
-                    padding: 60px 40px;
-                    margin: 60px 40px;
-                    text-align: left;
-                    align-items: flex-start;
-                }
-                .flexible-section h2 {
-                    width: 35%;
-                    margin: 0;
-                    padding-right: 40px;
-                    box-sizing: border-box;
-                }
-                .flexible-section p {
-                    width: 65%;
-                    max-width: none;
-                    font-size: 18px;
-                    margin: 0;
-                    text-align: left;
-                }
+            .flexible-section h2 {
+                width: 35%;
+                margin: 0;
+                padding-right: 40px;
+                box-sizing: border-box;
+            }
+            .flexible-section p {
+                width: 65%;
+                max-width: none;
+                font-size: 18px;
+                margin: 0;
+                text-align: left;
             }
             .build-section {
                 padding: 100px 40px;
@@ -814,26 +816,16 @@
                 font-size: 60px;
                 margin-bottom: 60px;
             }
-                    /* Исправление для блока "Создайте эффективную стратегию" */
             .build-section .options {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
+                flex-direction: row;
+                gap: 30px;
+                justify-content: center;
+                flex-wrap: wrap;
             }
-            
-            /* Центрирование карточек в десктопной версии */
-            @media (min-width: 769px) {
-                .build-section .options {
-                    flex-direction: row;
-                    gap: 30px;
-                    justify-content: center; /* Добавлено центрирование */
-                    flex-wrap: wrap; /* Разрешаем перенос на несколько строк */
-                }
-                .build-section .option-card {
-                    width: 25%;
-                    min-width: 280px; /* Минимальная ширина карточки */
-                    max-width: 320px; /* Максимальная ширина карточки */
-                }
+            .build-section .option-card {
+                width: 25%;
+                min-width: 280px;
+                max-width: 320px;
             }
             .options {
                 flex-direction: row;
@@ -847,7 +839,6 @@
             }
         }
 
-        /* Мобильное меню */
         @media (max-width: 768px) {
             nav {
                 position: fixed;
@@ -885,7 +876,6 @@
             }
         }
 
-        /* Стили для кнопки в хедере */
         .nav-button {
             margin-left: 15px;
         }
@@ -906,11 +896,18 @@
         }
     
 .welcome-box {
-    position: relative; /* Чтобы картинка могла позиционироваться внутри */
-    overflow: visible;  /* Чтобы персонаж мог «вылезать» за пределы блока */
+    position: relative;
+    overflow: visible;
 }
 
 .welcome-character {
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    pointer-events: none;
+}
 
 .side-character {
     position: absolute;
@@ -920,135 +917,20 @@
     transition: transform 0.6s ease;
 }
 
-/* Для "шокированного" персонажа */
 .shocked-character {
     right: -60px;
     top: 40px;
 }
 
-/* Для машущего */
 .waving-character {
     left: -80px;
     bottom: 20px;
 }
 
-/* Эффект при скролле */
 .animate-on-scroll.visible.side-character {
     transform: scale(1.1) rotate(-5deg);
 }
 
-
-    position: absolute;
-    top: -70px; /* регулируй, чтобы рука легла на край */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px; /* размер можно подогнать */
-    pointer-events: none; /* чтобы не мешал кликам */
-}
-</style>
-</head>
-<body>
-<header>
-<div class="logo">MOST</div>
-<div class="menu-toggle">
-<i class="fas fa-bars"></i>
-<i class="fas fa-times"></i>
-</div>
-<nav>
-<ul>
-<li><a href="#home">Главная</a></li>
-<li><a href="#about">О нас</a></li>
-<li><a href="#how">Как это работает</a></li>
-<li><a href="#testimonials">Отзывы</a></li>
-<li><a href="#blog">Блог</a></li>
-<li><a href="#contact">Контакты</a></li>
-</ul>
-<div class="nav-button">
-<button class="scroll-to-contact">Начать</button>
-</div>
-</nav>
-</header>
-<section class="hero" id="home">
-<div class="highlight">Инновационный подход</div>
-<h1>НАЙДИТЕ РЕАЛЬНЫЕ ГОЛОСА — ЗАКАЖИТЕ UGC И ИНТЕГРАЦИИ ЗА ПАРУ КЛИКОВ<br/></h1>
-<div class="welcome-box"><img alt="Персонаж" class="welcome-character" src="20250815_1318_Playful Pink Character_remix_01k2pthsjqf2qah8pe0km7g7y6.png"/>
-<h3>Добро пожаловать <span class="star-icon"><i class="fas fa-star"></i></span></h3>
-<p>MOST — каталог нано- и микро-креаторов, где бренды бронируют людей, а не догадки. Профили с примерами работ, прозрачные цены и безопасные сделки</p>
-</div>
-<div class="features">
-<div class="feature-card">Точный подбор по параметрам</div>
-<div class="feature-card">Анализ эффективности контента</div>
-<div class="feature-card">Прогнозирование результата</div>
-</div>
-</section>
-<section class="flexible-section animate-on-scroll">
-<h2>Адаптивность</h2>
-<p>Наша платформа учитывает специфику вашего бизнеса и предлагает индивидуальные решения. Независимо от масштаба проекта, MOST поможет найти именно тех инфлюенсеров, которые принесут максимальный результат.</p>
-</section>
-<section class="about-section animate-on-scroll" id="about">
-<h2>О MOST</h2>
-<p>MOST — это интеллектуальная платформа для поиска микроблогеров, использующая технологии искусственного интеллекта. Мы создаем инструмент, который экономит до 80% времени на поиск инфлюенсеров и повышает эффективность коллабораций на 60%. Наша миссия — сделать маркетинг в социальных сетях точным, измеримым и максимально эффективным.</p>
-<button class="scroll-to-contact">Узнать больше</button>
-</section>
-<section class="how-it-works animate-on-scroll" id="how">
-<h2>Как это работает</h2>
-<div class="steps">
-<div class="step animate-on-scroll">
-<h3>Шаг 1: </br>Найдите и сравните</h3>
-<p>Открывайте профили, смотрите примеры UGC, сравнивайте цены и сроки — всё в одной карточке.</p>
-</div>
-<div class="step animate-on-scroll">
-<h3>Шаг 2: </br>Согласуйте бриф</h3>
-<p>Выберите шаблон брифа или опишите задачу в пару строк. Креатор отправит концепт и сроки — вы подтверждаете.</p>
-</div>
-<div class="step animate-on-scroll">
-<h3>Шаг 3: </br>Запуск</h3>
-<p>Оплата через эскроу, креатор загружает материалы, вы принимаете — платёж переводится. Готово: контент в вашем арсенале и отчёт по размещению.</p>
-</div>
-</div>
-</section>
-<section class="build-section animate-on-scroll">
-<h2>Создайте эффективную стратегию</h2>
-<div class="options">
-<div class="option-card animate-on-scroll">
-<h4>Индивидуальный подход</h4>
-<p>Начните с тестовой кампании или комплексного решения для всего бренда.</p>
-</div>
-<div class="option-card animate-on-scroll">
-<h4>Интеграция</h4>
-<p>Легкое подключение к существующим маркетинговым процессам и CRM.</p>
-</div>
-<div class="option-card blue animate-on-scroll">
-<h4>ИИ-аналитика</h4>
-<p>Получайте инсайты и прогнозы эффективности для каждого инфлюенсера.</p>
-</div>
-</div>
-</section>
-<section class="results-section animate-on-scroll" id="results">
-  <h2>Результаты клиентов</h2>
-
-  <!-- уменьшенный персонаж -->
-  <!-- <img src="20250817_1020_Pink Cartoon Character_remix_01k2vn533tev3rpmh2w6yj28qc.png" 
-       alt="Персонаж в шоке" 
-       class="results-character animate-on-scroll"/> -->
-
-  <div class="results-cards">
-    <div class="result-card animate-on-scroll">
-      <h3>-80%</h3>
-      <p>Времени на поиск инфлюенсеров по сравнению с ручным подбором.</p>
-    </div>
-    <div class="result-card animate-on-scroll">
-      <h3>+45% ROI</h3>
-      <p>Рост возврата инвестиций в маркетинговых кампаниях.</p>
-    </div>
-    <div class="result-card animate-on-scroll">
-      <h3>+60%</h3>
-      <p>Повышение эффективности коллабораций с блогерами.</p>
-    </div>
-  </div>
-</section>
-
-<style>
 .results-section {
   padding: 60px 20px;
   background-color: var(--white);
@@ -1082,6 +964,7 @@
 .result-card p {
   font-size: 16px;
   margin: 0;
+  font-weight: 400;
 }
 .results-character {
   position: absolute;
@@ -1110,8 +993,100 @@
   }
 }
 </style>
-
-
+</head>
+<body>
+<header>
+<div class="logo">MOST</div>
+<div class="menu-toggle">
+<i class="fas fa-bars"></i>
+<i class="fas fa-times"></i>
+</div>
+<nav>
+<ul>
+<li><a href="#home">Главная</a></li>
+<li><a href="#about">О нас</a></li>
+<li><a href="#how">Как это работает</a></li>
+<li><a href="#testimonials">Отзывы</a></li>
+<li><a href="#blog">Блог</a></li>
+<li><a href="#contact">Контакты</a></li>
+</ul>
+<div class="nav-button">
+<button class="scroll-to-contact">Начать</button>
+</div>
+</nav>
+</header>
+<section class="hero" id="home">
+<h1>Соединяем бренды и сердца</h1>
+<div class="welcome-box"><img alt="Персонаж" class="welcome-character" src="20250815_1318_Playful Pink Character_remix_01k2pthsjqf2qah8pe0km7g7y6.png"/>
+<h3>Добро пожаловать <span class="star-icon"><i class="fas fa-star"></i></span></h3>
+<p>MOST — платформа, где бренды находят своих людей, а креаторы — проекты, которые отражают их ценности. Прозрачные условия, проверенная аналитика и честные сделки</p>
+</div>
+</section>
+<div class="features">
+<div class="feature-card">Точный подбор по параметрам</div>
+<div class="feature-card">Анализ эффективности контента</div>
+<div class="feature-card">Прогнозирование результата</div>
+</div>
+<section class="flexible-section animate-on-scroll">
+<h2>Адаптивность</h2>
+<p>Наша платформа учитывает специфику вашего бизнеса и предлагает индивидуальные решения. Независимо от масштаба проекта, MOST поможет найти именно тех инфлюенсеров, которые принесут максимальный результат.</p>
+</section>
+<section class="about-section animate-on-scroll" id="about">
+<h2>О MOST</h2>
+<p>MOST — это интеллектуальная платформа для поиска микроблогеров, использующая технологии искусственного интеллекта. Мы создаем инструмент, который экономит до 80% времени на поиск инфлюенсеров и повышает эффективность коллабораций на 60%. Наша миссия — сделать маркетинг в социальных сетях точным, измеримым и максимально эффективным.</p>
+<button class="scroll-to-contact">Узнать больше</button>
+</section>
+<section class="how-it-works animate-on-scroll" id="how">
+<h2>Как это работает</h2>
+<div class="steps">
+<div class="step animate-on-scroll">
+<h3>Шаг 1: </br>Найдите и сравните</h3>
+<p>Открывайте профили, смотрите примеры UGC, сравнивайте цены и сроки — всё в одной карточке.</p>
+</div>
+<div class="step animate-on-scroll">
+<h3>Шаг 2: </br>Согласуйте бриф</h3>
+<p>Выберите шаблон брифа или опишите задачу в пару строк. Креатор отправил концепт и сроки — вы подтверждаете.</p>
+</div>
+<div class="step animate-on-scroll">
+<h3>Шаг 3: </br>Запуск</h3>
+<p>Оплата через эскроу, креатор загружает материалы, вы принимаете — платёж переводится. Готово: контент в вашем арсенале и отчёт по размещению.</p>
+</div>
+</div>
+</section>
+<section class="build-section animate-on-scroll">
+<h2>Создайте эффективную стратегию</h2>
+<div class="options">
+<div class="option-card animate-on-scroll">
+<h4>Индивидуальный подход</h4>
+<p>Начните с тестовой кампании или комплексного решения для всего бренда.</p>
+</div>
+<div class="option-card animate-on-scroll">
+<h4>Интеграция</h4>
+<p>Легкое подключение к существующим маркетинговым процессам и CRM.</p>
+</div>
+<div class="option-card blue animate-on-scroll">
+<h4>ИИ-аналитика</h4>
+<p>Получайте инсайты и прогнозы эффективности для каждого инфлюенсера.</p>
+</div>
+</div>
+</section>
+<section class="results-section animate-on-scroll" id="results">
+  <h2>Результаты клиентов</h2>
+  <div class="results-cards">
+    <div class="result-card animate-on-scroll">
+      <h3>-80%</h3>
+      <p>Времени на поиск инфлюенсеров по сравнению с ручным подбором.</p>
+    </div>
+    <div class="result-card animate-on-scroll">
+      <h3>+45% ROI</h3>
+      <p>Рост возврата инвестиций в маркетинговых кампаниях.</p>
+    </div>
+    <div class="result-card animate-on-scroll">
+      <h3>+60%</h3>
+      <p>Повышение эффективности коллабораций с блогерами.</p>
+    </div>
+  </div>
+</section>
 
 <section class="blog-section animate-on-scroll" id="blog">
 <h2>Экспертные материалы</h2>
@@ -1135,8 +1110,6 @@
 </section>
 <section class="contact-section animate-on-scroll" id="contact">
 <h2>Заявка на демо-доступ</h2>
-
-
 <form class="contact-form">
 <input placeholder="Ваше имя" required="" type="text"/>
 <input placeholder="Ваш email" required="" type="email"/>
@@ -1148,14 +1121,10 @@
 <footer class="cool-footer">
   <div class="footer-top">
     <div class="footer-brand">
-      <!-- <h2>MOST</h2> -->
-      <!-- <p>Мы соединяем бренды и микроблогеров через технологии и креатив.</p> -->
       <img src="20250817_1013_Smiling Pink Wave_remix_01k2vmsm6bfj2addbacr6dtkzv.png" 
            alt="Персонаж" 
            class="footer-character"/>
-      
     </div>
-
     <div class="footer-links">
       <h3>Навигация</h3>
       <ul>
@@ -1165,7 +1134,6 @@
         <li><a href="#contact">Контакты</a></li>
       </ul>
     </div>
-
     <div class="footer-social">
       <h3>Мы в сети</h3>
       <div class="social-icons">
@@ -1175,27 +1143,23 @@
       </div>
     </div>
   </div>
-
   <div class="footer-bottom">
     <p>© 2025 MOST</p>
   </div>
 </footer>
 
 <script>
-
         document.querySelectorAll('.scroll-to-contact').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.querySelector('#contact');
     if (target) {
       window.scrollTo({
-        top: target.offsetTop - 80, // учёт фиксированного хедера
+        top: target.offsetTop - 80,
         behavior: 'smooth'
       });
     }
   });
 });
-
-
 
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.animate-on-scroll');
@@ -1223,7 +1187,6 @@
                 }
             });
             
-            // Бургер-меню с плавной анимацией
             const menuToggle = document.querySelector('.menu-toggle');
             const nav = document.querySelector('nav');
             
@@ -1231,7 +1194,6 @@
                 menuToggle.classList.toggle('active');
                 nav.classList.toggle('active');
                 
-                // Блокируем скролл при открытом меню
                 if (nav.classList.contains('active')) {
                     document.body.style.overflow = 'hidden';
                 } else {
@@ -1239,7 +1201,6 @@
                 }
             });
             
-            // Закрытие меню при клике на ссылку
             document.querySelectorAll('nav a').forEach(link => {
                 link.addEventListener('click', () => {
                     menuToggle.classList.remove('active');
@@ -1248,7 +1209,6 @@
                 });
             });
             
-            // Плавная прокрутка
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -1264,7 +1224,6 @@
                 });
             });
             
-            // Слайдер отзывов
             const testimonials = document.querySelector('.testimonials');
             const dots = document.querySelectorAll('.testimonial-dot');
             let currentSlide = 0;
@@ -1305,7 +1264,6 @@
             
             startSlider();
             
-            // Закрытие меню при клике вне его области
             document.addEventListener('click', (e) => {
                 if (!nav.contains(e.target) && !menuToggle.contains(e.target) && nav.classList.contains('active')) {
                     menuToggle.classList.remove('active');
