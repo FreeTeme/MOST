@@ -1,58 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+
+const mockReviews = [
+  { id: 1, author: "Екатерина", rating: 4, comment: "Хороший рекламодатель", date: "2023-04-12" },
+  { id: 2, author: "Алексей", rating: 5, comment: "Отличное сотрудничество", date: "2023-04-08" }
+];
 
 export default function AdvertiserReviews() {
-  const BASE_URL = "http://127.0.0.1:5000";
-  const [reviews, setReviews] = useState([]);
   const [filter, setFilter] = useState(0);
-  const [averageRating, setAverageRating] = useState(0.0);
-  const [ratingDistribution, setRatingDistribution] = useState([0, 0, 0, 0, 0]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const averageRating = (mockReviews.reduce((sum, review) => sum + review.rating, 0) / mockReviews.length).toFixed(1);
+  
+  const ratingDistribution = [0, 0, 0, 0, 0];
+  mockReviews.forEach(review => ratingDistribution[review.rating - 1]++);
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
-  const fetchReviews = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${BASE_URL}/api/reviews`, {
-        headers: { 'User-ID': localStorage.getItem('userId') }
-      });
-      if (!res.ok) throw new Error('Не удалось загрузить отзывы');
-      const data = await res.json();
-      setReviews(data);
-
-      const total = data.length;
-      const avg = total > 0 ? (data.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0.0;
-      setAverageRating(avg);
-
-      const dist = [0, 0, 0, 0, 0];
-      data.forEach(r => dist[r.rating - 1]++);
-      setRatingDistribution(dist);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredReviews = filter > 0 ? reviews.filter(review => review.rating === filter) : reviews;
-
-  if (loading) return <div className="loader">Загрузка...</div>;
-  if (error) return (
-    <div className="error-modal">
-      <div className="modal-content">
-        <h3>Ошибка</h3>
-        <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => setError(null)}>Закрыть</button>
-      </div>
-    </div>
-  );
+  const filteredReviews = filter > 0 
+    ? mockReviews.filter(review => review.rating === filter)
+    : mockReviews;
 
   return (
-    <div className="container">
+    <div>
       <h1>Отзывы</h1>
       <p>Отзывы блогеров о сотрудничестве с вами</p>
 
@@ -71,9 +36,9 @@ export default function AdvertiserReviews() {
 
       <div style={{ marginTop: '32px' }}>
         <h2>Все отзывы</h2>
-        <select
+        <select 
           className="input"
-          value={filter}
+          value={filter} 
           onChange={(e) => setFilter(Number(e.target.value))}
           style={{ width: '200px', marginBottom: '16px' }}
         >
@@ -100,7 +65,7 @@ export default function AdvertiserReviews() {
                 <td>{review.author}</td>
                 <td>{'⭐'.repeat(review.rating)}</td>
                 <td>{review.comment}</td>
-                <td>{new Date(review.date).toLocaleDateString()}</td>
+                <td>{review.date}</td>
               </tr>
             ))}
           </tbody>

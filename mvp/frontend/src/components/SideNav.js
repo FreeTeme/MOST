@@ -6,12 +6,10 @@ const navItems = {
   blogger: [
     { to: "/blogger", icon: <Home size={20} />, label: "Главная" },
     { to: "/blogger/catalog", icon: <Search size={20} />, label: "Каталог товаров" },
-    { to: "/blogger/swipe", icon: <Heart size={20} />, label: "Свайп товаров" },
   ],
   advertiser: [
     { to: "/advertiser", icon: <Home size={20} />, label: "Главная" },
     { to: "/advertiser/catalog", icon: <Search size={20} />, label: "Каталог блогеров" },
-    { to: "/advertiser/swipe", icon: <Heart size={20} />, label: "Свайп блогеров" },
   ],
   admin: [
     { to: "/admin", icon: <Home size={20} />, label: "Главная" },

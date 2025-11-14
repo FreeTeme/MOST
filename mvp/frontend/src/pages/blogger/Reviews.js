@@ -1,65 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { getReviews } from "../../services/api";
 
 export default function BloggerReviews() {
-  const BASE_URL = "http://127.0.0.1:5000";
-  const [reviews, setReviews] = useState([]);
   const [filter, setFilter] = useState(0);
-  const [averageRating, setAverageRating] = useState(0.0);
+  const [reviewsData, setReviewsData] = useState({ average: 0, reviews: [] });
   const [ratingDistribution, setRatingDistribution] = useState([0, 0, 0, 0, 0]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchReviews();
+    getReviews().then(res => {
+      setReviewsData(res.data);
+      const dist = [0, 0, 0, 0, 0];
+      res.data.reviews.forEach(r => dist[r.rating - 1]++);
+      setRatingDistribution(dist);
+    }).catch(console.error);
   }, []);
 
-  const fetchReviews = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${BASE_URL}/api/reviews`, {
-        headers: { 'User-ID': localStorage.getItem('userId') }
-      });
-      if (!res.ok) throw new Error('Не удалось загрузить отзывы');
-      const data = await res.json();
-      setReviews(data);
-
-      const total = data.length;
-      const avg = total > 0 ? (data.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0.0;
-      setAverageRating(avg);
-
-      const dist = [0, 0, 0, 0, 0];
-      data.forEach(r => dist[r.rating - 1]++);
-      setRatingDistribution(dist);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredReviews = filter > 0 ? reviews.filter(review => review.rating === filter) : reviews;
-
-  if (loading) return <div className="loader">Загрузка...</div>;
-  if (error) return (
-    <div className="error-modal">
-      <div className="modal-content">
-        <h3>Ошибка</h3>
-        <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => setError(null)}>Закрыть</button>
-      </div>
-    </div>
-  );
+  const filteredReviews = filter > 0 
+    ? reviewsData.reviews.filter(review => review.rating === filter)
+    : reviewsData.reviews;
 
   return (
-    <div className="container">
+    <div>
       <h1>Отзывы</h1>
       <p>Аналитика и управление отзывами</p>
 
       <div className="card-grid">
         <div className="card">
           <h3>Средний рейтинг</h3>
-          <p>{averageRating} ⭐</p>
+          <p>{reviewsData.average} ⭐</p>
         </div>
         {ratingDistribution.map((count, index) => (
           <div key={index} className="card">
@@ -71,9 +39,9 @@ export default function BloggerReviews() {
 
       <div style={{ marginTop: '32px' }}>
         <h2>Все отзывы</h2>
-        <select
+        <select 
           className="input"
-          value={filter}
+          value={filter} 
           onChange={(e) => setFilter(Number(e.target.value))}
           style={{ width: '200px', marginBottom: '16px' }}
         >
@@ -100,7 +68,7 @@ export default function BloggerReviews() {
                 <td>{review.author}</td>
                 <td>{'⭐'.repeat(review.rating)}</td>
                 <td>{review.comment}</td>
-                <td>{new Date(review.date).toLocaleDateString()}</td>
+                <td>{review.date}</td>
               </tr>
             ))}
           </tbody>

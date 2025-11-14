@@ -1,69 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { getCatalogProducts, applyToProduct } from "../../services/api";
 
 export default function CatalogProducts() {
-  const BASE_URL = "http://127.0.0.1:5000";
   const [products, setProducts] = useState([]);
   const [statusFilter, setStatusFilter] = useState("Все");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const statuses = ["Все", "В работе", "Ожидание"];
   const categories = ["all", "Красота", "Спорт", "Еда", "Техника"];
 
   useEffect(() => {
-    fetchProducts();
+    getCatalogProducts({ status: statusFilter, category: categoryFilter }).then(res => setProducts(res.data)).catch(console.error);
   }, [statusFilter, categoryFilter]);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${BASE_URL}/api/catalog/products?status=${statusFilter}&category=${categoryFilter}`);
-      if (!res.ok) throw new Error('Не удалось загрузить товары');
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleApply = async (productId) => {
-    setError(null);
-    try {
-      const res = await fetch(`${BASE_URL}/api/products/${productId}/apply`, {
-        method: 'POST',
-        headers: { 'User-ID': localStorage.getItem('userId') }
-      });
-      if (!res.ok) throw new Error('Не удалось отправить отклик');
-      alert('Отклик отправлен');
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
   const resetFilters = () => {
     setStatusFilter("Все");
     setCategoryFilter("all");
   };
 
-  if (loading) return <div className="loader">Загрузка...</div>;
-  if (error) return (
-    <div className="error-modal">
-      <div className="modal-content">
-        <h3>Ошибка</h3>
-        <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => setError(null)}>Закрыть</button>
-      </div>
-    </div>
-  );
+  const handleApply = (productId) => {
+    applyToProduct({ product_id: productId }).then(() => alert('Отклик отправлен')).catch(console.error);
+  };
 
   return (
-    <div className="container">
+    <div>
       <h1>Каталог товаров</h1>
+      <p>Выберите товары для вашей кампании</p>
+
       <div className="status-bar">
         {statuses.map(st => (
           <div
@@ -81,11 +45,12 @@ export default function CatalogProducts() {
       </button>
 
       {showFilters && (
-        <div className="card" style={{ marginBottom: "16px" }}>
+        <div className="card filter-card">
           <div className="filter-header">
             <h3>Фильтры</h3>
             <button className="filter-close" onClick={() => setShowFilters(false)}>✕</button>
           </div>
+
           <label className="label">Категория</label>
           <select
             className="input"
@@ -98,28 +63,46 @@ export default function CatalogProducts() {
               </option>
             ))}
           </select>
-          <button className="btn reset-btn" onClick={resetFilters}>Сбросить фильтры</button>
+
+          <button className="btn reset-btn" onClick={resetFilters}>
+            Сбросить фильтры
+          </button>
         </div>
       )}
 
       <div className="card-grid">
         {products.map(product => (
-          <div key={product.id} className="card clickable">
-            <h3>{product.name}</h3>
-            <p><strong>Бренд:</strong> {product.brand || '-'}</p>
-            <p><strong>Бюджет:</strong> {product.budget}</p>
-            <p><strong>Категория:</strong> {product.category || '-'}</p>
-            <p><strong>Дедлайн:</strong> {product.deadline ? new Date(product.deadline).toLocaleDateString() : '-'}</p>
-            <p><strong>Статус:</strong> {product.status === 'pending' ? 'Ожидание' : product.status === 'in_work' ? 'В работе' : 'Завершена'}</p>
-            <button className="btn btn-outline" style={{ marginTop: "10px" }} onClick={() => handleApply(product.id)}>
-              Откликнуться
-            </button>
+          <div key={product.id} className="card">
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
+              <div style={{
+                width: "60px", height: "60px", borderRadius: "12px",
+                backgroundColor: "#e5e7eb", display: "flex",
+                alignItems: "center", justifyContent: "center",
+                fontSize: "24px", fontWeight: "bold", marginRight: "16px"
+              }}>
+                {product.name.charAt(0)}
+              </div>
+              <div>
+                <h3>{product.name}</h3>
+                <p>{product.brand}</p>
+              </div>
+            </div>
+
+            <p><strong>Бюджет:</strong> {product.budget.toLocaleString()} ₽</p>
+            <p><strong>Категория:</strong> {product.category}</p>
+            <p><strong>Дедлайн:</strong> {product.deadline}</p>
+            <p><strong>Статус:</strong> {product.status}</p>
+
+            <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+              <button className="btn btn-blue">Подробнее</button>
+              <button className="btn btn-outline" onClick={() => handleApply(product.id)}>Откликнуться</button>
+            </div>
           </div>
         ))}
       </div>
 
       {products.length === 0 && (
-        <div className="card" style={{ textAlign: "center", padding: "40px" }}>
+        <div className="card empty-card">
           <h3>Товары не найдены</h3>
           <p>Попробуйте изменить параметры поиска</p>
         </div>
