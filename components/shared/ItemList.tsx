@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Spinner } from "@telegram-apps/telegram-ui";
 
 interface ItemListProps<T> {
@@ -28,18 +29,20 @@ export function ItemList<T>({
   if (items.length === 0) {
     return (
       <div className="text-center py-12 px-4">
-        <p style={{ color: "var(--tg-theme-hint-color)" }}>{emptyState}</p>
+        <p className="text-base" style={{ color: "var(--tg-theme-hint-color)" }}>
+          {emptyState}
+        </p>
         {createButton && (
-          <a
+          <Link
             href={createButton.href}
-            className="inline-block mt-4 px-6 py-3 rounded-xl font-medium"
+            className="inline-flex items-center justify-center min-h-[48px] mt-4 px-6 rounded-xl font-medium w-full max-w-[280px] mx-auto"
             style={{
               background: "var(--tg-theme-button-color)",
               color: "var(--tg-theme-button-text-color)",
             }}
           >
             {createButton.text}
-          </a>
+          </Link>
         )}
       </div>
     );

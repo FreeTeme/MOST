@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-export function useWebAppBackButton(show: boolean, onClick: () => void) {
+export function useWebAppBackButton(show: boolean, onClick?: () => void) {
   useEffect(() => {
-    if (!show) return;
+    if (!show || !onClick) return;
     let cancelled = false;
     import("@twa-dev/sdk").then(({ default: WebApp }) => {
       if (cancelled) return;

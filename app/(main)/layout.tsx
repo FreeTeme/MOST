@@ -1,3 +1,5 @@
+import { MainShell } from "@/components/MainShell";
+
 export const dynamic = "force-dynamic";
 
 export default function MainLayout({
@@ -5,5 +7,9 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <MainShell>
+      {children}
+    </MainShell>
+  );
 }

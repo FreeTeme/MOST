@@ -32,7 +32,7 @@ export default function RootLayout({
         <ThemeProvider>
           <TelegramProvider>
             <AppRoot>
-              <main className="min-h-screen bg-[var(--tg-theme-bg-color)]">
+              <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)]">
                 {children}
               </main>
             </AppRoot>

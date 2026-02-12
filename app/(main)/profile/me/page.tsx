@@ -20,7 +20,7 @@ export default function MyProfilePage() {
     if (!authLoading && !isAuthenticated) router.push("/role-select");
   }, [authLoading, isAuthenticated, router]);
 
-  useWebAppBackButton(!!(authLoading === false && isAuthenticated), () => router.push("/"));
+  useWebAppBackButton(false);
 
   if (!role || !config) {
     return null;
