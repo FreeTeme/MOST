@@ -4,32 +4,25 @@ import { useEffect } from "react";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useRouter } from "next/navigation";
 import { Card, Cell, Button } from "@telegram-apps/telegram-ui";
-import WebApp from "@twa-dev/sdk";
+import { useWebAppBackButton } from "@/hooks/useWebApp";
+import { showAlert } from "@/lib/telegram";
 
 export default function RoleSelectPage() {
   const { register, loading } = useTelegramAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    WebApp.BackButton.show();
-    WebApp.BackButton.onClick(() => {
-      router.push("/");
-    });
-
-    return () => {
-      WebApp.BackButton.hide();
-    };
-  }, [router]);
+  useWebAppBackButton(true, () => router.push("/"));
 
   const handleSelectRole = async (role: "blogger" | "client") => {
     try {
+      const WebApp = (await import("@twa-dev/sdk")).default;
       WebApp.MainButton.showProgress();
       await register(role);
       router.push("/search");
-    } catch (error) {
-      WebApp.showAlert("Ошибка при регистрации");
+    } catch {
+      showAlert("Ошибка при регистрации");
     } finally {
-      WebApp.MainButton.hideProgress();
+      import("@twa-dev/sdk").then((m) => m.default.MainButton.hideProgress());
     }
   };
 

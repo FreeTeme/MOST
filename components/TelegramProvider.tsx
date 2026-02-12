@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, createContext, useContext } from "react";
-import WebApp from "@twa-dev/sdk";
 
 interface TelegramUser {
   id: number;
@@ -13,7 +12,7 @@ interface TelegramUser {
 }
 
 interface TelegramContextType {
-  webApp: typeof WebApp | null;
+  webApp: unknown;
   user: TelegramUser | null;
   loading: boolean;
   initData: string;
@@ -33,25 +32,31 @@ export default function TelegramProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [webApp, setWebApp] = useState<typeof WebApp | null>(null);
+  const [webApp, setWebApp] = useState<unknown>(null);
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initData, setInitData] = useState("");
 
   useEffect(() => {
-    try {
-      WebApp.ready();
-      WebApp.expand();
-
-      setWebApp(WebApp);
-
-      if (WebApp.initDataUnsafe?.user) {
-        setUser(WebApp.initDataUnsafe.user);
+    let cancelled = false;
+    import("@twa-dev/sdk").then((module) => {
+      const WebApp = module.default;
+      if (cancelled || typeof window === "undefined") return;
+      try {
+        WebApp.ready();
+        WebApp.expand();
+        setWebApp(WebApp);
+        setInitData(WebApp.initData || "");
+        if (WebApp.initDataUnsafe?.user) {
+          setUser(WebApp.initDataUnsafe.user);
+        }
+      } catch (error) {
+        console.error("Telegram WebApp init error:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Telegram WebApp init error:", error);
-    } finally {
-      setLoading(false);
-    }
+    }).catch(() => setLoading(false));
+    return () => { cancelled = true; };
   }, []);
 
   return (
@@ -60,7 +65,7 @@ export default function TelegramProvider({
         webApp,
         user,
         loading,
-        initData: WebApp.initData || "",
+        initData,
       }}
     >
       {children}
