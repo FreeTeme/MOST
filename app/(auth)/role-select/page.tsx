@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useRouter } from "next/navigation";
 import { Card, Cell, Button } from "@telegram-apps/telegram-ui";
@@ -17,6 +16,7 @@ export default function RoleSelectPage() {
     try {
       const WebApp = (await import("@twa-dev/sdk")).default;
       WebApp.MainButton.showProgress();
+
       await register(role);
       router.push("/search");
     } catch {
@@ -27,87 +27,100 @@ export default function RoleSelectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--tg-theme-bg-color)] p-4">
-      <div className="pt-4">
+    <div className="min-h-screen flex flex-col bg-[var(--tg-theme-bg-color)]">
+      {/* Header */}
+      <div className="px-4 pt-6 pb-4">
         <h1
-          className="text-2xl font-bold mb-2"
+          className="text-2xl font-bold mb-1"
           style={{ color: "var(--tg-theme-text-color)" }}
         >
           Кто вы?
         </h1>
-        <p className="mb-6" style={{ color: "var(--tg-theme-hint-color)" }}>
-          Выберите роль, чтобы продолжить
+
+        <p className="text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
+          Выберите роль для продолжения
         </p>
+      </div>
 
-        <div className="space-y-4">
-          <Card>
-            <Cell
-              before={
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    background: "rgba(36, 129, 204, 0.1)",
-                    borderRadius: 12,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                  }}
-                >
-                  📱
-                </div>
-              }
-              subtitle="Ищу заказы для своего блога"
-              after={
-                <Button
-                  mode="filled"
-                  size="s"
-                  onClick={() => handleSelectRole("blogger")}
-                  disabled={loading}
-                >
-                  Выбрать
-                </Button>
-              }
-            >
-              Я блогер
-            </Cell>
-          </Card>
+      {/* Roles */}
+      <div className="px-4 space-y-3">
+        <Card>
+          <Cell
+            multiline
+            before={
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  background: "rgba(36,129,204,0.12)",
+                }}
+              >
+                📱
+              </div>
+            }
+            subtitle="Нахожу рекламные заказы"
+            after={
+              <Button
+                mode="filled"
+                size="s"
+                loading={loading}
+                onClick={() => handleSelectRole("blogger")}
+              >
+                Выбрать
+              </Button>
+            }
+          >
+            Я блогер
+          </Cell>
+        </Card>
 
-          <Card>
-            <Cell
-              before={
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    background: "rgba(36, 129, 204, 0.1)",
-                    borderRadius: 12,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                  }}
-                >
-                  💼
-                </div>
-              }
-              subtitle="Ищу блогеров для рекламы"
-              after={
-                <Button
-                  mode="filled"
-                  size="s"
-                  onClick={() => handleSelectRole("client")}
-                  disabled={loading}
-                >
-                  Выбрать
-                </Button>
-              }
-            >
-              Я заказчик
-            </Cell>
-          </Card>
-        </div>
+        <Card>
+          <Cell
+            multiline
+            before={
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  background: "rgba(129,36,204,0.12)",
+                }}
+              >
+                💼
+              </div>
+            }
+            subtitle="Нахожу блогеров для рекламы"
+            after={
+              <Button
+                mode="filled"
+                size="s"
+                loading={loading}
+                onClick={() => handleSelectRole("client")}
+              >
+                Выбрать
+              </Button>
+            }
+          >
+            Я заказчик
+          </Cell>
+        </Card>
+      </div>
+
+      {/* Footer hint */}
+      <div
+        className="mt-auto text-center text-xs px-6 pb-6"
+        style={{ color: "var(--tg-theme-hint-color)" }}
+      >
+        Роль можно изменить позже в настройках профиля
       </div>
     </div>
   );
