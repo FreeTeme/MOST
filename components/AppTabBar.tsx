@@ -3,8 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Flex } from "antd";
 import { useRole } from "@/hooks/useRole";
+import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { getTabsForRole, isTabRoute } from "@/config/nav.config";
 import type { TabId } from "@/config/nav.config";
+import type { UserType } from "@/types";
 
 const ICON_SIZE = 28;
 
@@ -51,17 +53,21 @@ export function AppTabBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { role } = useRole();
+  const { dbUser } = useTelegramAuth();
 
-  if (!isTabRoute(pathname) || !role) return null;
+  // Роль может прийти из useRole (localStorage) или из dbUser после загрузки авторизации
+  const effectiveRole: UserType | null = role ?? dbUser?.user_type ?? null;
 
-  const tabs = getTabsForRole(role);
+  if (!isTabRoute(pathname) || !effectiveRole) return null;
+
+  const tabs = getTabsForRole(effectiveRole);
   if (tabs.length === 0) return null;
 
   return (
     <Flex
       align="center"
       justify="space-around"
-      className="fixed bottom-0 left-0 right-0 border-t border-[var(--tg-theme-hint-color, #999)] bg-[var(--tg-theme-bg-color)]"
+      className="fixed bottom-0 left-0 right-0 z-[1000] border-t border-[var(--tg-theme-hint-color, #999)] bg-[var(--tg-theme-bg-color)]"
       style={{
         paddingBottom: "max(8px, env(safe-area-inset-bottom))",
         paddingTop: 8,
