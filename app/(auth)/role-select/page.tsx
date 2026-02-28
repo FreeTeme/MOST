@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, Button, Flex, Typography } from "antd";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
+import { isStandaloneDev } from "@/lib/dev";
 
 export default function RoleSelectPage() {
   const { register, loading } = useTelegramAuth();
@@ -14,15 +15,18 @@ export default function RoleSelectPage() {
 
   const handleSelectRole = async (role: "blogger" | "client") => {
     try {
-      const WebApp = (await import("@twa-dev/sdk")).default;
-      WebApp.MainButton.showProgress();
-
+      if (!isStandaloneDev) {
+        const WebApp = (await import("@twa-dev/sdk")).default;
+        WebApp.MainButton.showProgress?.();
+      }
       await register(role);
       router.push("/search");
     } catch {
       showAlert("Ошибка при регистрации");
     } finally {
-      import("@twa-dev/sdk").then((m) => m.default.MainButton.hideProgress());
+      if (!isStandaloneDev) {
+        import("@twa-dev/sdk").then((m) => m.default.MainButton?.hideProgress?.());
+      }
     }
   };
 

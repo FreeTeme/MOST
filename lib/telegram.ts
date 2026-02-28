@@ -1,3 +1,5 @@
+import { isStandaloneDev } from "@/lib/dev";
+
 const SESSION_KEY = "influencer_user";
 
 export interface SessionData {
@@ -48,11 +50,18 @@ export function openTelegramLink(url: string) {
 
 export function showAlert(message: string) {
   if (typeof window === "undefined") return;
+  if (isStandaloneDev) {
+    window.alert(message);
+    return;
+  }
   import("@twa-dev/sdk").then((m) => m.default.showAlert(message));
 }
 
 export function showConfirm(message: string): Promise<boolean> {
   if (typeof window === "undefined") return Promise.resolve(false);
+  if (isStandaloneDev) {
+    return Promise.resolve(window.confirm(message));
+  }
   return import("@twa-dev/sdk").then(
     (m) => new Promise<boolean>((resolve) => m.default.showConfirm(message, resolve))
   );

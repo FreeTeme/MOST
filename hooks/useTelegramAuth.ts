@@ -4,6 +4,29 @@ import { useEffect, useState } from "react";
 import { useTelegram } from "@/components/TelegramProvider";
 import { supabase, User } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { isStandaloneDev, DEV_MOCK_TELEGRAM_USER } from "@/lib/dev";
+
+const SESSION_KEY = "influencer_user";
+
+function buildMockUser(telegramId: number, userType: "blogger" | "client"): User {
+  const now = new Date().toISOString();
+  return {
+    id: `dev-${telegramId}`,
+    telegram_id: telegramId,
+    telegram_username: "dev_local",
+    first_name: "Dev",
+    last_name: "User",
+    photo_url: null,
+    user_type: userType,
+    full_name: "Dev User",
+    bio: null,
+    company_name: null,
+    company_category: null,
+    company_description: null,
+    created_at: now,
+    updated_at: now,
+  };
+}
 
 export function useTelegramAuth() {
   const { user: tgUser, loading: tgLoading } = useTelegram();
@@ -15,6 +38,23 @@ export function useTelegramAuth() {
   useEffect(() => {
     async function authenticateUser() {
       if (tgLoading || !tgUser) {
+        setLoading(false);
+        return;
+      }
+
+      const useDevMockAuth = isStandaloneDev || tgUser.id === DEV_MOCK_TELEGRAM_USER.id;
+      if (useDevMockAuth) {
+        try {
+          const raw = localStorage.getItem(SESSION_KEY);
+          if (raw) {
+            const data = JSON.parse(raw) as { telegram_id?: number; user_type?: "blogger" | "client" };
+            if (data.telegram_id === tgUser.id && data.user_type) {
+              setDbUser(buildMockUser(data.telegram_id, data.user_type));
+            }
+          }
+        } catch {
+          // ignore
+        }
         setLoading(false);
         return;
       }
@@ -33,7 +73,7 @@ export function useTelegramAuth() {
         if (existingUser) {
           setDbUser(existingUser);
           localStorage.setItem(
-            "influencer_user",
+            SESSION_KEY,
             JSON.stringify({
               telegram_id: existingUser.telegram_id,
               user_type: existingUser.user_type,
@@ -53,6 +93,20 @@ export function useTelegramAuth() {
 
   const register = async (userType: "blogger" | "client") => {
     if (!tgUser) throw new Error("No Telegram user");
+
+    const useDevMockAuth = isStandaloneDev || tgUser.id === DEV_MOCK_TELEGRAM_USER.id;
+    if (useDevMockAuth) {
+      const mockUser = buildMockUser(tgUser.id, userType);
+      setDbUser(mockUser);
+      localStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({
+          telegram_id: tgUser.id,
+          user_type: userType,
+        }),
+      );
+      return mockUser;
+    }
 
     try {
       setLoading(true);
@@ -82,7 +136,7 @@ export function useTelegramAuth() {
 
       setDbUser(data);
       localStorage.setItem(
-        "influencer_user",
+        SESSION_KEY,
         JSON.stringify({
           telegram_id: data.telegram_id,
           user_type: data.user_type,
