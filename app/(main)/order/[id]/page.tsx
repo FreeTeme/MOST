@@ -7,7 +7,8 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useApplications } from "@/hooks/useApplications";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ApplicationCard } from "@/components/cards/ApplicationCard";
-import { Button, Spin } from "antd";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import { TABLES } from "@/config/database.config";
 import type { Order, User } from "@/types";
@@ -100,7 +101,7 @@ export default function OrderDetailPage() {
   if (loading && !order) {
     return (
       <div className="flex justify-center py-12">
-        <Spin size="large" />
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
   }
@@ -124,14 +125,12 @@ export default function OrderDetailPage() {
       {canApply && (
         <div className="mt-4">
           <Button
-            type="primary"
-            size="large"
-            block
+            size="lg"
+            className="w-full"
             onClick={handleApply}
             disabled={applying}
-            loading={applying}
           >
-            Откликнуться
+            {applying ? "Отправка…" : "Откликнуться"}
           </Button>
         </div>
       )}
@@ -141,7 +140,7 @@ export default function OrderDetailPage() {
             Отклики
           </h2>
           {appsLoading ? (
-            <Spin />
+            <Skeleton className="h-20 w-full rounded-md" />
           ) : applications.length === 0 ? (
             <p style={{ color: "var(--tg-theme-hint-color)" }}>Пока нет откликов</p>
           ) : (

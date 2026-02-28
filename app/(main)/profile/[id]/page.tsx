@@ -8,7 +8,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { useReview } from "@/hooks/useReview";
 import { ProfileView } from "@/components/shared/ProfileView";
 import { ReviewForm } from "@/components/forms/ReviewForm";
-import { Card, Spin } from "antd";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function PublicProfilePage() {
@@ -42,7 +43,7 @@ export default function PublicProfilePage() {
   if (loading && !profile) {
     return (
       <div className="flex justify-center py-12">
-        <Spin size="large" />
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
   }
@@ -65,13 +66,15 @@ export default function PublicProfilePage() {
         {profileConfig.title}
       </h1>
       {showReviewForm ? (
-        <Card className="rounded-2xl">
+        <Card>
+          <CardContent className="pt-6">
           <ReviewForm
             onSubmit={submitReview}
             loading={reviewLoading}
             error={reviewError}
             onCancel={() => setShowReviewForm(false)}
           />
+          </CardContent>
         </Card>
       ) : (
         <ProfileView

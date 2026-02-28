@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Flex } from "antd";
 import { useRole } from "@/hooks/useRole";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { getTabsForRole, isTabRoute } from "@/config/nav.config";
@@ -64,11 +63,10 @@ export function AppTabBar() {
   if (tabs.length === 0) return null;
 
   return (
-    <Flex
-      align="center"
-      justify="space-around"
-      className="fixed bottom-0 left-0 right-0 z-[1000] border-t border-[var(--tg-theme-hint-color, #999)] bg-[var(--tg-theme-bg-color)]"
+    <div
+      className="fixed bottom-0 left-0 right-0 z-[1000] flex items-center justify-around border-t bg-[var(--tg-theme-bg-color)]"
       style={{
+        borderColor: "var(--tg-theme-hint-color, #999)",
         paddingBottom: "max(8px, env(safe-area-inset-bottom))",
         paddingTop: 8,
         minHeight: 56,
@@ -94,6 +92,6 @@ export function AppTabBar() {
           </button>
         );
       })}
-    </Flex>
+    </div>
   );
 }

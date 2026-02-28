@@ -1,0 +1,61 @@
+---
+description: Next.js best practices — RSC, performance, security, clean code, Shadcn/Radix
+alwaysApply: true
+---
+
+# Next.js & Full-Stack Standards
+
+Apply these standards when writing or refactoring code in this project.
+
+## Code Style & Structure
+
+- **TypeScript**: Concise, accurate types; avoid `any`. Prefer `interface` for public shapes.
+- **Functional & declarative**: Use function components and declarative patterns; no classes.
+- **Modularization**: Favor iteration and small modules over duplication. Extract helpers and types.
+- **Naming**: Descriptive names with auxiliary verbs (e.g. `isLoading`, `hasError`, `canSubmit`).
+- **File structure**: Group exports as: components, subcomponents, helpers, static content, types (top to bottom).
+- **Directories**: Lowercase with dashes (e.g. `components/auth-wizard`, `lib/api-client`).
+
+## React & Next.js Optimization
+
+- **Minimize client boundary**: Use React Server Components (RSC) by default. Add `'use client'` only when needed (hooks, browser APIs, interactivity).
+- **Reduce useEffect/useState**: Prefer server data (fetch, async components), URL state, or server actions over client state where possible.
+- **Code splitting**: Use `next/dynamic` for heavy or below-the-fold components.
+- **Mobile-first**: Implement responsive layouts with mobile-first CSS (base styles for mobile, then `sm:`, `md:`, etc.).
+
+## Error Handling & Validation
+
+- **Early returns**: Handle error and edge cases first; use guard clauses for invalid or loading states.
+- **Custom errors**: Use custom error types or error codes for consistent handling and messaging.
+- **Validation**: Use Zod for schema validation (forms, API payloads, env). Validate at boundaries.
+
+## UI & Styling
+
+- **Frameworks**: Use Shadcn UI and Radix UI primitives. Do not override component internals; use composition and props.
+- **Tailwind**: Prefer Tailwind utilities; keep design tokens in theme (e.g. `text-muted-foreground`). Avoid one-off inline styles unless necessary (e.g. CSS variables for theming).
+- **Consistency**: Reuse existing components and patterns; keep spacing, typography, and colors consistent.
+
+## State & Data
+
+- **Server-first data**: Fetch on the server (RSC, Server Actions). Use client state only for UI state that cannot live in URL or server.
+- **Libraries**: Prefer Zustand or URL state for global UI state; TanStack Query for server-state cache and mutations when appropriate.
+- **Forms**: Use react-hook-form with Zod resolver; wire to Shadcn Form/Input/Select/Button.
+
+## Security & Performance
+
+- **Input validation**: Validate and sanitize user input; use Zod (or similar) at API and form boundaries.
+- **Sensitive data**: Never log or expose secrets; use env vars and server-only code for keys.
+- **Rendering**: Avoid unnecessary re-renders (memo, stable callbacks); lazy-load heavy UI and assets.
+
+## Testing & Documentation
+
+- **Unit tests**: Use Jest and React Testing Library for components and helpers. Test behavior and edge cases.
+- **Comments**: Add clear comments for non-obvious logic; avoid stating the obvious.
+- **JSDoc**: Use JSDoc for public functions and components (params, returns, throws) to improve IDE intellisense.
+
+## Process
+
+1. **Analysis**: Understand requirements and constraints before implementing.
+2. **Plan**: Outline structure and data flow; consider RSC vs client and error states.
+3. **Implement**: Build in small steps; keep components and functions focused.
+4. **Review**: Check edge cases, accessibility, and performance before finishing.

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Flex, Typography } from "antd";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Review } from "@/types";
 
 interface ReviewListProps {
@@ -21,9 +21,9 @@ function StarRating({ rating }: { rating: number }) {
 export function ReviewList({ reviews }: ReviewListProps) {
   if (reviews.length === 0) {
     return (
-      <Typography.Text type="secondary" className="block text-center py-4">
+      <p className="text-center py-4 text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
         Пока нет отзывов
-      </Typography.Text>
+      </p>
     );
   }
 
@@ -38,20 +38,24 @@ export function ReviewList({ reviews }: ReviewListProps) {
     <div className="space-y-4">
       {Object.entries(byDate).map(([date, list]) => (
         <div key={date}>
-          <Typography.Text type="secondary" className="text-sm mb-2 block">
+          <p className="text-sm mb-2 block" style={{ color: "var(--tg-theme-hint-color)" }}>
             {date}
-          </Typography.Text>
+          </p>
           <div className="space-y-2">
             {list.map((review) => (
-              <Card key={review.id} size="small" className="rounded-2xl">
-                <Flex align="flex-start" gap={12}>
-                  <div className="text-lg">
-                    <StarRating rating={review.rating} />
+              <Card key={review.id}>
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <div className="text-lg">
+                      <StarRating rating={review.rating} />
+                    </div>
+                    {review.comment && (
+                      <p className="text-sm" style={{ color: "var(--tg-theme-text-color)" }}>
+                        {review.comment}
+                      </p>
+                    )}
                   </div>
-                  {review.comment && (
-                    <Typography.Text>{review.comment}</Typography.Text>
-                  )}
-                </Flex>
+                </CardContent>
               </Card>
             ))}
           </div>

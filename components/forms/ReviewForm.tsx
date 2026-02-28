@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Form } from "antd";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import type { ReviewFormData } from "@/hooks/useReview";
-
-const { TextArea } = Input;
 
 interface ReviewFormProps {
   onSubmit: (data: ReviewFormData) => Promise<void>;
@@ -13,25 +14,32 @@ interface ReviewFormProps {
   onCancel?: () => void;
 }
 
-export function ReviewForm({ onSubmit, loading, error, onCancel }: ReviewFormProps) {
-  const [form] = Form.useForm();
-  const [rating, setRating] = useState(0);
+type FormValues = {
+  comment: string;
+};
 
-  const handleSubmit = async (values: { comment?: string }) => {
+export function ReviewForm({ onSubmit, loading, error, onCancel }: ReviewFormProps) {
+  const [rating, setRating] = useState(0);
+  const { register, handleSubmit } = useForm<FormValues>({
+    defaultValues: { comment: "" },
+  });
+
+  const onFormSubmit = async (values: FormValues) => {
     if (rating < 1 || rating > 5) return;
     await onSubmit({ rating, comment: values.comment ?? "" });
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={handleSubmit}>
-      <Form.Item label="Оценка" required>
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      <div className="space-y-2">
+        <Label>Оценка</Label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               type="button"
               onClick={() => setRating(n)}
-              className="w-10 h-10 rounded-full text-lg border-0 cursor-pointer"
+              className="w-10 h-10 rounded-full text-lg border-0 cursor-pointer min-w-10 min-h-10"
               style={{
                 background:
                   rating >= n
@@ -44,29 +52,31 @@ export function ReviewForm({ onSubmit, loading, error, onCancel }: ReviewFormPro
             </button>
           ))}
         </div>
-      </Form.Item>
-      <Form.Item name="comment" label="Комментарий (необязательно)">
-        <TextArea placeholder="Напишите отзыв" rows={4} size="large" />
-      </Form.Item>
-      {error && (
-        <p className="text-sm text-red-500 mb-2">{error}</p>
-      )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="review-comment">Комментарий (необязательно)</Label>
+        <Textarea
+          id="review-comment"
+          placeholder="Напишите отзыв"
+          rows={4}
+          {...register("comment")}
+        />
+      </div>
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
         {onCancel && (
-          <Button size="large" onClick={onCancel}>
+          <Button type="button" size="lg" variant="outline" onClick={onCancel}>
             Отмена
           </Button>
         )}
         <Button
-          type="primary"
-          htmlType="submit"
-          size="large"
-          loading={loading}
+          type="submit"
+          size="lg"
           disabled={loading || rating < 1}
         >
-          Отправить отзыв
+          {loading ? "Отправка…" : "Отправить отзыв"}
         </Button>
       </div>
-    </Form>
+    </form>
   );
 }

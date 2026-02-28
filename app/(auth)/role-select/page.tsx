@@ -1,103 +1,125 @@
 "use client";
 
-import { useTelegramAuth } from "@/hooks/useTelegramAuth";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, Button, Flex, Typography } from "antd";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
 import { isStandaloneDev } from "@/lib/dev";
 
+type Role = "blogger" | "client";
+
+const ROLES = [
+  {
+    id: "blogger",
+    badge: "Блогер",
+    title: "Я блогер",
+    description: "Нахожу рекламные заказы",
+  },
+  {
+    id: "client",
+    badge: "Заказчик",
+    title: "Я заказчик",
+    description: "Нахожу блогеров для рекламы",
+  },
+] as const;
+
+async function showWebAppProgress() {
+  if (isStandaloneDev) return;
+  const WebApp = (await import("@twa-dev/sdk")).default;
+  WebApp.MainButton.showProgress?.();
+}
+
+function hideWebAppProgress() {
+  if (isStandaloneDev) return;
+  import("@twa-dev/sdk").then((m) => m.default.MainButton?.hideProgress?.());
+}
+
 export default function RoleSelectPage() {
-  const { register, loading } = useTelegramAuth();
   const router = useRouter();
+  const { register, loading } = useTelegramAuth();
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   useWebAppBackButton(true, () => router.push("/"));
 
-  const handleSelectRole = async (role: "blogger" | "client") => {
-    try {
-      if (!isStandaloneDev) {
-        const WebApp = (await import("@twa-dev/sdk")).default;
-        WebApp.MainButton.showProgress?.();
+  const handleSelectRole = useCallback(
+    async (role: Role) => {
+      if (loading) return;
+      setSelectedRole(role);
+      try {
+        await showWebAppProgress();
+        await register(role);
+        router.push("/search");
+      } catch {
+        showAlert("Ошибка при регистрации");
+      } finally {
+        hideWebAppProgress();
+        setSelectedRole(null);
       }
-      await register(role);
-      router.push("/search");
-    } catch {
-      showAlert("Ошибка при регистрации");
-    } finally {
-      if (!isStandaloneDev) {
-        import("@twa-dev/sdk").then((m) => m.default.MainButton?.hideProgress?.());
-      }
-    }
-  };
+    },
+    [register, router, loading]
+  );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--tg-theme-bg-color)]">
-      <div className="px-4 pt-6 pb-4">
-        <Typography.Title level={2} className="!mb-1">
-          Кто вы?
-        </Typography.Title>
-        <Typography.Text type="secondary">
-          Выберите роль для продолжения
-        </Typography.Text>
-      </div>
+    <div className="flex min-h-screen flex-col bg-background p-4">
+      <header className="py-8 text-center">
+        <h1 className="text-3xl font-bold">Кто вы?</h1>
+        <p className="text-sm text-muted-foreground">Выберите роль для продолжения</p>
+      </header>
 
-      <div className="px-4 space-y-3">
-        <Card size="small" className="rounded-2xl">
-          <Flex align="center" gap={12}>
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-              style={{ background: "rgba(36,129,204,0.12)" }}
-            >
-              📱
-            </div>
-            <Flex vertical className="flex-1 min-w-0">
-              <Typography.Text strong>Я блогер</Typography.Text>
-              <Typography.Text type="secondary" className="text-sm">
-                Нахожу рекламные заказы
-              </Typography.Text>
-            </Flex>
-            <Button
-              type="primary"
-              size="small"
-              loading={loading}
-              onClick={() => handleSelectRole("blogger")}
-            >
-              Выбрать
-            </Button>
-          </Flex>
-        </Card>
+      <main className="flex flex-1 flex-col items-center justify-center">
+        <div className="flex w-full flex-col items-center gap-6">
+          {ROLES.map((role) => {
+            const isLoading = loading && selectedRole === role.id;
 
-        <Card size="small" className="rounded-2xl">
-          <Flex align="center" gap={12}>
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-              style={{ background: "rgba(129,36,204,0.12)" }}
-            >
-              💼
-            </div>
-            <Flex vertical className="flex-1 min-w-0">
-              <Typography.Text strong>Я заказчик</Typography.Text>
-              <Typography.Text type="secondary" className="text-sm">
-                Нахожу блогеров для рекламы
-              </Typography.Text>
-            </Flex>
-            <Button
-              type="primary"
-              size="small"
-              loading={loading}
-              onClick={() => handleSelectRole("client")}
-            >
-              Выбрать
-            </Button>
-          </Flex>
-        </Card>
-      </div>
+            return (
+              <Card
+                key={role.id}
+                className="relative mx-auto w-full max-w-sm overflow-hidden pt-0"
+              >
+                <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
+                <img
+                  src="https://avatar.vercel.sh/shadcn1"
+                  alt=""
+                  className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
+                />
+                <CardHeader>
+                  <CardAction>
+                    <Badge variant="secondary">{role.badge}</Badge>
+                  </CardAction>
+                  <CardTitle>{role.title}</CardTitle>
+                  <CardDescription>{role.description}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button
+                    className="w-full"
+                    disabled={isLoading}
+                    onClick={() => handleSelectRole(role.id)}
+                  >
+                    {isLoading ? "Загрузка…" : "Выбрать"}
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+      </main>
 
-      <div className="mt-auto text-center px-6 pb-6">
-        <Typography.Text type="secondary" className="text-xs">
+      <footer className="py-6 text-center">
+        <p className="text-xs text-muted-foreground">
           Роль можно изменить позже в настройках профиля
-        </Typography.Text>
-      </div>
+        </p>
+      </footer>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Spin } from "antd";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ItemListProps<T> {
   items: T[];
@@ -21,7 +21,7 @@ export function ItemList<T>({
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Spin size="large" />
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
   }

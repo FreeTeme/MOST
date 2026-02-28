@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import TelegramProvider from "@/components/TelegramProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AntdProvider } from "@/components/AntdProvider";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -30,11 +29,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <TelegramProvider>
-            <AntdProvider>
-              <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)]">
-                {children}
-              </main>
-            </AntdProvider>
+            <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)]">
+              {children}
+            </main>
           </TelegramProvider>
         </ThemeProvider>
       </body>

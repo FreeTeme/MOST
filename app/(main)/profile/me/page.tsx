@@ -6,7 +6,7 @@ import { useRole } from "@/hooks/useRole";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { ProfileView } from "@/components/shared/ProfileView";
-import { Spin } from "antd";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function MyProfilePage() {
@@ -29,7 +29,7 @@ export default function MyProfilePage() {
   if (loading && !profile) {
     return (
       <div className="flex justify-center py-12">
-        <Spin size="large" />
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
   }
