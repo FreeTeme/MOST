@@ -2,7 +2,7 @@
 
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useRouter } from "next/navigation";
-import { Card, Cell, Button } from "@telegram-apps/telegram-ui";
+import { Card, Button, Flex, Typography } from "antd";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
 
@@ -28,99 +28,71 @@ export default function RoleSelectPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--tg-theme-bg-color)]">
-      {/* Header */}
       <div className="px-4 pt-6 pb-4">
-        <h1
-          className="text-2xl font-bold mb-1"
-          style={{ color: "var(--tg-theme-text-color)" }}
-        >
+        <Typography.Title level={2} className="!mb-1">
           Кто вы?
-        </h1>
-
-        <p className="text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
+        </Typography.Title>
+        <Typography.Text type="secondary">
           Выберите роль для продолжения
-        </p>
+        </Typography.Text>
       </div>
 
-      {/* Roles */}
       <div className="px-4 space-y-3">
-        <Card>
-          <Cell
-            multiline
-            before={
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  background: "rgba(36,129,204,0.12)",
-                }}
-              >
-                📱
-              </div>
-            }
-            subtitle="Нахожу рекламные заказы"
-            after={
-              <Button
-                mode="filled"
-                size="s"
-                loading={loading}
-                onClick={() => handleSelectRole("blogger")}
-              >
-                Выбрать
-              </Button>
-            }
-          >
-            Я блогер
-          </Cell>
+        <Card size="small" className="rounded-2xl">
+          <Flex align="center" gap={12}>
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+              style={{ background: "rgba(36,129,204,0.12)" }}
+            >
+              📱
+            </div>
+            <Flex vertical className="flex-1 min-w-0">
+              <Typography.Text strong>Я блогер</Typography.Text>
+              <Typography.Text type="secondary" className="text-sm">
+                Нахожу рекламные заказы
+              </Typography.Text>
+            </Flex>
+            <Button
+              type="primary"
+              size="small"
+              loading={loading}
+              onClick={() => handleSelectRole("blogger")}
+            >
+              Выбрать
+            </Button>
+          </Flex>
         </Card>
 
-        <Card>
-          <Cell
-            multiline
-            before={
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  background: "rgba(129,36,204,0.12)",
-                }}
-              >
-                💼
-              </div>
-            }
-            subtitle="Нахожу блогеров для рекламы"
-            after={
-              <Button
-                mode="filled"
-                size="s"
-                loading={loading}
-                onClick={() => handleSelectRole("client")}
-              >
-                Выбрать
-              </Button>
-            }
-          >
-            Я заказчик
-          </Cell>
+        <Card size="small" className="rounded-2xl">
+          <Flex align="center" gap={12}>
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+              style={{ background: "rgba(129,36,204,0.12)" }}
+            >
+              💼
+            </div>
+            <Flex vertical className="flex-1 min-w-0">
+              <Typography.Text strong>Я заказчик</Typography.Text>
+              <Typography.Text type="secondary" className="text-sm">
+                Нахожу блогеров для рекламы
+              </Typography.Text>
+            </Flex>
+            <Button
+              type="primary"
+              size="small"
+              loading={loading}
+              onClick={() => handleSelectRole("client")}
+            >
+              Выбрать
+            </Button>
+          </Flex>
         </Card>
       </div>
 
-      {/* Footer hint */}
-      <div
-        className="mt-auto text-center text-xs px-6 pb-6"
-        style={{ color: "var(--tg-theme-hint-color)" }}
-      >
-        Роль можно изменить позже в настройках профиля
+      <div className="mt-auto text-center px-6 pb-6">
+        <Typography.Text type="secondary" className="text-xs">
+          Роль можно изменить позже в настройках профиля
+        </Typography.Text>
       </div>
     </div>
   );

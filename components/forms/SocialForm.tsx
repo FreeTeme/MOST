@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input } from "@telegram-apps/telegram-ui";
+import { Button, Input, Form } from "antd";
 import type { SocialFormData } from "@/hooks/useCreateSocial";
 
 interface SocialFormProps {
@@ -13,81 +13,69 @@ interface SocialFormProps {
 const PLATFORMS = ["Telegram", "YouTube", "VK", "Дзен", "Instagram", "TikTok", "Другое"];
 
 export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
+  const [form] = Form.useForm();
   const [platform, setPlatform] = useState("");
-  const [profileUrl, setProfileUrl] = useState("");
-  const [followers, setFollowers] = useState("");
-  const [niche, setNiche] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: {
+    profile_url: string;
+    followers: number;
+    niche: string;
+  }) => {
     await onSubmit({
       platform: platform || "Другое",
-      profile_url: profileUrl,
-      followers: Number(followers) || 0,
-      niche,
+      profile_url: values.profile_url,
+      followers: Number(values.followers) || 0,
+      niche: values.niche ?? "",
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          className="block text-sm mb-1"
-          style={{ color: "var(--tg-theme-hint-color)" }}
-        >
-          Платформа
-        </label>
+    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+      <Form.Item label="Платформа">
         <div className="flex flex-wrap gap-2">
           {PLATFORMS.map((p) => (
             <Button
               key={p}
-              mode={platform === p ? "filled" : "bezeled"}
-              size="s"
+              type={platform === p ? "primary" : "default"}
               onClick={() => setPlatform(p)}
             >
               {p}
             </Button>
           ))}
         </div>
-      </div>
-      <Input
-        header="Ссылка на профиль"
-        placeholder="https://t.me/..."
-        type="url"
-        value={profileUrl}
-        onChange={(e) => setProfileUrl(e.target.value)}
-        required
-      />
-      <Input
-        header="Подписчики"
-        type="number"
-        placeholder="0"
-        value={followers}
-        onChange={(e) => setFollowers(e.target.value)}
-        min={0}
-      />
-      <Input
-        header="Ниша"
-        placeholder="Красота, техника, еда..."
-        value={niche}
-        onChange={(e) => setNiche(e.target.value)}
-        required
-      />
-      {error && (
-        <p className="text-sm" style={{ color: "#e53935" }}>
-          {error}
-        </p>
-      )}
-      <Button
-        type="submit"
-        mode="filled"
-        size="l"
-        stretched
-        disabled={loading}
-        loading={loading}
+      </Form.Item>
+      <Form.Item
+        name="profile_url"
+        label="Ссылка на профиль"
+        rules={[{ required: true, message: "Введите ссылку" }]}
       >
-        Добавить соцсеть
-      </Button>
-    </form>
+        <Input placeholder="https://t.me/..." type="url" size="large" />
+      </Form.Item>
+      <Form.Item name="followers" label="Подписчики" initialValue={0}>
+        <Input type="number" placeholder="0" min={0} size="large" />
+      </Form.Item>
+      <Form.Item
+        name="niche"
+        label="Ниша"
+        rules={[{ required: true, message: "Введите нишу" }]}
+      >
+        <Input placeholder="Красота, техника, еда..." size="large" />
+      </Form.Item>
+      {error && (
+        <p className="text-sm text-red-500 mb-2">{error}</p>
+      )}
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          block
+          loading={loading}
+          disabled={loading}
+        >
+          Добавить соцсеть
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }

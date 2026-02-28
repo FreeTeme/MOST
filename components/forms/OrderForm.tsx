@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Textarea } from "@telegram-apps/telegram-ui";
+import { Button, Input, Select, Form } from "antd";
 import type { OrderFormData } from "@/hooks/useCreateOrder";
+
+const { TextArea } = Input;
 
 interface OrderFormProps {
   onSubmit: (data: OrderFormData) => Promise<void>;
@@ -20,120 +22,87 @@ const CATEGORIES = [
 ];
 
 export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [form] = Form.useForm();
   const [budgetType, setBudgetType] = useState<"money" | "barter">("money");
-  const [budgetAmount, setBudgetAmount] = useState("");
-  const [socialLink, setSocialLink] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: {
+    title: string;
+    description: string;
+    category: string;
+    budget_amount?: string;
+    social_link: string;
+  }) => {
     await onSubmit({
-      title,
-      description,
-      category: category || "Другое",
+      title: values.title,
+      description: values.description,
+      category: values.category || "Другое",
       budget_type: budgetType,
-      budget_amount: budgetType === "money" && budgetAmount ? Number(budgetAmount) : null,
+      budget_amount: budgetType === "money" && values.budget_amount ? Number(values.budget_amount) : null,
       budget_currency: "RUB",
-      social_link: socialLink,
+      social_link: values.social_link ?? "",
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        header="Заголовок заказа"
-        placeholder="Например: Реклама косметики"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <Textarea
-        header="Описание"
-        placeholder="Опишите задачу для блогера"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <div>
-        <label
-          className="block text-sm mb-1"
-          style={{ color: "var(--tg-theme-hint-color)" }}
-        >
-          Категория
-        </label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-xl border p-3 min-h-[44px]"
-          style={{
-            background: "var(--tg-theme-bg-color)",
-            color: "var(--tg-theme-text-color)",
-            borderColor: "var(--tg-theme-hint-color)",
-          }}
-        >
-          <option value="">Выберите</option>
+    <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-4">
+      <Form.Item
+        name="title"
+        label="Заголовок заказа"
+        rules={[{ required: true, message: "Введите заголовок" }]}
+      >
+        <Input placeholder="Например: Реклама косметики" size="large" />
+      </Form.Item>
+      <Form.Item name="description" label="Описание">
+        <TextArea placeholder="Опишите задачу для блогера" rows={4} size="large" />
+      </Form.Item>
+      <Form.Item name="category" label="Категория">
+        <Select placeholder="Выберите" size="large" allowClear>
           {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
+            <Select.Option key={c} value={c}>
               {c}
-            </option>
+            </Select.Option>
           ))}
-        </select>
-      </div>
-      <div>
-        <label
-          className="block text-sm mb-1"
-          style={{ color: "var(--tg-theme-hint-color)" }}
-        >
-          Бюджет
-        </label>
-        <div className="flex gap-2">
+        </Select>
+      </Form.Item>
+      <Form.Item label="Бюджет">
+        <div className="flex gap-2 mb-2">
           <Button
-            mode={budgetType === "money" ? "filled" : "bezeled"}
-            size="s"
+            type={budgetType === "money" ? "primary" : "default"}
             onClick={() => setBudgetType("money")}
           >
             Деньги
           </Button>
           <Button
-            mode={budgetType === "barter" ? "filled" : "bezeled"}
-            size="s"
+            type={budgetType === "barter" ? "primary" : "default"}
             onClick={() => setBudgetType("barter")}
           >
             Бартер
           </Button>
         </div>
         {budgetType === "money" && (
-          <Input
-            type="number"
-            placeholder="Сумма в рублях"
-            value={budgetAmount}
-            onChange={(e) => setBudgetAmount(e.target.value)}
-            className="mt-2"
-          />
+          <Form.Item name="budget_amount" noStyle>
+            <Input type="number" placeholder="Сумма в рублях" size="large" />
+          </Form.Item>
         )}
-      </div>
-      <Input
-        header="Ссылка на соцсеть / продукт"
-        placeholder="https://..."
-        value={socialLink}
-        onChange={(e) => setSocialLink(e.target.value)}
-      />
+      </Form.Item>
+      <Form.Item name="social_link" label="Ссылка на соцсеть / продукт">
+        <Input placeholder="https://..." size="large" />
+      </Form.Item>
       {error && (
-        <p className="text-sm" style={{ color: "#e53935" }}>
-          {error}
-        </p>
+        <p className="text-sm text-red-500 mb-2">{error}</p>
       )}
-      <Button
-        type="submit"
-        mode="filled"
-        size="l"
-        stretched
-        disabled={loading}
-        loading={loading}
-      >
-        Создать заказ
-      </Button>
-    </form>
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          block
+          loading={loading}
+          disabled={loading}
+        >
+          Создать заказ
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }

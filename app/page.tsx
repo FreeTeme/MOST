@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useRouter } from "next/navigation";
-import { Button, Spinner } from "@telegram-apps/telegram-ui";
+import { Spin } from "antd";
 
 export default function HomePage() {
   const { tgUser, dbUser, loading, isAuthenticated } = useTelegramAuth();
@@ -22,7 +22,7 @@ export default function HomePage() {
   if (loading || (tgUser && !isAuthenticated)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Spinner size="l" />
+        <Spin size="large" />
       </div>
     );
   }
@@ -44,7 +44,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Spinner size="l" />
+      <Spin size="large" />
     </div>
   );
 }

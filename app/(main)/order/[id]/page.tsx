@@ -7,11 +7,10 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useApplications } from "@/hooks/useApplications";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ApplicationCard } from "@/components/cards/ApplicationCard";
-import { Button } from "@telegram-apps/telegram-ui";
+import { Button, Spin } from "antd";
 import { supabase } from "@/lib/supabase";
 import { TABLES } from "@/config/database.config";
 import type { Order, User } from "@/types";
-import { Spinner } from "@telegram-apps/telegram-ui";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
 
@@ -101,7 +100,7 @@ export default function OrderDetailPage() {
   if (loading && !order) {
     return (
       <div className="flex justify-center py-12">
-        <Spinner size="l" />
+        <Spin size="large" />
       </div>
     );
   }
@@ -125,9 +124,9 @@ export default function OrderDetailPage() {
       {canApply && (
         <div className="mt-4">
           <Button
-            mode="filled"
-            size="l"
-            stretched
+            type="primary"
+            size="large"
+            block
             onClick={handleApply}
             disabled={applying}
             loading={applying}
@@ -142,7 +141,7 @@ export default function OrderDetailPage() {
             Отклики
           </h2>
           {appsLoading ? (
-            <Spinner size="m" />
+            <Spin />
           ) : applications.length === 0 ? (
             <p style={{ color: "var(--tg-theme-hint-color)" }}>Пока нет откликов</p>
           ) : (

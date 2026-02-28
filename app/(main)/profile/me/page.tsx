@@ -6,7 +6,7 @@ import { useRole } from "@/hooks/useRole";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { ProfileView } from "@/components/shared/ProfileView";
-import { Spinner } from "@telegram-apps/telegram-ui";
+import { Spin } from "antd";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function MyProfilePage() {
@@ -29,7 +29,7 @@ export default function MyProfilePage() {
   if (loading && !profile) {
     return (
       <div className="flex justify-center py-12">
-        <Spinner size="l" />
+        <Spin size="large" />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Cell, Button } from "@telegram-apps/telegram-ui";
+import { Card, Button, Flex, Typography } from "antd";
 import type { ApplicationWithOrder, ApplicationWithBlogger } from "@/types";
 import type { ApplicationCardVariant } from "@/types";
 
@@ -51,55 +51,51 @@ export function ApplicationCard({
       ? application.message.slice(0, 80) + (application.message.length > 80 ? "…" : "")
       : new Date(application.applied_at).toLocaleDateString("ru");
 
+  const handleClick = () => {
+    if (isOutgoing && order) onOrderClick?.(order.id);
+    else if (!isOutgoing && blogger) onBloggerClick?.(blogger.telegram_id);
+  };
+
   return (
-    <Card>
-      <Cell
-        before={
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
-            style={{ background: "var(--tg-theme-secondary-bg-color)" }}
-          >
-            {isOutgoing ? "📋" : "👤"}
-          </div>
-        }
-        subtitle={subtitle}
-        onClick={
-          isOutgoing && order
-            ? () => onOrderClick?.(order.id)
-            : !isOutgoing && blogger
-              ? () => onBloggerClick?.(blogger.telegram_id)
-              : undefined
-        }
-        multiline
-      >
-        <span style={{ color: "var(--tg-theme-text-color)" }}>{title}</span>
-        {showStatus && (
-          <span
-            className="ml-2 text-sm"
-            style={{ color: "var(--tg-theme-hint-color)" }}
-          >
-            · {STATUS_LABELS[application.status] ?? application.status}
-          </span>
-        )}
-      </Cell>
+    <Card size="small" className="rounded-2xl">
+      <Flex align="flex-start" gap={12} onClick={handleClick} className="cursor-pointer">
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+          style={{ background: "var(--tg-theme-secondary-bg-color, #f0f2f5)" }}
+        >
+          {isOutgoing ? "📋" : "👤"}
+        </div>
+        <Flex vertical className="flex-1 min-w-0">
+          <Typography.Text strong>
+            {title}
+            {showStatus && (
+              <span className="ml-2 text-sm font-normal text-[var(--tg-theme-hint-color,#999)]">
+                · {STATUS_LABELS[application.status] ?? application.status}
+              </span>
+            )}
+          </Typography.Text>
+          <Typography.Text type="secondary" className="text-sm">
+            {subtitle}
+          </Typography.Text>
+        </Flex>
+      </Flex>
       {actions.includes("accept") && application.status === "pending" && (
-        <div className="flex gap-2 p-3 pt-0">
+        <Flex gap={8} className="mt-3 pt-0">
           <Button
-            mode="filled"
-            size="s"
+            type="primary"
+            size="small"
             onClick={() => onStatusChange?.(application.id, "accepted")}
           >
             Принять
           </Button>
           <Button
-            mode="plain"
-            size="s"
+            size="small"
+            danger
             onClick={() => onStatusChange?.(application.id, "rejected")}
-            style={{ color: "#e53935" }}
           >
             Отклонить
           </Button>
-        </div>
+        </Flex>
       )}
     </Card>
   );

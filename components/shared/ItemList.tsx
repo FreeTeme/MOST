@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Spinner } from "@telegram-apps/telegram-ui";
+import { Spin } from "antd";
 
 interface ItemListProps<T> {
   items: T[];
@@ -21,7 +21,7 @@ export function ItemList<T>({
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Spinner size="l" />
+        <Spin size="large" />
       </div>
     );
   }

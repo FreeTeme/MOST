@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useRole } from "@/hooks/useRole";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
@@ -8,10 +8,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { useReview } from "@/hooks/useReview";
 import { ProfileView } from "@/components/shared/ProfileView";
 import { ReviewForm } from "@/components/forms/ReviewForm";
-import { Card } from "@telegram-apps/telegram-ui";
-import { Spinner } from "@telegram-apps/telegram-ui";
+import { Card, Spin } from "antd";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
-import { useState } from "react";
 
 export default function PublicProfilePage() {
   const router = useRouter();
@@ -44,7 +42,7 @@ export default function PublicProfilePage() {
   if (loading && !profile) {
     return (
       <div className="flex justify-center py-12">
-        <Spinner size="l" />
+        <Spin size="large" />
       </div>
     );
   }
@@ -67,7 +65,7 @@ export default function PublicProfilePage() {
         {profileConfig.title}
       </h1>
       {showReviewForm ? (
-        <Card className="p-4">
+        <Card className="rounded-2xl">
           <ReviewForm
             onSubmit={submitReview}
             loading={reviewLoading}

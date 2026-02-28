@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Tabbar } from "@telegram-apps/telegram-ui";
+import { Flex } from "antd";
 import { useRole } from "@/hooks/useRole";
 import { getTabsForRole, isTabRoute } from "@/config/nav.config";
 import type { TabId } from "@/config/nav.config";
@@ -58,26 +58,36 @@ export function AppTabBar() {
   if (tabs.length === 0) return null;
 
   return (
-    <Tabbar
-      className="!pb-[env(safe-area-inset-bottom)]"
-      style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
+    <Flex
+      align="center"
+      justify="space-around"
+      className="fixed bottom-0 left-0 right-0 border-t border-[var(--tg-theme-hint-color, #999)] bg-[var(--tg-theme-bg-color)]"
+      style={{
+        paddingBottom: "max(8px, env(safe-area-inset-bottom))",
+        paddingTop: 8,
+        minHeight: 56,
+      }}
     >
       {tabs.map((tab) => {
         const selected = pathname === tab.path;
         const Icon = TAB_ICONS[tab.id];
         return (
-          <Tabbar.Item
+          <button
             key={tab.id}
-            selected={selected}
-            text={tab.label}
+            type="button"
             onClick={() => {
               if (!selected) router.push(tab.path);
             }}
+            className="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] border-0 bg-transparent cursor-pointer"
+            style={{
+              color: selected ? "var(--tg-theme-button-color, #2481cc)" : "var(--tg-theme-hint-color, #999)",
+            }}
           >
             {Icon ? <Icon /> : null}
-          </Tabbar.Item>
+            <span className="text-xs">{tab.label}</span>
+          </button>
         );
       })}
-    </Tabbar>
+    </Flex>
   );
 }

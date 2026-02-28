@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Cell, Button } from "@telegram-apps/telegram-ui";
+import { Card, Button, Flex, Typography } from "antd";
 import type { SocialAccount, User } from "@/types";
 import type { SocialCardVariant } from "@/types";
 
@@ -33,54 +33,52 @@ export function SocialCard({
         ? `${social.platform} · ${social.followers.toLocaleString()} подписчиков`
         : `${social.platform} · ${social.niche}`;
 
-  const content = (
-    <Cell
-      before={
+  return (
+    <Card size="small" className="rounded-2xl">
+      <Flex
+        align="flex-start"
+        gap={12}
+        onClick={variant !== "editable" ? onClick : undefined}
+        className={variant !== "editable" ? "cursor-pointer" : ""}
+      >
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
-          style={{ background: "var(--tg-theme-secondary-bg-color)" }}
+          style={{ background: "var(--tg-theme-secondary-bg-color, #f0f2f5)" }}
         >
           📱
         </div>
-      }
-      subtitle={subtitle}
-      onClick={variant !== "editable" ? onClick : undefined}
-      multiline
-    >
-      <span style={{ color: "var(--tg-theme-text-color)" }}>{displayName}</span>
-      {variant === "detailed" && social.profile_url && (
-        <div className="mt-1">
-          <a
-            href={social.profile_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm"
-            style={{ color: "var(--tg-theme-link-color)" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {social.profile_url}
-          </a>
-        </div>
-      )}
-    </Cell>
-  );
-
-  return (
-    <Card>
-      {content}
+        <Flex vertical className="flex-1 min-w-0">
+          <Typography.Text strong>{displayName}</Typography.Text>
+          <Typography.Text type="secondary" className="text-sm">
+            {subtitle}
+          </Typography.Text>
+          {variant === "detailed" && social.profile_url && (
+            <a
+              href={social.profile_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm mt-1"
+              style={{ color: "var(--tg-theme-button-color, #2481cc)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {social.profile_url}
+            </a>
+          )}
+        </Flex>
+      </Flex>
       {variant === "editable" && (onEdit || onDelete) && (
-        <div className="flex gap-2 p-3 pt-0">
+        <Flex gap={8} className="mt-3">
           {onEdit && (
-            <Button mode="bezeled" size="s" onClick={onEdit}>
+            <Button size="small" onClick={onEdit}>
               Изменить
             </Button>
           )}
           {onDelete && (
-            <Button mode="plain" size="s" onClick={onDelete} style={{ color: "#e53935" }}>
+            <Button size="small" danger onClick={onDelete}>
               Удалить
             </Button>
           )}
-        </div>
+        </Flex>
       )}
     </Card>
   );

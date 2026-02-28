@@ -49,16 +49,6 @@ a,
   min-width: 44px;
 }
 
-/* Telegram UI overrides for consistent look */
-.TelegramUI-Card {
-  background: var(--tg-theme-secondary-bg-color) !important;
-  border-radius: 14px !important;
-}
-
-.TelegramUI-Cell {
-  background: var(--tg-theme-bg-color) !important;
-}
-
 /* Smooth transitions */
 .transition-all {
   transition: all 0.2s ease;

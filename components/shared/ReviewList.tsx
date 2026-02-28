@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Cell } from "@telegram-apps/telegram-ui";
+import { Card, Flex, Typography } from "antd";
 import type { Review } from "@/types";
 
 interface ReviewListProps {
@@ -9,9 +9,9 @@ interface ReviewListProps {
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <span style={{ color: "var(--tg-theme-button-color)" }}>
+    <span style={{ color: "var(--tg-theme-button-color, #2481cc)" }}>
       {"★".repeat(rating)}
-      <span style={{ color: "var(--tg-theme-hint-color)" }}>
+      <span style={{ color: "var(--tg-theme-hint-color, #999)" }}>
         {"☆".repeat(5 - rating)}
       </span>
     </span>
@@ -21,9 +21,9 @@ function StarRating({ rating }: { rating: number }) {
 export function ReviewList({ reviews }: ReviewListProps) {
   if (reviews.length === 0) {
     return (
-      <p className="text-center py-4" style={{ color: "var(--tg-theme-hint-color)" }}>
+      <Typography.Text type="secondary" className="block text-center py-4">
         Пока нет отзывов
-      </p>
+      </Typography.Text>
     );
   }
 
@@ -38,29 +38,20 @@ export function ReviewList({ reviews }: ReviewListProps) {
     <div className="space-y-4">
       {Object.entries(byDate).map(([date, list]) => (
         <div key={date}>
-          <p
-            className="text-sm mb-2"
-            style={{ color: "var(--tg-theme-hint-color)" }}
-          >
+          <Typography.Text type="secondary" className="text-sm mb-2 block">
             {date}
-          </p>
+          </Typography.Text>
           <div className="space-y-2">
             {list.map((review) => (
-              <Card key={review.id}>
-                <Cell
-                  before={
-                    <div className="text-lg">
-                      <StarRating rating={review.rating} />
-                    </div>
-                  }
-                  multiline
-                >
+              <Card key={review.id} size="small" className="rounded-2xl">
+                <Flex align="flex-start" gap={12}>
+                  <div className="text-lg">
+                    <StarRating rating={review.rating} />
+                  </div>
                   {review.comment && (
-                    <span style={{ color: "var(--tg-theme-text-color)" }}>
-                      {review.comment}
-                    </span>
+                    <Typography.Text>{review.comment}</Typography.Text>
                   )}
-                </Cell>
+                </Flex>
               </Card>
             ))}
           </div>

@@ -20,7 +20,7 @@
 - Next.js 15+ (App Router)
 - TypeScript 5+
 - Tailwind CSS 3+
-- @telegram-apps/telegram-ui 2.x — нативные компоненты Telegram
+- antd 6.x — UI-компоненты (Card, Button, Form, Spin и т.д.)
 - @twa-dev/sdk — Telegram WebApp SDK
 
 ### 2.2 Backend & Database
@@ -425,7 +425,7 @@ export const PROFILE_CONFIG = {
 
 ## 8. КОМПОНЕНТЫ (ОБЯЗАТЕЛЬНЫ К РЕАЛИЗАЦИИ)
 
-### 8.1 Карточки (используют @telegram-apps/telegram-ui)
+### 8.1 Карточки (используют antd Card, Flex, Typography)
 
 **SocialCard.tsx**
 - Пропсы: `social`, `blogger`, `variant`, `onClick`, `onEdit`, `onDelete`
@@ -561,7 +561,7 @@ export const PROFILE_CONFIG = {
 1. Все страницы используют конфиги из `config/pages.config.ts`
 2. Никакой логики ролей внутри страниц (только через конфиги и хуки)
 3. Все запросы к данным через хуки, а не через useEffect внутри страниц
-4. Использование @telegram-apps/telegram-ui для всех интерфейсных компонентов
+4. Использование Ant Design (antd) для всех интерфейсных компонентов
 5. Mobile First: кнопки минимум 44px, отступы 16px
 6. Строгая типизация TypeScript для всех пропсов и возвращаемых значений
 7. Авторизация только через telegram_id, никакого Supabase Auth
