@@ -121,7 +121,7 @@ export function SearchFiltersToolbar({
               paddingBottom: "max(var(--space-4), env(safe-area-inset-bottom))",
             }}
           >
-            <div className="mx-auto w-full max-w-lg px-[var(--app-page-gutter)] pb-[var(--space-4)] pt-[var(--space-2)]">
+            <div className="mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)] pb-[var(--space-4)] pt-[var(--space-2)]">
               <div
                 className="mx-auto mb-[var(--space-4)] h-1 w-10 rounded-[var(--radius-app-pill)] bg-[var(--app-border-strong)]"
                 aria-hidden

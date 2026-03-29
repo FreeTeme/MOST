@@ -18,6 +18,8 @@
   --space-8: 2rem; /* 32 */
   --space-10: 2.5rem; /* 40 */
   --app-page-gutter: var(--space-5);
+  /** Макс. ширина колонки контента (как max-w-lg); на md/lg расширяется в @media ниже */
+  --app-content-max: 32rem;
   --app-section-gap: var(--space-6);
   --app-list-gap: var(--space-3);
   --app-fab-clearance: 5.5rem;
@@ -73,43 +75,66 @@
 
   /* Fallbacks when not in Telegram; Telegram ThemeProvider overwrites these */
   --tg-theme-bg-color: #ffffff;
-  --tg-theme-text-color: #000000;
+  --tg-theme-text-color: #1a1a1a;
   --tg-theme-button-color: #2481cc;
   --tg-theme-button-text-color: #ffffff;
-  --tg-theme-hint-color: #999999;
-  --tg-theme-secondary-bg-color: #f0f2f5;
+  --tg-theme-hint-color: #8e8e93;
+  --tg-theme-secondary-bg-color: #efefef;
+  --tg-theme-destructive-text-color: #ff3b30;
+  --tg-theme-link-color: #2481cc;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /**
+   * Shadcn / Radix — цвета из палитры Telegram Mini App.
+   * При смене темы в клиенте ThemeProvider обновляет --tg-theme-* → всё пересчитывается.
+   */
+  --background: var(--tg-theme-bg-color);
+  --foreground: var(--tg-theme-text-color);
+  --card: color-mix(in oklab, var(--tg-theme-secondary-bg-color) 52%, var(--tg-theme-bg-color));
+  --card-foreground: var(--tg-theme-text-color);
+  --popover: var(--tg-theme-bg-color);
+  --popover-foreground: var(--tg-theme-text-color);
+  --primary: var(--tg-theme-button-color);
+  --primary-foreground: var(--tg-theme-button-text-color);
+  --secondary: var(--tg-theme-secondary-bg-color);
+  --secondary-foreground: var(--tg-theme-text-color);
+  --muted: var(--tg-theme-secondary-bg-color);
+  --muted-foreground: var(--tg-theme-hint-color);
+  --accent: color-mix(in oklab, var(--tg-theme-secondary-bg-color) 62%, var(--tg-theme-bg-color));
+  --accent-foreground: var(--tg-theme-text-color);
+  --destructive: var(--tg-theme-destructive-text-color);
+  --destructive-foreground: #ffffff;
+  --border: color-mix(in oklab, var(--tg-theme-hint-color) 28%, var(--tg-theme-bg-color));
+  --input: color-mix(in oklab, var(--tg-theme-hint-color) 24%, var(--tg-theme-bg-color));
+  --ring: color-mix(in oklab, var(--tg-theme-button-color) 45%, var(--tg-theme-bg-color));
+  --chart-1: color-mix(in oklab, var(--tg-theme-button-color) 55%, var(--tg-theme-hint-color));
+  --chart-2: color-mix(in oklab, var(--tg-theme-hint-color) 70%, var(--tg-theme-bg-color));
+  --chart-3: color-mix(in oklab, var(--tg-theme-secondary-bg-color) 50%, var(--tg-theme-button-color));
+  --chart-4: color-mix(in oklab, var(--tg-theme-text-color) 35%, var(--tg-theme-bg-color));
+  --chart-5: color-mix(in oklab, var(--tg-theme-destructive-text-color) 40%, var(--tg-theme-bg-color));
+  --sidebar: var(--tg-theme-secondary-bg-color);
+  --sidebar-foreground: var(--tg-theme-text-color);
+  --sidebar-primary: var(--tg-theme-button-color);
+  --sidebar-primary-foreground: var(--tg-theme-button-text-color);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--tg-theme-text-color);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+/* Планшет и широкий Mini App (Tailwind md / lg) — без отдельного «мобильного» класса: те же переменные */
+@media (min-width: 768px) {
+  :root {
+    --app-page-gutter: var(--space-6);
+    --app-content-max: 42rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --app-page-gutter: var(--space-8);
+    --app-content-max: 56rem;
+  }
 }
 
 * {
@@ -272,6 +297,23 @@ a.tap-compact {
       color-mix(in oklab, var(--tg-theme-secondary-bg-color) 32%, var(--tg-theme-bg-color)) 100%
     );
   }
+
+  /**
+   * Сетка «1 колонка → 2 на md+» для карточек/плиток (mobile-first).
+   * Используйте вместе с gap-[var(--app-list-gap)] или gap-[var(--space-4)].
+   */
+  .app-grid-responsive-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .app-grid-responsive-cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
 }
 
 /* Override Next.js dev portal position (persisted from browser preview) */
@@ -303,6 +345,7 @@ nextjs-portal {
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -319,40 +362,6 @@ nextjs-portal {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-}
-
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
 @layer base {

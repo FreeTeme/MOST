@@ -3,7 +3,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MobileScreen } from "@/components/mobile/mobile-screen";
@@ -31,8 +30,10 @@ const ROLES: {
     title: "Ищу заказы",
     description: "Рекламные интеграции и отклики на подходящие кампании",
     icon: Sparkles,
-    gradient: "from-violet-500/25 via-fuchsia-500/10 to-transparent dark:from-violet-400/30",
-    iconWrap: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
+    gradient:
+      "from-[color-mix(in_oklab,var(--tg-theme-button-color)_22%,var(--tg-theme-bg-color))] via-[color-mix(in_oklab,var(--tg-theme-secondary-bg-color)_35%,var(--tg-theme-bg-color))] to-transparent",
+    iconWrap:
+      "bg-[color-mix(in_oklab,var(--tg-theme-button-color)_18%,var(--tg-theme-bg-color))] text-[var(--tg-theme-button-color)]",
   },
   {
     id: "client",
@@ -40,8 +41,10 @@ const ROLES: {
     title: "Ищу блогеров",
     description: "Публикация заказов и подбор исполнителей под задачу",
     icon: Building2,
-    gradient: "from-sky-500/25 via-blue-500/10 to-transparent dark:from-sky-400/30",
-    iconWrap: "bg-sky-500/15 text-sky-600 dark:text-sky-300",
+    gradient:
+      "from-[color-mix(in_oklab,var(--tg-theme-hint-color)_38%,var(--tg-theme-bg-color))] via-[color-mix(in_oklab,var(--tg-theme-secondary-bg-color)_28%,var(--tg-theme-bg-color))] to-transparent",
+    iconWrap:
+      "bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_22%,var(--tg-theme-bg-color))] text-[var(--tg-theme-text-color)]",
   },
 ];
 
@@ -131,15 +134,11 @@ export default function RoleSelectPage() {
       style={{ paddingTop: "max(var(--space-2), env(safe-area-inset-top))" }}
     >
       <MobileScreen className="flex flex-1 flex-col pb-[max(var(--space-4),env(safe-area-inset-bottom))]">
-        <header className="shrink-0 pb-[var(--app-section-gap)] pt-[var(--space-2)] text-center">
-          <p className="app-overline mb-[var(--space-3)]">MOST</p>
+        <header className="shrink-0 pb-[var(--space-2)] pt-[var(--space-1)] text-center">
           <h1 className="app-title-display">Кто вы?</h1>
-          <p className="app-subtitle mx-auto max-w-sm text-center">
-            Интерфейс подстроится под роль. Позже можно сменить в профиле.
-          </p>
         </header>
 
-        <main className="flex flex-1 flex-col justify-center gap-[var(--space-4)]">
+        <main className="app-grid-responsive-cols flex-1 content-start justify-items-stretch pt-[var(--space-2)]">
           {ROLES.map((role) => {
             const Icon = role.icon;
             const busy = isSubmitting && selectedRole === role.id;
@@ -147,11 +146,29 @@ export default function RoleSelectPage() {
             return (
               <Card
                 key={role.id}
+                role="button"
+                tabIndex={isSubmitting ? -1 : 0}
+                aria-busy={busy}
+                aria-disabled={isSubmitting}
+                aria-label={`${role.badge}. ${role.title}. ${role.description}. Нажмите, чтобы продолжить`}
                 className={cn(
                   "app-motion overflow-hidden backdrop-blur-sm transition-[transform,box-shadow] duration-[var(--app-duration)]",
-                  "active:scale-[0.985]",
-                  "focus-within:ring-2 focus-within:ring-[color-mix(in_oklab,var(--tg-theme-button-color)_35%,transparent)] focus-within:ring-offset-2 focus-within:ring-offset-[var(--tg-theme-bg-color)]"
+                  "outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--tg-theme-button-color)_35%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--tg-theme-bg-color)]",
+                  !isSubmitting && "cursor-pointer active:scale-[0.985]",
+                  isSubmitting && "pointer-events-none",
+                  isSubmitting && !busy && "opacity-50"
                 )}
+                onClick={() => {
+                  if (isSubmitting) return;
+                  void handleSelectRole(role.id);
+                }}
+                onKeyDown={(e) => {
+                  if (isSubmitting) return;
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    void handleSelectRole(role.id);
+                  }
+                }}
               >
                 <div className={cn("relative flex h-[5.5rem] shrink-0 items-center justify-center bg-gradient-to-br", role.gradient)}>
                   <span className="app-overline absolute left-[var(--space-3)] top-[var(--space-3)] rounded-[var(--radius-app-pill)] bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_88%,transparent)] px-[var(--space-2)] py-1 text-[length:var(--text-overline)] backdrop-blur-sm">
@@ -172,19 +189,16 @@ export default function RoleSelectPage() {
                 </CardHeader>
 
                 <CardFooter className="px-[var(--space-4)] pb-[var(--space-4)] pt-0">
-                  <Button
-                    type="button"
-                    size="lg"
-                    className="h-12 min-h-12 w-full rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
+                  <div
+                    aria-hidden
+                    className="flex h-12 min-h-12 w-full items-center justify-center rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
                     style={{
                       backgroundColor: "var(--tg-theme-button-color)",
                       color: "var(--tg-theme-button-text-color)",
                     }}
-                    disabled={isSubmitting}
-                    onClick={() => handleSelectRole(role.id)}
                   >
                     {busy ? "Сохранение…" : "Продолжить"}
-                  </Button>
+                  </div>
                 </CardFooter>
               </Card>
             );

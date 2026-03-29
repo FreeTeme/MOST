@@ -6,13 +6,15 @@ interface MobileScreenProps {
 }
 
 /**
- * Горизонтальные поля экрана — `var(--app-page-gutter)` (20px, 8pt-сетка).
+ * Основная колонка приложения: **mobile-first**, на `md`/`lg` шире за счёт
+ * `var(--app-content-max)` и `var(--app-page-gutter)` в `globals.css`.
+ * Для нескольких колонок на широких экранах используйте `grid` / `.app-grid-responsive-cols`.
  */
 export function MobileScreen({ children, className }: MobileScreenProps) {
   return (
     <div
       className={cn(
-        "mx-auto flex w-full min-w-0 max-w-lg flex-1 flex-col px-[var(--app-page-gutter)]",
+        "mx-auto flex w-full min-w-0 max-w-[var(--app-content-max)] flex-1 flex-col px-[var(--app-page-gutter)]",
         className
       )}
     >

@@ -155,7 +155,7 @@ export default function OrderDetailPage() {
           )}
           style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))", paddingTop: 12 }}
         >
-          <div className="mx-auto w-full max-w-lg px-4">
+          <div className="mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)]">
             <Button
               type="button"
               className="h-12 w-full rounded-xl text-base font-semibold"

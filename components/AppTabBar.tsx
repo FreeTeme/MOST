@@ -48,7 +48,7 @@ export function AppTabBar() {
       }}
       aria-label="Основные разделы"
     >
-      <div className="mx-auto flex min-h-[52px] max-w-lg items-stretch justify-between gap-1 px-[var(--app-page-gutter)]">
+      <div className="mx-auto flex min-h-[52px] max-w-[var(--app-content-max)] items-stretch justify-between gap-1 px-[var(--app-page-gutter)]">
         {tabs.map((tab) => {
           const selected = pathname === tab.path;
           const Icon = TAB_ICONS[tab.id];
