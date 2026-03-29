@@ -7,8 +7,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "Influencer Platform",
-  description: "Платформа для поиска инфлюенсеров",
+  title: "MOST",
+  description: "Мобильная платформа для блогеров и заказчиков",
 };
 
 export const viewport = {
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <TelegramProvider>
-            <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)]">
+            <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)] text-[var(--tg-theme-text-color)]">
               {children}
             </main>
           </TelegramProvider>

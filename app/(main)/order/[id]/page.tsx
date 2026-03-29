@@ -9,11 +9,13 @@ import { OrderCard } from "@/components/cards/OrderCard";
 import { ApplicationCard } from "@/components/cards/ApplicationCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
 import { supabase } from "@/lib/supabase";
 import { TABLES } from "@/config/database.config";
 import type { Order, User } from "@/types";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
+import { cn } from "@/lib/utils";
 
 export default function OrderDetailPage() {
   const router = useRouter();
@@ -61,9 +63,7 @@ export default function OrderDetailPage() {
     };
   }, [orderId]);
 
-  const myApplication = isBlogger && dbUser
-    ? applications.find((a) => a.blogger_telegram_id === dbUser.telegram_id)
-    : null;
+  const myApplication = isBlogger && dbUser ? applications.find((a) => a.blogger_telegram_id === dbUser.telegram_id) : null;
 
   const canApply = isBlogger && !myApplication && order?.status === "active";
 
@@ -85,9 +85,7 @@ export default function OrderDetailPage() {
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId);
-      setOrder((prev) =>
-        prev ? { ...prev, applications_count: prev.applications_count + 1 } : null
-      );
+      setOrder((prev) => (prev ? { ...prev, applications_count: prev.applications_count + 1 } : null));
       refetchApps();
     } catch {
       showAlert("Не удалось откликнуться");
@@ -100,64 +98,77 @@ export default function OrderDetailPage() {
 
   if (loading && !order) {
     return (
-      <div className="flex justify-center py-12">
-        <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="flex flex-1 flex-col items-center justify-center py-16">
+        <Skeleton className="size-14 rounded-full" />
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="p-4">
-        <p style={{ color: "var(--tg-theme-hint-color)" }}>Заказ не найден</p>
-      </div>
+      <MobileScreen className="pt-4">
+        <p className="text-sm text-[var(--tg-theme-hint-color)]">Заказ не найден</p>
+      </MobileScreen>
     );
   }
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <OrderCard
-        order={order}
-        client={client}
-        variant="detailed"
-        onApply={canApply ? handleApply : undefined}
-      />
-      {canApply && (
-        <div className="mt-4">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleApply}
-            disabled={applying}
-          >
-            {applying ? "Отправка…" : "Откликнуться"}
-          </Button>
-        </div>
-      )}
-      {isClient && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-3" style={{ color: "var(--tg-theme-text-color)" }}>
-            Отклики
-          </h2>
-          {appsLoading ? (
-            <Skeleton className="h-20 w-full rounded-md" />
-          ) : applications.length === 0 ? (
-            <p style={{ color: "var(--tg-theme-hint-color)" }}>Пока нет откликов</p>
-          ) : (
-            <div className="space-y-3">
-              {applications.map((app) => (
-                <ApplicationCard
-                  key={app.id}
-                  application={app}
-                  variant="incoming"
-                  showStatus
-                  actions={["accept", "reject"]}
-                  onStatusChange={updateStatus}
-                  onBloggerClick={(tid) => router.push(`/profile/${tid}`)}
-                />
-              ))}
-            </div>
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      <MobileScreen className={cn("flex-1 pt-2", canApply && "pb-[calc(5.5rem+max(12px,env(safe-area-inset-bottom)))]")}>
+        <ScreenHeader title="Заказ" size="medium" />
+        <div className="space-y-5">
+          <OrderCard order={order} client={client} variant="detailed" />
+          {isClient && (
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--tg-theme-hint-color)]">Отклики</h2>
+              {appsLoading ? (
+                <Skeleton className="h-24 w-full rounded-2xl" />
+              ) : applications.length === 0 ? (
+                <p className="text-sm text-[var(--tg-theme-hint-color)]">Пока нет откликов</p>
+              ) : (
+                <ul className="list-none space-y-2.5 p-0">
+                  {applications.map((app) => (
+                    <li key={app.id}>
+                      <ApplicationCard
+                        application={app}
+                        variant="incoming"
+                        showStatus
+                        actions={["accept", "reject"]}
+                        onStatusChange={updateStatus}
+                        onBloggerClick={(tid) => router.push(`/profile/${tid}`)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
           )}
+        </div>
+      </MobileScreen>
+
+      {canApply && (
+        <div
+          className={cn(
+            "fixed bottom-0 left-0 right-0 z-[900]",
+            "border-t border-[color-mix(in_oklab,var(--tg-theme-hint-color)_22%,transparent)]",
+            "bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_92%,transparent)] backdrop-blur-xl supports-[backdrop-filter]:bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_78%,transparent)]"
+          )}
+          style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))", paddingTop: 12 }}
+        >
+          <div className="mx-auto w-full max-w-lg px-4">
+            <Button
+              type="button"
+              className="h-12 w-full rounded-xl text-base font-semibold"
+              style={{
+                backgroundColor: "var(--tg-theme-button-color)",
+                color: "var(--tg-theme-button-text-color)",
+              }}
+              onClick={handleApply}
+              disabled={applying}
+            >
+              {applying ? "Отправка…" : "Откликнуться"}
+            </Button>
+          </div>
         </div>
       )}
     </div>

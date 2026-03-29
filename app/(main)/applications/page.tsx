@@ -7,6 +7,7 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useApplications } from "@/hooks/useApplications";
 import { ItemList } from "@/components/shared/ItemList";
 import { ApplicationCard } from "@/components/cards/ApplicationCard";
+import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function ApplicationsPage() {
@@ -39,19 +40,16 @@ export default function ApplicationsPage() {
   );
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <h1 className="text-xl font-bold mb-1" style={{ color: "var(--tg-theme-text-color)" }}>
-        {config.title}
-      </h1>
-      <p className="mb-4 text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
-        {config.description}
-      </p>
-      <ItemList
-        items={applications}
-        renderItem={renderItem}
-        emptyState={config.emptyState}
-        loading={loading}
-      />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <MobileScreen className="pt-2">
+        <ScreenHeader title={config.title} description={config.description} />
+        <ItemList
+          items={applications}
+          renderItem={renderItem}
+          emptyState={config.emptyState}
+          loading={loading}
+        />
+      </MobileScreen>
     </div>
   );
 }

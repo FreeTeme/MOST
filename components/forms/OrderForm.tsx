@@ -97,10 +97,11 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
       </div>
       <div className="space-y-2">
         <Label>Бюджет</Label>
-        <div className="flex gap-2 mb-2">
+        <div className="mb-2 flex flex-wrap gap-2">
           <Button
             type="button"
             variant={budgetType === "money" ? "default" : "outline"}
+            className="tap-compact min-h-10 flex-1 rounded-full sm:flex-none"
             onClick={() => setBudgetType("money")}
           >
             Деньги
@@ -108,6 +109,7 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
           <Button
             type="button"
             variant={budgetType === "barter" ? "default" : "outline"}
+            className="tap-compact min-h-10 flex-1 rounded-full sm:flex-none"
             onClick={() => setBudgetType("barter")}
           >
             Бартер
@@ -132,7 +134,16 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
         />
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="submit" size="lg" className="w-full min-h-11" disabled={loading}>
+      <Button
+        type="submit"
+        size="lg"
+        className="mt-2 h-12 w-full rounded-xl text-base font-semibold"
+        style={{
+          backgroundColor: "var(--tg-theme-button-color)",
+          color: "var(--tg-theme-button-text-color)",
+        }}
+        disabled={loading}
+      >
         {loading ? "Создание…" : "Создать заказ"}
       </Button>
     </form>

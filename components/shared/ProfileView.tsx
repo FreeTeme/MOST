@@ -4,6 +4,8 @@ import type { User, SocialAccount, Order, Review } from "@/types";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ReviewList } from "./ReviewList";
+import { cn } from "@/lib/utils";
+
 interface ProfileConfigShape {
   title: string;
   fields: string[];
@@ -14,12 +16,13 @@ interface ProfileConfigShape {
   actions?: string[];
 }
 
-interface ProfileViewProps {
+export interface ProfileViewProps {
   profile: User;
   items: SocialAccount[] | Order[];
   reviews: Review[];
   config: ProfileConfigShape | null;
   isOwnProfile: boolean;
+  /** Зарезервировано для экрана редактирования профиля */
   onUpdateProfile?: (updates: Partial<User>) => Promise<void>;
   onEditItem?: (item: SocialAccount | Order) => void;
   onDeleteItem?: (item: SocialAccount | Order) => void;
@@ -35,13 +38,29 @@ const fieldLabels: Record<string, string> = {
   description: "Описание",
 };
 
+function Section({
+  title,
+  children,
+  className,
+}: {
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={cn("flex flex-col gap-[var(--space-4)]", className)}>
+      {title ? <h2 className="app-overline">{title}</h2> : null}
+      {children}
+    </section>
+  );
+}
+
 export function ProfileView({
   profile,
   items,
   reviews,
   config,
   isOwnProfile,
-  onUpdateProfile,
   onEditItem,
   onDeleteItem,
   onWriteReview,
@@ -70,54 +89,51 @@ export function ProfileView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-[var(--space-6)]">
       <div
-        className="rounded-xl p-4 flex items-center gap-4"
-        style={{ background: "var(--tg-theme-secondary-bg-color)" }}
+        className={cn(
+          "flex items-center gap-[var(--space-4)] rounded-[var(--radius-app-lg)] p-[var(--space-4)] shadow-[var(--app-shadow-xs)]",
+          "bg-[var(--app-surface-muted)] ring-1 ring-[var(--app-border)]"
+        )}
       >
         {profile.photo_url ? (
-          <img
-            src={profile.photo_url}
-            alt=""
-            className="w-16 h-16 rounded-full object-cover"
-          />
+          <img src={profile.photo_url} alt="" className="size-16 shrink-0 rounded-full object-cover ring-2 ring-[color-mix(in_oklab,var(--tg-theme-hint-color)_20%,transparent)]" />
         ) : (
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+            className="flex size-16 shrink-0 items-center justify-center rounded-full text-xl font-bold"
             style={{ background: "var(--tg-theme-button-color)", color: "var(--tg-theme-button-text-color)" }}
           >
             {(profile.first_name?.[0] || "?").toUpperCase()}
           </div>
         )}
-        <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold truncate" style={{ color: "var(--tg-theme-text-color)" }}>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)] text-[var(--tg-theme-text-color)]">
             {isBlogger ? getFieldValue("full_name") : getFieldValue("company_name")}
-          </h1>
-          {profile.telegram_username && (
-            <p className="text-sm truncate" style={{ color: "var(--tg-theme-hint-color)" }}>
+          </p>
+          {profile.telegram_username ? (
+            <p className="mt-1 truncate text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
               @{profile.telegram_username}
             </p>
-          )}
+          ) : null}
         </div>
       </div>
 
-      <div className="space-y-2">
-        {config.fields.map((field) => (
-          <div key={field}>
-            <span className="text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
-              {fieldLabels[field] ?? field}:
-            </span>
-            <p style={{ color: "var(--tg-theme-text-color)" }}>{getFieldValue(field)}</p>
-          </div>
-        ))}
-      </div>
+      <Section title="Основное">
+        <div className="app-card divide-y divide-[var(--app-border)] overflow-hidden p-0">
+          {config.fields.map((field) => (
+            <div key={field} className="px-[var(--space-4)] py-[var(--space-4)] sm:px-[var(--space-5)]">
+              <p className="app-form-label">{fieldLabels[field] ?? field}</p>
+              <p className="mt-[var(--space-2)] text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)] text-[var(--tg-theme-text-color)]">
+                {getFieldValue(field)}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Section>
 
       {items.length > 0 && (
-        <div>
-          <h2 className="text-lg font-medium mb-3" style={{ color: "var(--tg-theme-text-color)" }}>
-            {isBlogger ? "Соцсети" : "Заказы"}
-          </h2>
-          <div className="space-y-3">
+        <Section title={isBlogger ? "Соцсети" : "Заказы"}>
+          <div className="flex flex-col gap-[var(--app-list-gap)]">
             {items.map((item) =>
               isBlogger ? (
                 <SocialCard
@@ -140,28 +156,25 @@ export function ProfileView({
               )
             )}
           </div>
-        </div>
+        </Section>
       )}
 
       {config.showReviews && (
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-medium" style={{ color: "var(--tg-theme-text-color)" }}>
-              Отзывы
-            </h2>
-            {!isOwnProfile && config.actions?.includes("write_review") && onWriteReview && (
+        <section className="flex flex-col gap-[var(--space-4)]">
+          <div className="flex items-center justify-between gap-[var(--space-3)]">
+            <h2 className="app-overline">Отзывы</h2>
+            {!isOwnProfile && config.actions?.includes("write_review") && onWriteReview ? (
               <button
                 type="button"
                 onClick={onWriteReview}
-                className="text-sm font-medium"
-                style={{ color: "var(--tg-theme-link-color)" }}
+                className="tap-compact shrink-0 text-[length:var(--text-caption)] font-semibold text-[var(--tg-theme-button-color)]"
               >
                 Написать отзыв
               </button>
-            )}
+            ) : null}
           </div>
           <ReviewList reviews={reviews} />
-        </div>
+        </section>
       )}
     </div>
   );

@@ -3,9 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AppTabBar } from "@/components/AppTabBar";
 import { isTabRoute } from "@/config/nav.config";
-
-/** Bottom tab bar height (approx.) + safe area. Match with Tabbar styling. */
-const TABBAR_HEIGHT = "64px";
+import { cn } from "@/lib/utils";
 
 export function MainShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,13 +12,14 @@ export function MainShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div
-        className="min-h-[100dvh] w-full overflow-x-hidden"
-        style={{
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: showTabBar ? `calc(${TABBAR_HEIGHT} + env(safe-area-inset-bottom))` : "env(safe-area-inset-bottom)",
-        }}
+        className={cn(
+          "relative flex min-h-[100dvh] w-full min-w-0 flex-col overflow-x-hidden",
+          showTabBar ? "pb-[var(--app-tabbar-total)]" : "pb-[max(1rem,env(safe-area-inset-bottom))]"
+        )}
       >
-        {children}
+        <div className="app-shell-gradient flex min-h-0 flex-1 flex-col">
+          {children}
+        </div>
       </div>
       <AppTabBar />
     </>

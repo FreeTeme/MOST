@@ -47,6 +47,7 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
               type="button"
               variant={platform === p ? "default" : "outline"}
               size="sm"
+              className="tap-compact min-h-10 rounded-full px-3.5"
               onClick={() => setPlatform(p)}
             >
               {p}
@@ -91,7 +92,16 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         )}
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="submit" size="lg" className="w-full min-h-11" disabled={loading}>
+      <Button
+        type="submit"
+        size="lg"
+        className="mt-2 h-12 w-full rounded-xl text-base font-semibold"
+        style={{
+          backgroundColor: "var(--tg-theme-button-color)",
+          color: "var(--tg-theme-button-text-color)",
+        }}
+        disabled={loading}
+      >
         {loading ? "Добавление…" : "Добавить соцсеть"}
       </Button>
     </form>

@@ -2,6 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ClipboardList, UserRound } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ApplicationWithOrder, ApplicationWithBlogger } from "@/types";
 import type { ApplicationCardVariant } from "@/types";
 
@@ -37,9 +39,11 @@ export function ApplicationCard({
   const blogger = "blogger" in application ? application.blogger : null;
 
   const title = isOutgoing
-    ? order?.title ?? "Заказ"
+    ? (order?.title ?? "Заказ")
     : blogger
-      ? blogger.full_name || [blogger.first_name, blogger.last_name].filter(Boolean).join(" ") || `@${blogger.telegram_username}`
+      ? blogger.full_name ||
+        [blogger.first_name, blogger.last_name].filter(Boolean).join(" ") ||
+        `@${blogger.telegram_username}`
       : "Блогер";
 
   const subtitle = isOutgoing
@@ -49,7 +53,7 @@ export function ApplicationCard({
         ? new Date(application.applied_at).toLocaleDateString("ru")
         : ""
     : application.message
-      ? application.message.slice(0, 80) + (application.message.length > 80 ? "…" : "")
+      ? `${application.message.slice(0, 80)}${application.message.length > 80 ? "…" : ""}`
       : new Date(application.applied_at).toLocaleDateString("ru");
 
   const handleClick = () => {
@@ -57,48 +61,65 @@ export function ApplicationCard({
     else if (!isOutgoing && blogger) onBloggerClick?.(blogger.telegram_id);
   };
 
+  const Icon = isOutgoing ? ClipboardList : UserRound;
+
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card className="app-motion overflow-hidden">
+      <CardContent>
         <div
-          className="flex items-start gap-3 cursor-pointer"
+          className={cn(
+            "flex cursor-pointer gap-[var(--space-3)] rounded-[var(--radius-app-sm)] outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--tg-theme-button-color)_35%,transparent)]",
+            "transition-transform duration-[var(--app-duration-fast)] active:scale-[0.985]"
+          )}
           onClick={handleClick}
           onKeyDown={(e) => e.key === "Enter" && handleClick()}
           role="button"
           tabIndex={0}
         >
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+            className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-app-md)]"
             style={{ background: "var(--tg-theme-secondary-bg-color, #f0f2f5)" }}
           >
-            {isOutgoing ? "📋" : "👤"}
+            <Icon className="size-5" style={{ color: "var(--tg-theme-button-color)" }} />
           </div>
-          <div className="flex-1 min-w-0 space-y-0.5">
-            <p className="font-medium" style={{ color: "var(--tg-theme-text-color)" }}>
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="text-[length:var(--text-body-sm)] font-semibold leading-[var(--text-body-sm--line)] text-[var(--tg-theme-text-color)]">
               {title}
-              {showStatus && (
-                <span className="ml-2 text-sm font-normal" style={{ color: "var(--tg-theme-hint-color, #999)" }}>
+              {showStatus ? (
+                <span className="ml-1 text-[length:var(--text-caption)] font-normal text-[var(--tg-theme-hint-color)]">
                   · {STATUS_LABELS[application.status] ?? application.status}
                 </span>
-              )}
+              ) : null}
             </p>
-            <p className="text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
+            <p className="text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
               {subtitle}
             </p>
           </div>
         </div>
         {actions.includes("accept") && application.status === "pending" && (
-          <div className="flex gap-2 mt-3">
+          <div className="mt-[var(--space-4)] flex flex-col gap-[var(--space-2)] sm:flex-row">
             <Button
-              size="sm"
-              onClick={() => onStatusChange?.(application.id, "accepted")}
+              type="button"
+              className="tap-compact h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
+              style={{
+                backgroundColor: "var(--tg-theme-button-color)",
+                color: "var(--tg-theme-button-text-color)",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStatusChange?.(application.id, "accepted");
+              }}
             >
               Принять
             </Button>
             <Button
-              size="sm"
+              type="button"
               variant="destructive"
-              onClick={() => onStatusChange?.(application.id, "rejected")}
+              className="tap-compact h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStatusChange?.(application.id, "rejected");
+              }}
             >
               Отклонить
             </Button>

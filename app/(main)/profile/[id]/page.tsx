@@ -10,6 +10,7 @@ import { ProfileView } from "@/components/shared/ProfileView";
 import { ReviewForm } from "@/components/forms/ReviewForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function PublicProfilePage() {
@@ -19,15 +20,11 @@ export default function PublicProfilePage() {
   const telegramId = id ? Number(id) : undefined;
   const { role } = useRole();
   const { isAuthenticated, loading: authLoading } = useTelegramAuth();
-  const { profile, items, reviews, loading, config, isOwnProfile, refetch } =
-    useProfile(telegramId);
-  const { submitReview, loading: reviewLoading, error: reviewError } = useReview(
-    telegramId,
-    () => {
-      setShowReviewForm(false);
-      refetch();
-    }
-  );
+  const { profile, items, reviews, loading, config, isOwnProfile, refetch } = useProfile(telegramId);
+  const { submitReview, loading: reviewLoading, error: reviewError } = useReview(telegramId, () => {
+    setShowReviewForm(false);
+    refetch();
+  });
   const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
@@ -42,54 +39,72 @@ export default function PublicProfilePage() {
 
   if (loading && !profile) {
     return (
-      <div className="flex justify-center py-12">
-        <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="flex flex-1 flex-col items-center justify-center py-16">
+        <Skeleton className="size-14 rounded-full" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="p-4">
-        <p style={{ color: "var(--tg-theme-hint-color)" }}>Профиль не найден</p>
-      </div>
+      <MobileScreen className="pt-4">
+        <p className="text-sm text-[var(--tg-theme-hint-color)]">Профиль не найден</p>
+      </MobileScreen>
     );
   }
 
-  const profileConfig = config ?? (profile.user_type === "blogger"
-    ? { title: "Профиль блогера", fields: ["full_name", "bio"], card: "SocialCard", cardVariant: "detailed", canEdit: false, showReviews: true, actions: ["write_review"] }
-    : { title: "Профиль компании", fields: ["company_name", "category"], card: "OrderCard", cardVariant: "detailed", canEdit: false, showReviews: true, actions: ["write_review"] });
+  const profileConfig =
+    config ??
+    (profile.user_type === "blogger"
+      ? {
+          title: "Профиль блогера",
+          fields: ["full_name", "bio"],
+          card: "SocialCard",
+          cardVariant: "detailed",
+          canEdit: false,
+          showReviews: true,
+          actions: ["write_review"],
+        }
+      : {
+          title: "Профиль компании",
+          fields: ["company_name", "category"],
+          card: "OrderCard",
+          cardVariant: "detailed",
+          canEdit: false,
+          showReviews: true,
+          actions: ["write_review"],
+        });
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <h1 className="text-xl font-bold mb-4" style={{ color: "var(--tg-theme-text-color)" }}>
-        {profileConfig.title}
-      </h1>
-      {showReviewForm ? (
-        <Card>
-          <CardContent className="pt-6">
-          <ReviewForm
-            onSubmit={submitReview}
-            loading={reviewLoading}
-            error={reviewError}
-            onCancel={() => setShowReviewForm(false)}
+    <div className="flex min-h-0 flex-1 flex-col">
+      <MobileScreen className="pt-2">
+        <ScreenHeader title={profileConfig.title} size="medium" />
+        {showReviewForm ? (
+          <Card className="overflow-hidden">
+            <CardContent>
+              <ReviewForm
+                onSubmit={submitReview}
+                loading={reviewLoading}
+                error={reviewError}
+                onCancel={() => setShowReviewForm(false)}
+              />
+            </CardContent>
+          </Card>
+        ) : (
+          <ProfileView
+            profile={profile}
+            items={items}
+            reviews={reviews}
+            config={profileConfig}
+            isOwnProfile={isOwnProfile}
+            onWriteReview={
+              !isOwnProfile && profileConfig.actions?.includes("write_review")
+                ? () => setShowReviewForm(true)
+                : undefined
+            }
           />
-          </CardContent>
-        </Card>
-      ) : (
-        <ProfileView
-          profile={profile}
-          items={items}
-          reviews={reviews}
-          config={profileConfig}
-          isOwnProfile={isOwnProfile}
-          onWriteReview={
-            !isOwnProfile && profileConfig.actions?.includes("write_review")
-              ? () => setShowReviewForm(true)
-              : undefined
-          }
-        />
-      )}
+        )}
+      </MobileScreen>
     </div>
   );
 }

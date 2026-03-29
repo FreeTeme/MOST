@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Order, User } from "@/types";
 import type { OrderCardVariant } from "@/types";
 
@@ -24,6 +25,11 @@ function formatBudget(order: Order): string {
   return "—";
 }
 
+const ctaStyle = {
+  backgroundColor: "var(--tg-theme-button-color)",
+  color: "var(--tg-theme-button-text-color)",
+} as const;
+
 export function OrderCard({
   order,
   client,
@@ -40,59 +46,84 @@ export function OrderCard({
         ? `${order.category} · ${formatBudget(order)}`
         : `${order.category} · ${formatBudget(order)}`;
 
+  const isPressable = variant !== "editable" && !!onClick;
+
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card
+      className={cn(
+        "app-motion overflow-hidden transition-[transform,box-shadow] duration-[var(--app-duration-fast)]",
+        isPressable && "cursor-pointer active:scale-[0.985]"
+      )}
+    >
+      <CardContent>
         <div
-          className={`flex items-start gap-3 ${variant !== "editable" ? "cursor-pointer" : ""}`}
-          onClick={variant !== "editable" ? onClick : undefined}
+          className={cn(
+            "flex gap-[var(--space-3)]",
+            isPressable &&
+              "rounded-[var(--radius-app-sm)] outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--tg-theme-button-color)_35%,transparent)]"
+          )}
+          onClick={isPressable ? onClick : undefined}
           onKeyDown={
-            variant !== "editable" && onClick
-              ? (e) => e.key === "Enter" && onClick()
-              : undefined
+            isPressable && onClick ? (e) => e.key === "Enter" && onClick() : undefined
           }
-          role={variant !== "editable" ? "button" : undefined}
-          tabIndex={variant !== "editable" ? 0 : undefined}
+          role={isPressable ? "button" : undefined}
+          tabIndex={isPressable ? 0 : undefined}
         >
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-app-md)]"
             style={{ background: "var(--tg-theme-secondary-bg-color, #f0f2f5)" }}
           >
             <FileText className="size-5" style={{ color: "var(--tg-theme-button-color)" }} />
           </div>
-          <div className="flex-1 min-w-0 space-y-0.5">
-            <p className="font-medium" style={{ color: "var(--tg-theme-text-color)" }}>
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="text-[length:var(--text-body-sm)] font-semibold leading-[var(--text-body-sm--line)] text-[var(--tg-theme-text-color)]">
               {order.title}
             </p>
-            <p className="text-sm" style={{ color: "var(--tg-theme-hint-color)" }}>
+            <p className="text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
               {subtitle}
             </p>
             {variant === "detailed" && order.description && (
-              <p className="text-sm mt-2 block" style={{ color: "var(--tg-theme-hint-color)" }}>
-                {order.description}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--tg-theme-hint-color)]">{order.description}</p>
             )}
             {variant === "detailed" && client && (
-              <p className="text-sm mt-1 block" style={{ color: "var(--tg-theme-hint-color)" }}>
+              <p className="mt-1 text-sm text-[var(--tg-theme-hint-color)]">
                 Заказчик: {client.company_name || client.full_name || "—"}
               </p>
             )}
           </div>
         </div>
         {variant === "compact" && onApply && (
-          <Button size="sm" className="w-full mt-3" onClick={onApply}>
+          <Button
+            size="sm"
+            className="tap-compact mt-[var(--space-4)] h-12 w-full rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
+            style={ctaStyle}
+            onClick={(e) => {
+              e.stopPropagation();
+              onApply();
+            }}
+          >
             Откликнуться
           </Button>
         )}
         {variant === "editable" && (onEdit || onClose) && (
-          <div className="flex gap-2 mt-3">
+          <div className="mt-[var(--space-4)] flex flex-col gap-[var(--space-2)] sm:flex-row">
             {onEdit && (
-              <Button size="sm" variant="outline" onClick={onEdit}>
+              <Button
+                type="button"
+                variant="outline"
+                className="tap-compact h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)]"
+                onClick={onEdit}
+              >
                 Изменить
               </Button>
             )}
             {onClose && (
-              <Button size="sm" variant="destructive" onClick={onClose}>
+              <Button
+                type="button"
+                variant="destructive"
+                className="tap-compact h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)]"
+                onClick={onClose}
+              >
                 Закрыть
               </Button>
             )}

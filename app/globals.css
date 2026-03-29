@@ -8,6 +8,69 @@
 @tailwind utilities;
 
 :root {
+  /* ─── 8pt grid (Material / iOS spacing rhythm) ─── */
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.25rem; /* 20 — типичный боковой отступ экрана */
+  --space-6: 1.5rem; /* 24 */
+  --space-8: 2rem; /* 32 */
+  --space-10: 2.5rem; /* 40 */
+  --app-page-gutter: var(--space-5);
+  --app-section-gap: var(--space-6);
+  --app-list-gap: var(--space-3);
+  --app-fab-clearance: 5.5rem;
+
+  /* ─── Типографика (mobile-first, читаемые интервалы строк) ─── */
+  --text-display: 1.75rem; /* 28 / ~34 */
+  --text-display--line: 2.125rem;
+  --text-title: 1.375rem; /* 22 / 28 */
+  --text-title--line: 1.75rem;
+  --text-body: 1rem; /* 16 / 24 */
+  --text-body--line: 1.5rem;
+  --text-body-sm: 0.9375rem; /* 15 / 22 */
+  --text-body-sm--line: 1.375rem;
+  --text-caption: 0.8125rem; /* 13 */
+  --text-caption--line: 1.125rem;
+  --text-overline: 0.6875rem; /* 11 */
+  --text-overline--line: 1rem;
+  --tracking-display: -0.022em;
+  --tracking-title: -0.018em;
+  --tracking-overline: 0.08em;
+
+  /* ─── Радиусы (согласованная шкала) ─── */
+  --radius-app-xs: 0.625rem; /* 10 */
+  --radius-app-sm: 0.75rem; /* 12 */
+  --radius-app-md: 1rem; /* 16 */
+  --radius-app-lg: 1.25rem; /* 20 */
+  --radius-app-xl: 1.5rem; /* 24 */
+  --radius-app-pill: 624.9375rem;
+
+  /* ─── Поверхности и обводки (на базе Telegram theme) ─── */
+  --app-border: color-mix(in oklab, var(--tg-theme-hint-color) 26%, var(--tg-theme-bg-color));
+  --app-border-strong: color-mix(in oklab, var(--tg-theme-hint-color) 38%, var(--tg-theme-bg-color));
+  --app-surface-elevated: color-mix(in oklab, var(--tg-theme-secondary-bg-color) 48%, var(--tg-theme-bg-color));
+  --app-surface-card: color-mix(in oklab, var(--tg-theme-bg-color) 97%, var(--tg-theme-text-color));
+  --app-surface-muted: color-mix(in oklab, var(--tg-theme-secondary-bg-color) 58%, var(--tg-theme-bg-color));
+
+  /* ─── Тени (мягкая «лестница», цвет от темы) ─── */
+  --app-shadow-xs: 0 1px 0 color-mix(in oklab, var(--tg-theme-text-color) 5%, transparent);
+  --app-shadow-sm: var(--app-shadow-xs), 0 6px 16px -6px color-mix(in oklab, var(--tg-theme-text-color) 9%, transparent);
+  --app-shadow-md: var(--app-shadow-xs), 0 12px 28px -8px color-mix(in oklab, var(--tg-theme-text-color) 11%, transparent);
+  --app-shadow-fab: 0 4px 16px color-mix(in oklab, var(--tg-theme-text-color) 16%, transparent),
+    0 2px 6px color-mix(in oklab, var(--tg-theme-text-color) 10%, transparent);
+  --app-shadow-sheet: 0 -8px 40px -12px color-mix(in oklab, var(--tg-theme-text-color) 14%, transparent);
+
+  /* ─── Motion (ease as in Material) ─── */
+  --app-duration: 220ms;
+  --app-duration-fast: 140ms;
+  --app-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --app-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Bottom nav chrome: top pad + row + bottom pad (min 8px; overlaps safe-area inside fixed bar) */
+  --app-tabbar-total: calc(8px + 52px + max(8px, env(safe-area-inset-bottom)));
+
   /* Fallbacks when not in Telegram; Telegram ThemeProvider overwrites these */
   --tg-theme-bg-color: #ffffff;
   --tg-theme-text-color: #000000;
@@ -68,6 +131,11 @@ body {
   overflow-x: hidden;
   background: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line);
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Safe area for notches and home indicator (iOS/Android) */
@@ -78,17 +146,132 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
-/* Mobile: comfortable tap targets (44px min) */
-button,
-a,
-[role="button"] {
+/* Primary tap targets (WCAG / Apple HIG); dense controls use .tap-compact */
+button:not(.tap-compact),
+a:not(.tap-compact),
+[role="button"]:not(.tap-compact) {
   min-height: 44px;
   min-width: 44px;
 }
 
-/* Smooth transitions */
+button.tap-compact,
+a.tap-compact {
+  min-height: revert-layer;
+  min-width: revert-layer;
+}
+
+/* Smooth transitions — длительность из токенов */
 .transition-all {
-  transition: all 0.2s ease;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow,
+    transform;
+  transition-duration: var(--app-duration);
+  transition-timing-function: var(--app-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .transition-all,
+  .app-motion {
+    transition-duration: 0.01ms !important;
+  }
+  .app-sheet-panel {
+    animation: none !important;
+  }
+}
+
+@keyframes app-sheet-enter {
+  from {
+    transform: translate3d(0, 12px, 0);
+    opacity: 0.96;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.app-sheet-panel {
+  animation: app-sheet-enter var(--app-duration) var(--app-ease-emphasized) both;
+}
+
+@layer components {
+  .app-title-display {
+    font-size: var(--text-display);
+    line-height: var(--text-display--line);
+    letter-spacing: var(--tracking-display);
+    font-weight: 700;
+    color: var(--tg-theme-text-color);
+    text-wrap: balance;
+  }
+
+  .app-title-screen {
+    font-size: var(--text-title);
+    line-height: var(--text-title--line);
+    letter-spacing: var(--tracking-title);
+    font-weight: 700;
+    color: var(--tg-theme-text-color);
+  }
+
+  .app-subtitle {
+    margin-top: var(--space-2);
+    max-width: 38rem;
+    font-size: var(--text-body-sm);
+    line-height: var(--text-body-sm--line);
+    color: var(--tg-theme-hint-color);
+    text-wrap: pretty;
+  }
+
+  .app-overline {
+    font-size: var(--text-overline);
+    line-height: var(--text-overline--line);
+    letter-spacing: var(--tracking-overline);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--tg-theme-hint-color) 88%, var(--tg-theme-text-color));
+  }
+
+  .app-form-label {
+    font-size: var(--text-caption);
+    line-height: var(--text-caption--line);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: color-mix(in oklab, var(--tg-theme-hint-color) 85%, var(--tg-theme-text-color));
+  }
+
+  .app-card {
+    border-radius: var(--radius-app-md);
+    border: 1px solid var(--app-border);
+    background: var(--app-surface-card);
+    box-shadow: var(--app-shadow-sm);
+  }
+
+  .app-field {
+    min-height: 3rem;
+    border-radius: var(--radius-app-sm);
+    border: 1px solid var(--app-border);
+    background: var(--app-surface-elevated);
+    font-size: var(--text-body-sm);
+    line-height: var(--text-body-sm--line);
+    transition: border-color var(--app-duration-fast) var(--app-ease-standard),
+      box-shadow var(--app-duration-fast) var(--app-ease-standard);
+  }
+
+  .app-field:focus-visible {
+    outline: none;
+    border-color: color-mix(in oklab, var(--tg-theme-button-color) 45%, var(--app-border));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--tg-theme-button-color) 22%, transparent);
+  }
+
+  .app-shell-gradient {
+    background: linear-gradient(
+      180deg,
+      var(--tg-theme-bg-color) 0%,
+      var(--tg-theme-bg-color) 52%,
+      color-mix(in oklab, var(--tg-theme-secondary-bg-color) 32%, var(--tg-theme-bg-color)) 100%
+    );
+  }
 }
 
 /* Override Next.js dev portal position (persisted from browser preview) */
@@ -175,8 +358,5 @@ nextjs-portal {
 @layer base {
   * {
     @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

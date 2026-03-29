@@ -6,6 +6,8 @@ import { useRole } from "@/hooks/useRole";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useCreateSocial } from "@/hooks/useCreateSocial";
 import { SocialForm } from "@/components/forms/SocialForm";
+import { Card, CardContent } from "@/components/ui/card";
+import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function NewSocialPage() {
@@ -26,11 +28,19 @@ export default function NewSocialPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <h1 className="text-xl font-bold mb-4" style={{ color: "var(--tg-theme-text-color)" }}>
-        Добавление соцсети
-      </h1>
-      <SocialForm onSubmit={createSocial} loading={loading} error={error} />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <MobileScreen className="pt-2">
+        <ScreenHeader
+          title="Новая соцсеть"
+          description="Укажите площадку и ссылку — заказчики смогут найти вас в поиске"
+          size="medium"
+        />
+        <Card className="overflow-hidden">
+          <CardContent>
+            <SocialForm onSubmit={createSocial} loading={loading} error={error} />
+          </CardContent>
+        </Card>
+      </MobileScreen>
     </div>
   );
 }
