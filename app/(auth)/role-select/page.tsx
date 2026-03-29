@@ -99,8 +99,8 @@ export default function RoleSelectPage() {
             <Skeleton className="mx-auto h-4 w-64 rounded-md" />
           </div>
           <div className="flex flex-1 flex-col gap-4">
-            <Skeleton className="h-56 w-full rounded-2xl" />
-            <Skeleton className="h-56 w-full rounded-2xl" />
+            <Skeleton className="h-80 w-full rounded-2xl" />
+            <Skeleton className="h-80 w-full rounded-2xl" />
           </div>
         </MobileScreen>
       </div>
@@ -191,10 +191,10 @@ export default function RoleSelectPage() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardFooter className="px-[var(--space-4)] pb-[var(--space-4)] pt-0">
+                <CardFooter className="px-0 pb-0 pt-0 sm:px-0">
                   <div
                     aria-hidden
-                    className="flex h-12 min-h-12 w-full items-center justify-center rounded-[var(--radius-app-sm)] text-[length:var(--text-body-sm)] font-semibold"
+                    className="role-select-cta-bar"
                     style={{
                       backgroundColor: "var(--tg-theme-button-color)",
                       color: "var(--tg-theme-button-text-color)",
