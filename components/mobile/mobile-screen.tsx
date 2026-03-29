@@ -1,20 +1,27 @@
 import { cn } from "@/lib/utils";
 
+export type MobileScreenWidth = "column" | "full";
+
 interface MobileScreenProps {
   children: React.ReactNode;
   className?: string;
+  /**
+   * - **column** (по умолчанию): `max-w-[var(--app-content-max)]` + `mx-auto` + горизонтальные поля
+   *   `--app-page-gutter` — удобная ширина строки и отступ от краёв.
+   * - **full**: на всю ширину `main` (без искусственного сужения). Вертикальные/горизонтальные
+   *   safe-area уже заданы на `.app-root` в `layout.tsx`.
+   */
+  width?: MobileScreenWidth;
 }
 
-/**
- * Основная колонка приложения: **mobile-first**, на `md`/`lg` шире за счёт
- * `var(--app-content-max)` и `var(--app-page-gutter)` в `globals.css`.
- * Для нескольких колонок на широких экранах используйте `grid` / `.app-grid-responsive-cols`.
- */
-export function MobileScreen({ children, className }: MobileScreenProps) {
+export function MobileScreen({ children, className, width = "column" }: MobileScreenProps) {
   return (
     <div
       className={cn(
-        "mx-auto flex w-full min-w-0 max-w-[var(--app-content-max)] flex-1 flex-col px-[var(--app-page-gutter)]",
+        "flex min-w-0 flex-1 flex-col",
+        width === "full"
+          ? "mx-0 w-full max-w-none px-0"
+          : "mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)]",
         className
       )}
     >

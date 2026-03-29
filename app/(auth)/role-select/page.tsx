@@ -93,7 +93,7 @@ export default function RoleSelectPage() {
         className="flex min-h-[100dvh] flex-col bg-[var(--tg-theme-bg-color)] text-[var(--tg-theme-text-color)]"
         style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
       >
-        <MobileScreen className="flex flex-1 flex-col gap-6 pt-4">
+        <MobileScreen width="full" className="flex flex-1 flex-col gap-6 pt-4">
           <div className="space-y-3 text-center">
             <Skeleton className="mx-auto h-9 w-52 rounded-xl" />
             <Skeleton className="mx-auto h-4 w-64 rounded-md" />
@@ -133,7 +133,10 @@ export default function RoleSelectPage() {
       className="app-shell-gradient flex min-h-[100dvh] flex-col text-[var(--tg-theme-text-color)]"
       style={{ paddingTop: "max(var(--space-2), env(safe-area-inset-top))" }}
     >
-      <MobileScreen className="flex flex-1 flex-col pb-[max(var(--space-4),env(safe-area-inset-bottom))]">
+      <MobileScreen
+        width="full"
+        className="flex flex-1 flex-col pb-[max(var(--space-4),env(safe-area-inset-bottom))]"
+      >
         <header className="shrink-0 pb-[var(--space-2)] pt-[var(--space-1)] text-center">
           <h1 className="app-title-display">Кто вы?</h1>
         </header>

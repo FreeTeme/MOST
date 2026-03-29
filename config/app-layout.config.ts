@@ -8,6 +8,9 @@
  * Светлая/тёмная тема: `ThemeProvider` подставляет `--tg-theme-*` из Telegram и `themeChanged`;
  * shadcn-токены (`--background`, `--foreground`, …) в `globals.css` считаются от них.
  *
+ * `MobileScreen`: по умолчанию `width="column"` (узкая колонка + поля). Для кромки экрана —
+ * `width="full"` (без `max-w` и без горизонтальных полей компонента; safe-area на `.app-root`).
+ *
  * Брейкпоинты совпадают с Tailwind: `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px.
  * Для сеток в разметке предпочтительны `md:grid-cols-2` или класс `.app-grid-responsive-cols`.
  */
