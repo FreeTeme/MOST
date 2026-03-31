@@ -8,6 +8,9 @@
  * Светлая/тёмная тема: `ThemeProvider` подставляет `--tg-theme-*` из Telegram и `themeChanged`;
  * shadcn-токены (`--background`, `--foreground`, …) в `globals.css` считаются от них.
  *
+ * Визуальный слой референса (фаза A): `--app-canvas`, `--app-gradient-primary`, `--radius-app-card`,
+ * утилиты `.app-btn-primary-gradient`, `.app-chip`, `.app-pill-input`, `.app-card-elevated`.
+ *
  * `MobileScreen`: по умолчанию `width="column"` (узкая колонка + поля). Для кромки экрана —
  * `width="full"` (без `max-w` и без горизонтальных полей компонента; safe-area на `.app-root`).
  *
