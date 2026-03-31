@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { emojiForSocialPlatform } from "@/config/card-display.config";
 import { ORDER_CATEGORIES, BLOGGER_PLATFORMS } from "@/config/search-ui.config";
 import { cn } from "@/lib/utils";
 import type { UserType } from "@/types";
@@ -104,6 +105,69 @@ export function SearchFiltersToolbar({
             <SlidersHorizontal className={cn("size-[1.25rem]", sheetOpen && "rotate-90")} strokeWidth={2} aria-hidden />
           </button>
         </div>
+      </div>
+
+      <div
+        className={cn(
+          "mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto pb-0.5",
+          "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        )}
+        role="toolbar"
+        aria-label={isOrders ? "Быстрый фильтр по бюджету" : "Быстрый фильтр по платформе"}
+      >
+        {isOrders ? (
+          (
+            [
+              { id: "all" as const, label: "Все" },
+              { id: "money" as const, label: "Деньги" },
+              { id: "barter" as const, label: "Бартер" },
+            ] as const
+          ).map(({ id, label }) => {
+            const active = (filters.budgetType ?? "all") === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                className="app-chip shrink-0"
+                aria-pressed={active}
+                onClick={() =>
+                  patch({
+                    budgetType: id,
+                    ...(id === "barter" ? { budgetMin: "" } : {}),
+                  })
+                }
+              >
+                {label}
+              </button>
+            );
+          })
+        ) : (
+          <>
+            <button
+              type="button"
+              className="app-chip shrink-0"
+              aria-pressed={!filters.platform}
+              onClick={() => patch({ platform: "" })}
+            >
+              Все
+            </button>
+            {(["Instagram", "TikTok", "YouTube", "Telegram"] as const).map((p) => {
+              const active = filters.platform === p;
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  className="app-chip shrink-0 gap-[var(--space-1)]"
+                  aria-pressed={active}
+                  onClick={() => patch({ platform: p })}
+                >
+                  <span aria-hidden>{emojiForSocialPlatform(p)}</span>
+                  {p}
+                </button>
+              );
+            })}
+          </>
+        )}
       </div>
 
       {sheetOpen ? (

@@ -90,8 +90,11 @@
   --app-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --app-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Bottom nav chrome: top pad + row + bottom pad (min 8px; overlaps safe-area inside fixed bar) */
-  --app-tabbar-total: calc(8px + 52px + max(8px, env(safe-area-inset-bottom)));
+  /* Плавающий tab bar (фаза B): отступ сверху + высота капсулы + зазор/safe-area снизу */
+  --app-tabbar-pill-h: 3.5rem;
+  --app-tabbar-total: calc(
+    var(--space-2) + var(--app-tabbar-pill-h) + max(var(--space-3), env(safe-area-inset-bottom))
+  );
 
   /* Fallbacks when not in Telegram; Telegram ThemeProvider overwrites these */
   --tg-theme-bg-color: #ffffff;
@@ -453,6 +456,13 @@ a.tap-compact {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-6);
     }
+  }
+
+  /** Активная вкладка внутри плавающего tab bar (градиент как в референсе) */
+  .app-tabbar-active-slot {
+    background: var(--app-gradient-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 12px color-mix(in oklab, var(--app-gradient-rose) 38%, transparent);
   }
 }
 

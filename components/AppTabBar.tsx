@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Inbox, LayoutList, Search, UserRound } from "lucide-react";
 import { useRole } from "@/hooks/useRole";
@@ -21,6 +22,8 @@ const TAB_ICONS: Record<
   "/profile/me": UserRound,
 };
 
+const PROFILE_TAB_ID = "/profile/me" satisfies TabId;
+
 export function AppTabBar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -34,49 +37,81 @@ export function AppTabBar() {
   const tabs = getTabsForRole(effectiveRole);
   if (tabs.length === 0) return null;
 
+  const railTabs = tabs.filter((t) => t.id !== PROFILE_TAB_ID);
+  const profileActive = pathname === PROFILE_TAB_ID;
+
   return (
     <nav
-      className={cn(
-        "app-motion fixed bottom-0 left-0 right-0 z-[1000]",
-        "border-t border-[var(--app-border)]",
-        "bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_86%,transparent)] backdrop-blur-2xl supports-[backdrop-filter]:bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_72%,transparent)]",
-        "shadow-[0_-1px_0_var(--app-border)]"
-      )}
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[1000]"
       style={{
-        paddingBottom: "max(var(--space-2), env(safe-area-inset-bottom))",
         paddingTop: "var(--space-2)",
+        paddingBottom: "max(var(--space-3), env(safe-area-inset-bottom))",
+        paddingInline: "var(--app-page-gutter)",
       }}
       aria-label="Основные разделы"
     >
-      <div className="mx-auto flex min-h-[52px] max-w-[var(--app-content-max)] items-stretch justify-between gap-1 px-[var(--app-page-gutter)]">
-        {tabs.map((tab) => {
-          const selected = pathname === tab.path;
-          const Icon = TAB_ICONS[tab.id];
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => {
-                if (!selected) router.push(tab.path);
-              }}
-              aria-current={selected ? "page" : undefined}
-              className={cn(
-                "app-motion flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-[var(--radius-app-md)] border-0 px-1",
-                "transition-[color,background-color,transform] duration-[var(--app-duration-fast)]",
-                selected
-                  ? "bg-[color-mix(in_oklab,var(--tg-theme-button-color)_16%,transparent)] text-[var(--tg-theme-button-color)] shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--tg-theme-button-color)_22%,transparent)]"
-                  : "bg-transparent text-[color-mix(in_oklab,var(--tg-theme-hint-color)_88%,var(--tg-theme-text-color))] active:scale-[0.97] active:bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_10%,transparent)]"
-              )}
-            >
-              {Icon ? (
-                <Icon className={ICON_CLASS} strokeWidth={selected ? 2.25 : 2} aria-hidden />
-              ) : null}
-              <span className="max-w-full truncate text-center text-[length:var(--text-caption)] font-semibold leading-tight tracking-[0.02em]">
-                {tab.label}
-              </span>
-            </button>
-          );
-        })}
+      <div className="pointer-events-auto mx-auto flex max-w-[var(--app-content-max)] items-center justify-center gap-[var(--space-3)]">
+        <div
+          className={cn(
+            "flex min-h-[var(--app-tabbar-pill-h)] min-w-0 flex-1 items-stretch",
+            "rounded-[var(--radius-app-pill)] border border-[var(--app-border)]",
+            "bg-[color-mix(in_oklab,var(--app-surface-card)_94%,transparent)]",
+            "shadow-[var(--app-shadow-card)] backdrop-blur-xl",
+            "supports-[backdrop-filter]:bg-[color-mix(in_oklab,var(--app-surface-card)_88%,transparent)]",
+            "px-1 py-1"
+          )}
+        >
+          {railTabs.map((tab) => {
+            const selected = pathname === tab.path;
+            const Icon = TAB_ICONS[tab.id];
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  if (!selected) router.push(tab.path);
+                }}
+                aria-current={selected ? "page" : undefined}
+                className={cn(
+                  "app-motion flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5",
+                  "rounded-[var(--radius-app-pill)] border-0 px-0.5 py-1",
+                  "transition-[color,background-color,transform,box-shadow] duration-[var(--app-duration-fast)]",
+                  selected
+                    ? "app-tabbar-active-slot"
+                    : "bg-transparent text-[color-mix(in_oklab,var(--tg-theme-hint-color)_88%,var(--tg-theme-text-color))] active:scale-[0.97] active:bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_8%,transparent)]"
+                )}
+              >
+                {Icon ? (
+                  <Icon className={ICON_CLASS} strokeWidth={selected ? 2.25 : 2} aria-hidden />
+                ) : null}
+                <span className="max-w-full truncate text-center text-[length:var(--text-caption)] font-semibold leading-tight tracking-[0.02em]">
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <Link
+          href={PROFILE_TAB_ID}
+          aria-label="Профиль"
+          aria-current={profileActive ? "page" : undefined}
+          className={cn(
+            "tap-compact app-motion flex size-[var(--app-tabbar-pill-h)] shrink-0 items-center justify-center overflow-hidden",
+            "rounded-[var(--radius-app-pill)] border border-[var(--app-border)]",
+            "bg-[var(--app-surface-card)] shadow-[var(--app-shadow-sm)]",
+            "transition-[transform,box-shadow] duration-[var(--app-duration-fast)] active:scale-[0.97]",
+            profileActive &&
+              "ring-2 ring-[color-mix(in_oklab,var(--app-gradient-peach)_65%,transparent)] ring-offset-2 ring-offset-[var(--app-canvas)]"
+          )}
+        >
+          {dbUser?.photo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element -- внешний URL Telegram без доменов в next.config
+            <img src={dbUser.photo_url} alt="" className="size-full object-cover" />
+          ) : (
+            <UserRound className="size-[1.35rem] text-[var(--tg-theme-hint-color)]" strokeWidth={2} aria-hidden />
+          )}
+        </Link>
       </div>
     </nav>
   );
