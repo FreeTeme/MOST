@@ -32,6 +32,28 @@ function parsePositiveInt(s: string): number | null {
   return n;
 }
 
+/** Читаемое сообщение для PostgREST/Supabase и прочих ошибок (в console часто видно `{}` из‑за полей объекта). */
+function describeFetchError(err: unknown): string {
+  if (err == null) return String(err);
+  if (typeof err !== "object") return String(err);
+  const e = err as { message?: unknown; code?: unknown; details?: unknown; hint?: unknown };
+  const parts = [
+    e.message != null && String(e.message),
+    e.code != null && `code=${String(e.code)}`,
+    e.details != null && String(e.details),
+    e.hint != null && String(e.hint),
+  ].filter(Boolean);
+  if (parts.length) return parts.join(" | ");
+  if (err instanceof Error && err.message) return err.message;
+  try {
+    const s = JSON.stringify(err);
+    if (s !== "{}") return s;
+  } catch {
+    /* ignore */
+  }
+  return Object.prototype.toString.call(err);
+}
+
 function hasActiveFilters(role: UserType | null, filters: Record<string, string>): boolean {
   if (!role) return false;
   if (role === "blogger") {
@@ -75,6 +97,17 @@ export function useSearch() {
 
     setLoading(true);
     try {
+      if (
+        !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+      ) {
+        console.error(
+          "Search: задайте NEXT_PUBLIC_SUPABASE_URL и NEXT_PUBLIC_SUPABASE_ANON_KEY в .env"
+        );
+        setItems([]);
+        return;
+      }
+
       if (config.query === "orders") {
         let q = supabase.from(TABLES.orders).select("*").eq("status", "active");
 
@@ -129,7 +162,7 @@ export function useSearch() {
         setItems((data as SocialAccount[]) ?? []);
       }
     } catch (err) {
-      console.error("Search error:", err);
+      console.error("Search error:", describeFetchError(err), err);
       setItems([]);
     } finally {
       setLoading(false);

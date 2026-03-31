@@ -44,10 +44,16 @@ export function SearchFiltersToolbar({
 
   return (
     <>
-      <div className="mb-[var(--app-section-gap)]">
-        <div className="relative">
+      <div className="mb-[var(--space-4)]">
+        <div
+          className={cn(
+            "flex min-h-[3rem] w-full min-w-0 items-center gap-1 rounded-[var(--radius-app-md)] border border-[var(--app-border)]",
+            "bg-[var(--app-surface-elevated)] pl-[var(--space-2)] pr-[var(--space-1)] shadow-[var(--app-shadow-xs)]"
+          )}
+          role="search"
+        >
           <Search
-            className="pointer-events-none absolute left-[var(--space-3)] top-1/2 size-[1.125rem] -translate-y-1/2 text-[var(--tg-theme-hint-color)]"
+            className="pointer-events-none size-[1.125rem] shrink-0 text-[var(--tg-theme-hint-color)]"
             strokeWidth={2}
             aria-hidden
           />
@@ -55,11 +61,14 @@ export function SearchFiltersToolbar({
             type="search"
             enterKeyHint="search"
             autoComplete="off"
-            placeholder={isOrders ? "Поиск по названию или описанию…" : "Поиск по платформе, нише, ссылке…"}
+            placeholder={isOrders ? "Название или описание…" : "Платформа, ниша, ссылка…"}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className={cn(
-              "min-h-[3rem] rounded-[var(--radius-app-md)] pl-10 pr-11 text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)]"
+              "app-field border-0 bg-transparent shadow-none",
+              "min-h-0 flex-1 rounded-none py-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-1)]",
+              "text-[length:var(--text-body)] leading-[var(--text-body--line)]",
+              "focus-visible:border-transparent focus-visible:shadow-none focus-visible:ring-0"
             )}
             aria-label="Поиск"
           />
@@ -67,37 +76,35 @@ export function SearchFiltersToolbar({
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="tap-compact app-motion absolute right-[var(--space-1)] top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-[var(--radius-app-sm)] text-[var(--tg-theme-hint-color)] transition-colors hover:bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_10%,transparent)]"
+              className="tap-compact app-motion flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-app-sm)] text-[var(--tg-theme-hint-color)] transition-colors hover:bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_10%,transparent)]"
               aria-label="Очистить поиск"
             >
               <X className="size-4" strokeWidth={2} />
             </button>
           ) : null}
+          <button
+            type="button"
+            onClick={() => setSheetOpen((o) => !o)}
+            aria-expanded={sheetOpen}
+            aria-controls={sheetOpen ? titleId : undefined}
+            className={cn(
+              "tap-compact app-motion relative flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-app-sm)]",
+              "border border-[color-mix(in_oklab,var(--tg-theme-text-color)_10%,transparent)]",
+              "text-[var(--tg-theme-button-text-color)] transition-[transform,box-shadow] duration-[var(--app-duration)] active:scale-95"
+            )}
+            style={{ backgroundColor: "var(--tg-theme-button-color)" }}
+            aria-label={sheetOpen ? "Закрыть фильтры" : "Фильтры"}
+          >
+            {hasActiveUi ? (
+              <span
+                className="absolute right-1.5 top-1.5 size-2 rounded-full bg-[var(--tg-theme-button-text-color)] ring-2 ring-[var(--tg-theme-button-color)]"
+                aria-hidden
+              />
+            ) : null}
+            <SlidersHorizontal className={cn("size-[1.25rem]", sheetOpen && "rotate-90")} strokeWidth={2} aria-hidden />
+          </button>
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setSheetOpen((o) => !o)}
-        aria-expanded={sheetOpen}
-        aria-controls={sheetOpen ? titleId : undefined}
-        className={cn(
-          "app-motion fixed right-[var(--app-page-gutter)] z-[960] flex size-14 items-center justify-center rounded-[var(--radius-app-pill)]",
-          "border border-[color-mix(in_oklab,var(--tg-theme-text-color)_12%,transparent)]",
-          "text-[var(--tg-theme-button-text-color)] shadow-[var(--app-shadow-fab)]",
-          "transition-[transform,box-shadow] duration-[var(--app-duration)] active:scale-95"
-        )}
-        style={{
-          backgroundColor: "var(--tg-theme-button-color)",
-          bottom: "calc(var(--app-tabbar-total) + var(--space-3))",
-        }}
-        aria-label={sheetOpen ? "Закрыть фильтры" : "Открыть фильтры"}
-      >
-        {hasActiveUi ? (
-          <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-[var(--tg-theme-button-text-color)] ring-2 ring-[var(--tg-theme-button-color)]" />
-        ) : null}
-        <SlidersHorizontal className={cn("size-6", sheetOpen && "rotate-90")} strokeWidth={2} aria-hidden />
-      </button>
 
       {sheetOpen ? (
         <>
