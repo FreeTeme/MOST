@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SocialFormData } from "@/hooks/useCreateSocial";
@@ -42,16 +41,15 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         <Label>Платформа</Label>
         <div className="flex flex-wrap gap-2">
           {PLATFORMS.map((p) => (
-            <Button
+            <button
               key={p}
               type="button"
-              variant={platform === p ? "default" : "outline"}
-              size="sm"
-              className="tap-compact min-h-10 rounded-full px-3.5"
+              className="app-chip tap-compact shrink-0"
+              aria-pressed={platform === p}
               onClick={() => setPlatform(p)}
             >
               {p}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
@@ -59,9 +57,9 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         <Label htmlFor="social-profile">Ссылка на профиль</Label>
         <Input
           id="social-profile"
+          variant="pill"
           placeholder="https://t.me/..."
           type="url"
-          className="min-h-11"
           {...register("profile_url", { required: "Введите ссылку" })}
         />
         {errors.profile_url && (
@@ -72,10 +70,10 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         <Label htmlFor="social-followers">Подписчики</Label>
         <Input
           id="social-followers"
+          variant="pill"
           type="number"
           placeholder="0"
           min={0}
-          className="min-h-11"
           {...register("followers")}
         />
       </div>
@@ -83,8 +81,8 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         <Label htmlFor="social-niche">Ниша</Label>
         <Input
           id="social-niche"
+          variant="pill"
           placeholder="Красота, техника, еда..."
-          className="min-h-11"
           {...register("niche", { required: "Введите нишу" })}
         />
         {errors.niche && (
@@ -92,18 +90,13 @@ export function SocialForm({ onSubmit, loading, error }: SocialFormProps) {
         )}
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button
+      <button
         type="submit"
-        size="lg"
-        className="mt-2 h-12 w-full rounded-xl text-base font-semibold"
-        style={{
-          backgroundColor: "var(--tg-theme-button-color)",
-          color: "var(--tg-theme-button-text-color)",
-        }}
+        className="app-btn-primary-gradient tap-compact mt-2 w-full"
         disabled={loading}
       >
         {loading ? "Добавление…" : "Добавить соцсеть"}
-      </Button>
+      </button>
     </form>
   );
 }

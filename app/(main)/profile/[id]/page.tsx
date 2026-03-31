@@ -10,7 +10,7 @@ import { ProfileView } from "@/components/shared/ProfileView";
 import { ReviewForm } from "@/components/forms/ReviewForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
+import { MobileScreen } from "@/components/mobile/mobile-screen";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function PublicProfilePage() {
@@ -78,7 +78,6 @@ export default function PublicProfilePage() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <MobileScreen className="pt-2">
-        <ScreenHeader title={profileConfig.title} size="medium" />
         {showReviewForm ? (
           <Card className="overflow-hidden">
             <CardContent>

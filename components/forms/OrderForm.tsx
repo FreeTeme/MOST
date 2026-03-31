@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -63,8 +62,8 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
         <Label htmlFor="order-title">Заголовок заказа</Label>
         <Input
           id="order-title"
+          variant="pill"
           placeholder="Например: Реклама косметики"
-          className="min-h-11"
           {...register("title", { required: "Введите заголовок" })}
         />
         {errors.title && (
@@ -75,6 +74,7 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
         <Label htmlFor="order-description">Описание</Label>
         <Textarea
           id="order-description"
+          variant="pill"
           placeholder="Опишите задачу для блогера"
           rows={4}
           {...register("description")}
@@ -83,7 +83,7 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
       <div className="space-y-2">
         <Label>Категория</Label>
         <Select value={category || undefined} onValueChange={(v) => setValue("category", v)}>
-          <SelectTrigger className="min-h-11 w-full">
+          <SelectTrigger variant="pill" className="w-full">
             <SelectValue placeholder="Выберите" />
           </SelectTrigger>
           <SelectContent>
@@ -98,28 +98,28 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
       <div className="space-y-2">
         <Label>Бюджет</Label>
         <div className="mb-2 flex flex-wrap gap-2">
-          <Button
+          <button
             type="button"
-            variant={budgetType === "money" ? "default" : "outline"}
-            className="tap-compact min-h-10 flex-1 rounded-full sm:flex-none"
+            className="app-chip tap-compact min-h-10 flex-1 sm:flex-none"
+            aria-pressed={budgetType === "money"}
             onClick={() => setBudgetType("money")}
           >
             Деньги
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant={budgetType === "barter" ? "default" : "outline"}
-            className="tap-compact min-h-10 flex-1 rounded-full sm:flex-none"
+            className="app-chip tap-compact min-h-10 flex-1 sm:flex-none"
+            aria-pressed={budgetType === "barter"}
             onClick={() => setBudgetType("barter")}
           >
             Бартер
-          </Button>
+          </button>
         </div>
         {budgetType === "money" && (
           <Input
             type="number"
+            variant="pill"
             placeholder="Сумма в рублях"
-            className="min-h-11"
             {...register("budget_amount")}
           />
         )}
@@ -128,24 +128,19 @@ export function OrderForm({ onSubmit, loading, error }: OrderFormProps) {
         <Label htmlFor="order-social">Ссылка на соцсеть / продукт</Label>
         <Input
           id="order-social"
+          variant="pill"
           placeholder="https://..."
-          className="min-h-11"
           {...register("social_link")}
         />
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button
+      <button
         type="submit"
-        size="lg"
-        className="mt-2 h-12 w-full rounded-xl text-base font-semibold"
-        style={{
-          backgroundColor: "var(--tg-theme-button-color)",
-          color: "var(--tg-theme-button-text-color)",
-        }}
+        className="app-btn-primary-gradient tap-compact mt-2 w-full"
         disabled={loading}
       >
         {loading ? "Создание…" : "Создать заказ"}
-      </Button>
+      </button>
     </form>
   );
 }

@@ -21,7 +21,6 @@ const ROLES: {
   title: string;
   description: string;
   icon: typeof Sparkles;
-  gradient: string;
   iconWrap: string;
 }[] = [
   {
@@ -30,10 +29,8 @@ const ROLES: {
     title: "Ищу заказы",
     description: "Рекламные интеграции и отклики на подходящие кампании",
     icon: Sparkles,
-    gradient:
-      "from-[color-mix(in_oklab,var(--tg-theme-button-color)_22%,var(--tg-theme-bg-color))] via-[color-mix(in_oklab,var(--tg-theme-secondary-bg-color)_35%,var(--tg-theme-bg-color))] to-transparent",
     iconWrap:
-      "bg-[color-mix(in_oklab,var(--tg-theme-button-color)_18%,var(--tg-theme-bg-color))] text-[var(--tg-theme-button-color)]",
+      "bg-[color-mix(in_oklab,var(--app-gradient-peach)_22%,var(--app-surface-elevated))] text-[color-mix(in_oklab,var(--app-gradient-rose)_55%,var(--tg-theme-text-color))]",
   },
   {
     id: "client",
@@ -41,10 +38,8 @@ const ROLES: {
     title: "Ищу блогеров",
     description: "Публикация заказов и подбор исполнителей под задачу",
     icon: Building2,
-    gradient:
-      "from-[color-mix(in_oklab,var(--tg-theme-hint-color)_38%,var(--tg-theme-bg-color))] via-[color-mix(in_oklab,var(--tg-theme-secondary-bg-color)_28%,var(--tg-theme-bg-color))] to-transparent",
     iconWrap:
-      "bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_22%,var(--tg-theme-bg-color))] text-[var(--tg-theme-text-color)]",
+      "bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_18%,var(--app-surface-elevated))] text-[var(--tg-theme-text-color)]",
   },
 ];
 
@@ -141,7 +136,7 @@ export default function RoleSelectPage() {
           <h1 className="app-title-display">Кто вы?</h1>
         </header>
 
-        <main className="app-grid-responsive-cols flex-1 content-start justify-items-stretch pt-[var(--space-2)]">
+        <main className="flex flex-1 flex-col gap-[var(--space-4)] pt-[var(--space-2)]">
           {ROLES.map((role) => {
             const Icon = role.icon;
             const busy = isSubmitting && selectedRole === role.id;
@@ -155,8 +150,8 @@ export default function RoleSelectPage() {
                 aria-disabled={isSubmitting}
                 aria-label={`${role.badge}. ${role.title}. ${role.description}. Нажмите, чтобы продолжить`}
                 className={cn(
-                  "app-motion overflow-hidden backdrop-blur-sm transition-[transform,box-shadow] duration-[var(--app-duration)]",
-                  "outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--tg-theme-button-color)_35%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--tg-theme-bg-color)]",
+                  "app-motion !rounded-[var(--radius-app-pill)] overflow-hidden transition-[transform,box-shadow] duration-[var(--app-duration)]",
+                  "outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--app-gradient-peach)_45%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--app-canvas)]",
                   !isSubmitting && "cursor-pointer active:scale-[0.985]",
                   isSubmitting && "pointer-events-none",
                   isSubmitting && !busy && "opacity-50"
@@ -173,31 +168,36 @@ export default function RoleSelectPage() {
                   }
                 }}
               >
-                <div className={cn("relative flex h-[5.5rem] shrink-0 items-center justify-center bg-gradient-to-br", role.gradient)}>
-                  <span className="app-overline absolute left-[var(--space-3)] top-[var(--space-3)] rounded-[var(--radius-app-pill)] bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_88%,transparent)] px-[var(--space-2)] py-1 text-[length:var(--text-overline)] backdrop-blur-sm">
-                    {role.badge}
-                  </span>
-                  <div className={cn("flex size-12 items-center justify-center rounded-[var(--radius-app-md)]", role.iconWrap)} aria-hidden>
-                    <Icon className="size-6" strokeWidth={1.75} />
+                <CardHeader className="flex flex-row gap-[var(--space-4)] px-[var(--space-5)] pb-[var(--space-3)] pt-[var(--space-5)] text-left">
+                  <div
+                    className={cn(
+                      "flex size-14 shrink-0 items-center justify-center rounded-[var(--radius-app-lg)]",
+                      role.iconWrap
+                    )}
+                    aria-hidden
+                  >
+                    <Icon className="size-7" strokeWidth={1.65} />
                   </div>
-                </div>
-
-                <CardHeader className="space-y-[var(--space-2)] px-[var(--space-4)] pb-[var(--space-2)] pt-[var(--space-4)]">
-                  <CardTitle className="text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)]">
-                    {role.title}
-                  </CardTitle>
-                  <CardDescription className="text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)]">
-                    {role.description}
-                  </CardDescription>
+                  <div className="min-w-0 flex-1 space-y-[var(--space-2)]">
+                    <span className="app-chip pointer-events-none inline-flex w-fit max-w-full shrink-0 normal-case">
+                      {role.badge}
+                    </span>
+                    <CardTitle className="text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)]">
+                      {role.title}
+                    </CardTitle>
+                    <CardDescription className="text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)]">
+                      {role.description}
+                    </CardDescription>
+                  </div>
                 </CardHeader>
 
                 <CardFooter className="px-0 pb-0 pt-0 sm:px-0">
                   <div
                     aria-hidden
-                    className="role-select-cta-bar"
+                    className="role-select-cta-bar !text-white"
                     style={{
-                      backgroundColor: "var(--tg-theme-button-color)",
-                      color: "var(--tg-theme-button-text-color)",
+                      background: "var(--app-gradient-primary)",
+                      boxShadow: "0 -6px 24px -8px color-mix(in oklab, var(--app-gradient-rose) 35%, transparent)",
                     }}
                   >
                     {busy ? "Сохранение…" : "Продолжить"}

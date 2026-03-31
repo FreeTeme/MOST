@@ -7,7 +7,6 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useApplications } from "@/hooks/useApplications";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ApplicationCard } from "@/components/cards/ApplicationCard";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
 import { supabase } from "@/lib/supabase";
@@ -156,18 +155,14 @@ export default function OrderDetailPage() {
           style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))", paddingTop: 12 }}
         >
           <div className="mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)]">
-            <Button
+            <button
               type="button"
-              className="h-12 w-full rounded-xl text-base font-semibold"
-              style={{
-                backgroundColor: "var(--tg-theme-button-color)",
-                color: "var(--tg-theme-button-text-color)",
-              }}
+              className="app-btn-primary-gradient tap-compact w-full"
               onClick={handleApply}
               disabled={applying}
             >
               {applying ? "Отправка…" : "Откликнуться"}
-            </Button>
+            </button>
           </div>
         </div>
       )}

@@ -7,7 +7,7 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { ProfileView } from "@/components/shared/ProfileView";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MobileScreen, ScreenHeader } from "@/components/mobile/mobile-screen";
+import { MobileScreen } from "@/components/mobile/mobile-screen";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 
 export default function MyProfilePage() {
@@ -45,7 +45,6 @@ export default function MyProfilePage() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <MobileScreen className="pt-2">
-        <ScreenHeader title={config.title} size="medium" />
         <ProfileView
           profile={profile}
           items={items}

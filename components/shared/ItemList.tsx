@@ -17,7 +17,7 @@ function ListSkeleton() {
   return (
     <div className="flex flex-col gap-[var(--app-list-gap)]" aria-busy aria-label="Загрузка">
       {[0, 1, 2, 3].map((i) => (
-        <Skeleton key={i} className="h-[5.75rem] w-full rounded-[var(--radius-app-md)]" />
+        <Skeleton key={i} className="h-[5.75rem] w-full rounded-[var(--radius-app-card)]" />
       ))}
     </div>
   );
@@ -54,11 +54,7 @@ export function ItemList<T>({
         {createButton && (
           <Link
             href={createButton.href}
-            className="tap-compact mt-[var(--space-6)] inline-flex h-12 w-full max-w-xs items-center justify-center rounded-[var(--radius-app-sm)] px-[var(--space-6)] text-[length:var(--text-body-sm)] font-semibold leading-none shadow-[var(--app-shadow-sm)]"
-            style={{
-              background: "var(--tg-theme-button-color)",
-              color: "var(--tg-theme-button-text-color)",
-            }}
+            className="app-btn-primary-gradient tap-compact mt-[var(--space-6)] inline-flex w-full max-w-xs justify-center no-underline"
           >
             {createButton.text}
           </Link>

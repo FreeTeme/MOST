@@ -1,10 +1,12 @@
 "use client";
 
+import { MessageCircle } from "lucide-react";
 import type { User, SocialAccount, Order, Review } from "@/types";
 import { SocialCard } from "@/components/cards/SocialCard";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ReviewList } from "./ReviewList";
 import { cn } from "@/lib/utils";
+import { openTelegramLink } from "@/lib/telegram";
 
 interface ProfileConfigShape {
   title: string;
@@ -38,6 +40,23 @@ const fieldLabels: Record<string, string> = {
   description: "Описание",
 };
 
+function computeProfileCompleteness(profile: User): number {
+  if (profile.user_type === "blogger") {
+    const checks = [
+      Boolean(profile.full_name?.trim() || profile.first_name),
+      Boolean(profile.bio?.trim()),
+      Boolean(profile.photo_url),
+    ];
+    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  }
+  const checks = [
+    Boolean(profile.company_name?.trim()),
+    Boolean(profile.company_category?.trim()),
+    Boolean(profile.company_description?.trim()),
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
+
 function Section({
   title,
   children,
@@ -55,6 +74,40 @@ function Section({
   );
 }
 
+function AvatarBlock({
+  profile,
+  className,
+  ringClass,
+}: {
+  profile: User;
+  className?: string;
+  ringClass?: string;
+}) {
+  if (profile.photo_url) {
+    return (
+      <img
+        src={profile.photo_url}
+        alt=""
+        className={cn("object-cover", className)}
+      />
+    );
+  }
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center font-bold",
+        className,
+        ringClass,
+        "bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]"
+      )}
+    >
+      <span className="text-[length:var(--text-title)] leading-none">
+        {(profile.first_name?.[0] || profile.company_name?.[0] || "?").toUpperCase()}
+      </span>
+    </div>
+  );
+}
+
 export function ProfileView({
   profile,
   items,
@@ -68,6 +121,7 @@ export function ProfileView({
   if (!config) return null;
 
   const isBlogger = profile.user_type === "blogger";
+  const completeness = computeProfileCompleteness(profile);
 
   const getFieldValue = (field: string): string => {
     switch (field) {
@@ -88,35 +142,107 @@ export function ProfileView({
     }
   };
 
+  const primaryTitle = isBlogger ? getFieldValue("full_name") : getFieldValue("company_name");
+  const heroSubtitle = isBlogger
+    ? profile.telegram_username
+      ? `@${profile.telegram_username}`
+      : getFieldValue("category") !== "—"
+        ? getFieldValue("category")
+        : "Блогер"
+    : profile.company_category || (profile.telegram_username ? `@${profile.telegram_username}` : "Компания");
+
   return (
     <div className="flex flex-col gap-[var(--space-6)]">
-      <div
-        className={cn(
-          "flex items-center gap-[var(--space-4)] rounded-[var(--radius-app-lg)] p-[var(--space-4)] shadow-[var(--app-shadow-xs)]",
-          "bg-[var(--app-surface-muted)] ring-1 ring-[var(--app-border)]"
-        )}
-      >
-        {profile.photo_url ? (
-          <img src={profile.photo_url} alt="" className="size-16 shrink-0 rounded-full object-cover ring-2 ring-[color-mix(in_oklab,var(--tg-theme-hint-color)_20%,transparent)]" />
-        ) : (
-          <div
-            className="flex size-16 shrink-0 items-center justify-center rounded-full text-xl font-bold"
-            style={{ background: "var(--tg-theme-button-color)", color: "var(--tg-theme-button-text-color)" }}
-          >
-            {(profile.first_name?.[0] || "?").toUpperCase()}
+      {/* Hero: референс — фото или мягкий градиент + затемнение снизу */}
+      <div className="-mx-[var(--app-page-gutter)]">
+        <div
+          className={cn(
+            "relative min-h-[14rem] w-full overflow-hidden",
+            "rounded-b-[var(--radius-app-xl)] sm:min-h-[15rem]"
+          )}
+        >
+          {profile.photo_url ? (
+            <>
+              <img
+                src={profile.photo_url}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_oklab,var(--tg-theme-text-color)_78%,transparent)] via-[color-mix(in_oklab,var(--tg-theme-text-color)_35%,transparent)] to-transparent"
+                aria-hidden
+              />
+            </>
+          ) : (
+            <>
+              <div
+                className="absolute inset-0 bg-[color-mix(in_oklab,var(--app-gradient-peach)_42%,var(--app-canvas))]"
+                aria-hidden
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-[color-mix(in_oklab,var(--app-gradient-rose)_28%,transparent)] to-transparent"
+                aria-hidden
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_oklab,var(--tg-theme-text-color)_55%,transparent)] via-transparent to-transparent"
+                aria-hidden
+              />
+            </>
+          )}
+
+          <div className="relative flex min-h-[14rem] flex-col justify-end p-[var(--space-4)] pb-[var(--space-5)] sm:min-h-[15rem]">
+            <div className="flex items-end gap-[var(--space-3)]">
+              <AvatarBlock
+                profile={profile}
+                className="size-14 shrink-0 rounded-[var(--radius-app-md)] ring-2 ring-white/90"
+              />
+              <div className="min-w-0 pb-0.5">
+                <p className="truncate text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)] text-white drop-shadow-md">
+                  {primaryTitle}
+                </p>
+                <p className="mt-0.5 truncate text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)] text-white/90 drop-shadow">
+                  {heroSubtitle}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)] text-[var(--tg-theme-text-color)]">
-            {isBlogger ? getFieldValue("full_name") : getFieldValue("company_name")}
-          </p>
-          {profile.telegram_username ? (
-            <p className="mt-1 truncate text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
-              @{profile.telegram_username}
-            </p>
-          ) : null}
         </div>
       </div>
+
+      {isOwnProfile ? (
+        <Section title="Мой профиль">
+          <div className="app-card-elevated p-[var(--space-4)]">
+            <div className="mb-[var(--space-3)] flex items-center justify-between gap-[var(--space-3)]">
+              <span
+                className={cn(
+                  "rounded-[var(--radius-app-pill)] px-[var(--space-3)] py-1",
+                  "text-[length:var(--text-caption)] font-semibold leading-[var(--text-caption--line)]",
+                  "bg-[color-mix(in_oklab,#22c55e_22%,var(--app-surface-elevated))]",
+                  "text-[color-mix(in_oklab,#166534_90%,var(--tg-theme-text-color))]"
+                )}
+              >
+                Активен
+              </span>
+              <span className="text-[length:var(--text-title)] font-bold tabular-nums text-[var(--app-gradient-rose)]">
+                {completeness}%
+              </span>
+            </div>
+            <p className="app-form-label mb-[var(--space-2)]">Заполненность профиля</p>
+            <div className="h-2.5 w-full overflow-hidden rounded-[var(--radius-app-pill)] bg-[var(--app-surface-elevated)]">
+              <div
+                className="h-full min-w-0 rounded-[var(--radius-app-pill)] transition-[width] duration-[var(--app-duration)] ease-out"
+                style={{
+                  width: `${completeness}%`,
+                  background: "var(--app-gradient-primary)",
+                }}
+              />
+            </div>
+            <p className="mt-[var(--space-3)] text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
+              Заполните профиль — так заказчикам и блогерам проще доверять и договариваться.
+            </p>
+          </div>
+        </Section>
+      ) : null}
 
       <Section title="Основное">
         <div className="app-card divide-y divide-[var(--app-border)] overflow-hidden p-0">
@@ -176,6 +302,17 @@ export function ProfileView({
           <ReviewList reviews={reviews} />
         </section>
       )}
+
+      {!isOwnProfile && profile.telegram_username ? (
+        <button
+          type="button"
+          className="app-btn-primary-gradient tap-compact w-full gap-[var(--space-2)]"
+          onClick={() => openTelegramLink(`https://t.me/${profile.telegram_username}`)}
+        >
+          <MessageCircle className="size-5 shrink-0" strokeWidth={2} aria-hidden />
+          Написать в Telegram
+        </button>
+      ) : null}
     </div>
   );
 }

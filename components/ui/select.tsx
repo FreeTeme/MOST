@@ -27,17 +27,22 @@ function SelectValue({
 function SelectTrigger({
   className,
   size = "default",
+  variant = "default",
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
+  variant?: "default" | "pill"
 }) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
+      data-variant={variant}
       className={cn(
-        "app-field flex w-full min-w-0 items-center justify-between gap-2 px-[var(--space-3)] text-sm font-normal whitespace-nowrap shadow-none",
+        variant === "pill"
+          ? "app-pill-input flex w-full min-w-0 items-center justify-between gap-2 text-base font-normal whitespace-nowrap shadow-none"
+          : "app-field flex w-full min-w-0 items-center justify-between gap-2 px-[var(--space-3)] text-sm font-normal whitespace-nowrap shadow-none",
         "data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "data-[size=default]:min-h-[3rem] data-[size=sm]:min-h-8",
