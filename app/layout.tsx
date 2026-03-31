@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <TelegramProvider>
-            <main className="app-root min-h-[100dvh] bg-[var(--tg-theme-bg-color)] text-[var(--tg-theme-text-color)]">
+            <main className="app-root min-h-[100dvh] bg-[var(--app-canvas)] text-[var(--tg-theme-text-color)]">
               {children}
             </main>
           </TelegramProvider>

@@ -5,13 +5,26 @@ import { useTelegramAuth } from "@/hooks/useTelegramAuth";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MobileScreen } from "@/components/mobile/mobile-screen";
+import { STORAGE_KEYS } from "@/config/roles.config";
 
 export default function HomePage() {
   const { tgUser, dbUser, loading, isAuthenticated } = useTelegramAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (typeof window === "undefined" || loading) return;
+
+    /** Локально: снова показать «Кто вы?» — откройте http://localhost:3000/?reselect=1 */
+    if (
+      process.env.NODE_ENV !== "production" &&
+      new URLSearchParams(window.location.search).get("reselect") === "1"
+    ) {
+      localStorage.removeItem(STORAGE_KEYS.session);
+      window.history.replaceState({}, "", "/");
+      window.location.replace("/role-select");
+      return;
+    }
+
     if (!tgUser) return;
     if (isAuthenticated && dbUser) {
       router.replace("/search");

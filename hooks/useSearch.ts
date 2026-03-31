@@ -9,6 +9,8 @@ import { SEARCH_CONFIG } from "@/config/pages.config";
 import { TABLES } from "@/config/database.config";
 import type { Order, SocialAccount } from "@/types";
 import type { UserType } from "@/types";
+import { isForceDemoData } from "@/lib/dev";
+import { getDemoSearchItems } from "@/lib/demo-fixtures";
 
 type SearchItem = Order | SocialAccount;
 
@@ -97,6 +99,11 @@ export function useSearch() {
 
     setLoading(true);
     try {
+      if (isForceDemoData()) {
+        setItems(getDemoSearchItems(role, filters, debouncedSearch) as SearchItem[]);
+        return;
+      }
+
       if (
         !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
         !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()

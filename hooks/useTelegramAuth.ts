@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useTelegram } from "@/components/TelegramProvider";
 import { supabase, User } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { isStandaloneDev, DEV_MOCK_TELEGRAM_USER } from "@/lib/dev";
+import { isStandaloneDev, DEV_MOCK_TELEGRAM_USER, isForceDemoData } from "@/lib/dev";
+import { getDemoUser } from "@/lib/demo-fixtures";
 
 const SESSION_KEY = "influencer_user";
 
@@ -44,18 +45,57 @@ export function useTelegramAuth() {
 
       const useDevMockAuth = isStandaloneDev || tgUser.id === DEV_MOCK_TELEGRAM_USER.id;
       if (useDevMockAuth) {
+        setLoading(true);
         try {
-          const raw = localStorage.getItem(SESSION_KEY);
-          if (raw) {
-            const data = JSON.parse(raw) as { telegram_id?: number; user_type?: "blogger" | "client" };
-            if (data.telegram_id === tgUser.id && data.user_type) {
-              setDbUser(buildMockUser(data.telegram_id, data.user_type));
+          let roleFromSession: "blogger" | "client" | null = null;
+          try {
+            const raw = localStorage.getItem(SESSION_KEY);
+            if (raw) {
+              const data = JSON.parse(raw) as { telegram_id?: number; user_type?: "blogger" | "client" };
+              if (data.telegram_id === tgUser.id && data.user_type) {
+                roleFromSession = data.user_type;
+              }
+            }
+          } catch {
+            /* ignore */
+          }
+
+          let nextUser: User | null = null;
+          const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+          const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+          if (url && key) {
+            try {
+              const { data: row } = await supabase
+                .from("users")
+                .select("*")
+                .eq("telegram_id", tgUser.id)
+                .maybeSingle();
+              if (row) {
+                const r = row as User;
+                nextUser = { ...r, user_type: roleFromSession ?? r.user_type };
+              }
+            } catch {
+              /* ignore */
             }
           }
-        } catch {
-          // ignore
+
+          if (!nextUser && isForceDemoData()) {
+            const fx = getDemoUser(tgUser.id);
+            if (fx && roleFromSession) {
+              nextUser = { ...fx, user_type: roleFromSession };
+            } else if (fx) {
+              nextUser = fx;
+            }
+          }
+
+          if (!nextUser && roleFromSession) {
+            nextUser = buildMockUser(tgUser.id, roleFromSession);
+          }
+
+          setDbUser(nextUser);
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
         return;
       }
 
@@ -96,8 +136,12 @@ export function useTelegramAuth() {
 
     const useDevMockAuth = isStandaloneDev || tgUser.id === DEV_MOCK_TELEGRAM_USER.id;
     if (useDevMockAuth) {
-      const mockUser = buildMockUser(tgUser.id, userType);
-      setDbUser(mockUser);
+      let nextUser: User = buildMockUser(tgUser.id, userType);
+      const fx = getDemoUser(tgUser.id);
+      if (fx) {
+        nextUser = { ...fx, user_type: userType };
+      }
+      setDbUser(nextUser);
       localStorage.setItem(
         SESSION_KEY,
         JSON.stringify({
@@ -105,7 +149,39 @@ export function useTelegramAuth() {
           user_type: userType,
         }),
       );
-      return mockUser;
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (url && key) {
+        try {
+          const { data: existing } = await supabase
+            .from("users")
+            .select("telegram_id")
+            .eq("telegram_id", tgUser.id)
+            .maybeSingle();
+          if (existing) {
+            await supabase
+              .from("users")
+              .update({ user_type: userType, updated_at: new Date().toISOString() })
+              .eq("telegram_id", tgUser.id);
+          } else {
+            await supabase.from("users").insert({
+              telegram_id: tgUser.id,
+              telegram_username: tgUser.username || null,
+              first_name: tgUser.first_name,
+              last_name: tgUser.last_name || null,
+              photo_url: tgUser.photo_url || null,
+              user_type: userType,
+              full_name:
+                userType === "blogger"
+                  ? `${tgUser.first_name} ${tgUser.last_name || ""}`.trim()
+                  : null,
+            });
+          }
+        } catch (e) {
+          console.warn("[dev] Синхронизация роли с Supabase пропущена:", e);
+        }
+      }
+      return nextUser;
     }
 
     try {

@@ -15,6 +15,8 @@ import type { Order, User } from "@/types";
 import { useWebAppBackButton } from "@/hooks/useWebApp";
 import { showAlert } from "@/lib/telegram";
 import { cn } from "@/lib/utils";
+import { isForceDemoData } from "@/lib/dev";
+import { demoOrders, getDemoUser } from "@/lib/demo-fixtures";
 
 export default function OrderDetailPage() {
   const router = useRouter();
@@ -38,6 +40,16 @@ export default function OrderDetailPage() {
     if (!orderId) return;
     let cancelled = false;
     (async () => {
+      if (isForceDemoData()) {
+        const o = demoOrders.find((x) => x.id === orderId) ?? null;
+        if (!cancelled) {
+          setOrder(o);
+          setClient(o ? getDemoUser(o.client_telegram_id) ?? null : null);
+        }
+        setLoading(false);
+        return;
+      }
+
       const { data: orderData, error: orderError } = await supabase
         .from(TABLES.orders)
         .select("*")
@@ -68,6 +80,10 @@ export default function OrderDetailPage() {
 
   const handleApply = async () => {
     if (!orderId || !dbUser || !canApply) return;
+    if (isForceDemoData()) {
+      showAlert("Демо-режим: отклик не сохраняется в базе");
+      return;
+    }
     setApplying(true);
     try {
       const { error } = await supabase.from(TABLES.applications).insert({

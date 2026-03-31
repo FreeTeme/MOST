@@ -7,6 +7,12 @@ import { supabase } from "@/lib/supabase";
 import { PROFILE_CONFIG } from "@/config/pages.config";
 import { TABLES } from "@/config/database.config";
 import type { User, SocialAccount, Order, Review } from "@/types";
+import { isForceDemoData } from "@/lib/dev";
+import {
+  getDemoProfileOrdersOrSocials,
+  getDemoReviewsForTarget,
+  getDemoUser,
+} from "@/lib/demo-fixtures";
 
 type ProfileItems = SocialAccount[] | Order[];
 
@@ -47,6 +53,20 @@ export function useProfile(profileTelegramId?: string | number) {
 
     setLoading(true);
     try {
+      if (isForceDemoData()) {
+        const demo = getDemoUser(telegramId);
+        if (demo) {
+          setProfile(demo);
+          setItems(getDemoProfileOrdersOrSocials(telegramId, demo.user_type));
+          setReviews(getDemoReviewsForTarget(telegramId));
+        } else {
+          setProfile(null);
+          setItems([]);
+          setReviews([]);
+        }
+        return;
+      }
+
       const { data: userData, error: userError } = await supabase
         .from(TABLES.users)
         .select("*")

@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 import { MY_ITEMS_CONFIG } from "@/config/pages.config";
 import { TABLES } from "@/config/database.config";
 import type { Order, SocialAccount } from "@/types";
+import { isForceDemoData } from "@/lib/dev";
+import { demoOrders, demoSocials } from "@/lib/demo-fixtures";
 
 type Item = Order | SocialAccount;
 
@@ -28,6 +30,15 @@ export function useItems() {
 
     setLoading(true);
     try {
+      if (isForceDemoData()) {
+        if (config.query === "orders") {
+          setItems(demoOrders.filter((o) => o.client_telegram_id === telegramId));
+        } else {
+          setItems(demoSocials.filter((s) => s.blogger_telegram_id === telegramId));
+        }
+        return;
+      }
+
       if (config.query === "orders") {
         const { data, error } = await supabase
           .from(TABLES.orders)
@@ -60,6 +71,10 @@ export function useItems() {
   const deleteItem = useCallback(
     async (id: string) => {
       if (!config) return;
+      if (isForceDemoData()) {
+        setItems((prev) => prev.filter((item) => (item as { id: string }).id !== id));
+        return;
+      }
       const table =
         config.query === "orders" ? TABLES.orders : TABLES.social_accounts;
       const { error } = await supabase.from(table).delete().eq("id", id);

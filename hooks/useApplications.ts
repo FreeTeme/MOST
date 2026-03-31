@@ -7,13 +7,18 @@ import { supabase } from "@/lib/supabase";
 import { APPLICATIONS_CONFIG } from "@/config/pages.config";
 import { TABLES } from "@/config/database.config";
 import type {
-  Application,
   ApplicationWithOrder,
   ApplicationWithBlogger,
   Order,
   User,
   SocialAccount,
 } from "@/types";
+import { isForceDemoData } from "@/lib/dev";
+import {
+  getDemoApplicationsForOrder,
+  getDemoBloggerApplications,
+  getDemoClientApplications,
+} from "@/lib/demo-fixtures";
 
 type ApplicationItem = ApplicationWithOrder | ApplicationWithBlogger;
 
@@ -35,6 +40,17 @@ export function useApplications(orderId?: string) {
 
     setLoading(true);
     try {
+      if (isForceDemoData()) {
+        if (role === "blogger") {
+          setApplications(getDemoBloggerApplications(telegramId));
+        } else if (orderId) {
+          setApplications(getDemoApplicationsForOrder(orderId));
+        } else {
+          setApplications(getDemoClientApplications(telegramId));
+        }
+        return;
+      }
+
       if (role === "blogger") {
         const { data: apps, error: appsError } = await supabase
           .from(TABLES.applications)
@@ -122,6 +138,12 @@ export function useApplications(orderId?: string) {
 
   const updateStatus = useCallback(
     async (applicationId: string, status: "accepted" | "rejected") => {
+      if (isForceDemoData()) {
+        setApplications((prev) =>
+          prev.map((a) => (a.id === applicationId ? { ...a, status } : a))
+        );
+        return;
+      }
       const { error } = await supabase
         .from(TABLES.applications)
         .update({ status, updated_at: new Date().toISOString() })
