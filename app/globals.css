@@ -230,6 +230,73 @@ a.tap-compact {
   .app-btn-primary-gradient:active {
     transform: none;
   }
+  .role-select-fade-up,
+  .role-select-orbit-float,
+  .role-select-avatar-ring,
+  .role-select-btn-blogger::before,
+  .role-select-btn-brand::before {
+    animation: none !important;
+  }
+}
+
+@keyframes role-select-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.15rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes role-select-orbit-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes role-select-shimmer-edge {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes role-select-avatar-ring-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 color-mix(in oklab, var(--app-gradient-rose) 18%, transparent),
+      0 14px 44px -14px color-mix(in oklab, var(--app-gradient-rose) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px color-mix(in oklab, var(--app-gradient-rose) 12%, transparent),
+      0 18px 52px -12px color-mix(in oklab, var(--app-gradient-rose) 48%, transparent);
+  }
+}
+
+.role-select-avatar-ring {
+  border-radius: var(--radius-app-pill);
+  animation: role-select-avatar-ring-pulse 2.8s ease-in-out infinite;
+}
+
+.role-select-fade-up {
+  opacity: 0;
+  animation: role-select-fade-up 0.65s var(--app-ease-emphasized) forwards;
+  animation-delay: var(--role-select-delay, 0s);
+}
+
+.role-select-orbit-float {
+  animation: role-select-orbit-float 3.2s ease-in-out infinite;
+  animation-delay: var(--orbit-delay, 0s);
 }
 
 @keyframes app-sheet-enter {
@@ -396,23 +463,222 @@ a.tap-compact {
     box-shadow: var(--app-shadow-xs);
   }
 
+  /** Экран выбора роли — тёплый градиент + лёгкий «дыхание» фона */
+  .role-select-warm-bg {
+    background: radial-gradient(120% 80% at 50% -10%, rgba(255, 182, 193, 0.35) 0%, transparent 55%),
+      radial-gradient(90% 60% at 100% 40%, rgba(255, 200, 150, 0.2) 0%, transparent 50%),
+      linear-gradient(180deg, #fff5f7 0%, #fff8f1 38%, #ffefd9 72%, #ffe8cc 100%);
+  }
+
   /**
-   * Полоса «Продолжить» на role-select: высота в CSS, не только Tailwind-утилиты —
-   * файлы под `app/(auth)/` часто не попадают в скан сборки, классы вроде `h-48` тогда отсутствуют в бандле.
+   * Кнопки роли — без .tap-compact (иначе min-height сбрасывается в revert-layer).
+   * Блогер: глянцевый тёмный блок + розовое свечение; бренд: стекло + персиковое свечение.
    */
-  .role-select-cta-bar {
-    display: flex;
+  .role-select-btn-blogger {
+    position: relative;
+    isolation: isolate;
+    min-height: 3.75rem;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    padding-left: var(--space-6);
+    border: none;
+    border-radius: var(--radius-app-pill);
+    cursor: pointer;
+    text-align: left;
+    color: #fff;
+    font-size: var(--text-body);
+    font-weight: 650;
+    line-height: var(--text-body--line);
+    background: linear-gradient(180deg, #2d2d2d 0%, #141414 48%, #0d0d0d 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.14) inset,
+      0 8px 32px color-mix(in oklab, var(--app-gradient-rose) 38%, transparent),
+      0 4px 16px rgba(0, 0, 0, 0.22);
+    transition:
+      transform var(--app-duration-fast) var(--app-ease-standard),
+      box-shadow var(--app-duration-fast) var(--app-ease-standard),
+      opacity var(--app-duration-fast) var(--app-ease-standard);
+  }
+
+  .role-select-btn-blogger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 58%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: role-select-shimmer-edge 4.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .role-select-btn-blogger > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (hover: hover) {
+    .role-select-btn-blogger:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.015);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.16) inset,
+        0 14px 40px color-mix(in oklab, var(--app-gradient-rose) 42%, transparent),
+        0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .role-select-btn-blogger:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.985);
+  }
+
+  .role-select-btn-blogger:focus-visible {
+    outline: none;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.14) inset,
+      0 8px 32px color-mix(in oklab, var(--app-gradient-rose) 38%, transparent),
+      0 0 0 3px color-mix(in oklab, var(--app-gradient-rose) 45%, transparent);
+  }
+
+  .role-select-btn-blogger:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .role-select-btn-icon-blogger {
+    display: flex;
+    width: 2.875rem;
+    height: 2.875rem;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
-    padding-inline: var(--space-4);
-    font-size: 1.375rem;
-    font-weight: 600;
-    line-height: 1.15;
-    min-height: max(11.25rem, min(46dvh, 19rem));
-    height: max(11.25rem, min(46dvh, 19rem));
+    border-radius: var(--radius-app-pill);
+    background: linear-gradient(145deg, #f06ba8 0%, #d63d8a 100%);
+    color: #fff;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.25),
+      0 0 0 2px rgba(255, 255, 255, 0.2) inset;
+    transition: transform var(--app-duration-fast) var(--app-ease-standard);
+  }
+
+  .role-select-btn-blogger:active:not(:disabled) .role-select-btn-icon-blogger {
+    transform: scale(0.92);
+  }
+
+  .role-select-btn-brand {
+    position: relative;
+    isolation: isolate;
+    min-height: 3.75rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    padding-left: var(--space-6);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: var(--radius-app-pill);
+    cursor: pointer;
+    text-align: left;
+    color: #1a1a1a;
+    font-size: var(--text-body);
+    font-weight: 650;
+    line-height: var(--text-body--line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 252, 248, 0.92) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 10px 36px color-mix(in oklab, var(--app-gradient-peach) 28%, transparent),
+      0 4px 14px rgba(0, 0, 0, 0.08);
+    transition:
+      transform var(--app-duration-fast) var(--app-ease-standard),
+      box-shadow var(--app-duration-fast) var(--app-ease-standard),
+      opacity var(--app-duration-fast) var(--app-ease-standard);
+  }
+
+  .role-select-btn-brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 155, 113, 0.08) 45%,
+      rgba(231, 83, 160, 0.06) 55%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: role-select-shimmer-edge 5s ease-in-out infinite reverse;
+    pointer-events: none;
+  }
+
+  .role-select-btn-brand > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (hover: hover) {
+    .role-select-btn-brand:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.015);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 1) inset,
+        0 16px 44px color-mix(in oklab, var(--app-gradient-peach) 34%, transparent),
+        0 6px 18px rgba(0, 0, 0, 0.09);
+    }
+  }
+
+  .role-select-btn-brand:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.985);
+  }
+
+  .role-select-btn-brand:focus-visible {
+    outline: none;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 10px 36px color-mix(in oklab, var(--app-gradient-peach) 28%, transparent),
+      0 0 0 3px color-mix(in oklab, var(--app-gradient-peach) 40%, transparent);
+  }
+
+  .role-select-btn-brand:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .role-select-btn-icon-brand {
+    display: flex;
+    width: 2.875rem;
+    height: 2.875rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-app-pill);
+    background: linear-gradient(145deg, #ff9b71 0%, #ff7b4a 100%);
+    color: #fff;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.18),
+      0 0 0 2px rgba(255, 255, 255, 0.25) inset;
+    transition: transform var(--app-duration-fast) var(--app-ease-standard);
+  }
+
+  .role-select-btn-brand:active:not(:disabled) .role-select-btn-icon-brand {
+    transform: scale(0.92);
+  }
+
+  .role-select-logo-glow {
+    text-shadow: 0 2px 24px color-mix(in oklab, var(--app-gradient-rose) 35%, transparent);
   }
 
   .app-field {
