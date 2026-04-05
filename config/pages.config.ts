@@ -46,7 +46,7 @@ type ProfileConfigItem = {
 
 export const SEARCH_CONFIG: Record<UserType, SearchConfigItem> = {
   blogger: {
-    title: "Поиск заказов",
+    title: "Офферы",
     description: "Найдите заказы под ваш блог",
     query: "orders",
     card: "OrderCard",
@@ -59,7 +59,7 @@ export const SEARCH_CONFIG: Record<UserType, SearchConfigItem> = {
     },
   },
   client: {
-    title: "Поиск блогеров",
+    title: "Креаторы",
     description: "Найдите блогеров для рекламы",
     query: "social_accounts",
     card: "SocialCard",

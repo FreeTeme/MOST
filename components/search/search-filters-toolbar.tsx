@@ -1,8 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowDownUp, SlidersHorizontal, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { emojiForSocialPlatform } from "@/config/card-display.config";
 import { ORDER_CATEGORIES, BLOGGER_PLATFORMS } from "@/config/search-ui.config";
+import type { SearchSortTab } from "@/config/search-sort.config";
 import { cn } from "@/lib/utils";
 import type { UserType } from "@/types";
 
@@ -24,8 +23,45 @@ interface SearchFiltersToolbarProps {
   filters: Record<string, string>;
   onFiltersChange: (patch: Record<string, string>) => void;
   onResetAll: () => void;
-  /** Показать точку на FAB (есть текст поиска или выбраны фильтры) */
   hasActiveUi: boolean;
+  searchSort: SearchSortTab;
+  onSelectSortTab: (tab: SearchSortTab) => void;
+  priceHighFirst: boolean;
+}
+
+const SORT_TABS: { id: SearchSortTab; label: string }[] = [
+  { id: "recommended", label: "Рекомендуемые" },
+  { id: "new", label: "Новые" },
+];
+
+function SheetPillButton({
+  selected,
+  children,
+  onClick,
+  className,
+}: {
+  selected: boolean;
+  children: React.ReactNode;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "tap-compact min-h-11 min-w-0 flex-1 rounded-full px-4 text-sm font-semibold tracking-tight",
+        "touch-manipulation transition-[transform,box-shadow,background,color] duration-200 ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+        "active:scale-[0.96]",
+        selected
+          ? "bg-gradient-to-r from-[#ff9b71] to-[#e753a0] text-white shadow-[0_6px_20px_-4px_color-mix(in_oklab,#e753a0_55%,transparent)]"
+          : "bg-[#f2f2f7] text-[#3c3c43] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] ring-1 ring-black/[0.05] active:bg-[#e8e8ed]",
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function SearchFiltersToolbar({
@@ -36,40 +72,43 @@ export function SearchFiltersToolbar({
   onFiltersChange,
   onResetAll,
   hasActiveUi,
+  searchSort,
+  onSelectSortTab,
+  priceHighFirst,
 }: SearchFiltersToolbarProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const titleId = useId();
   const isOrders = role === "blogger";
+  const priceTabLabel = isOrders ? "Цена" : "Охват";
 
   const patch = (p: Record<string, string>) => onFiltersChange(p);
 
+  const sortIdx = searchSort === "recommended" ? 0 : searchSort === "new" ? 1 : 2;
+
   return (
     <>
-      <div className="mb-[var(--space-4)]">
+      <div className="mb-3 flex w-full min-w-0 items-stretch gap-2.5">
         <div
           className={cn(
-            "flex min-h-[3rem] w-full min-w-0 items-center gap-1 rounded-[var(--radius-app-md)] border border-[var(--app-border)]",
-            "bg-[var(--app-surface-elevated)] pl-[var(--space-2)] pr-[var(--space-1)] shadow-[var(--app-shadow-xs)]"
+            "flex h-[3rem] min-w-0 flex-1 items-center gap-2.5 rounded-full bg-white pl-3.5 pr-1",
+            "shadow-[0_2px_12px_rgba(0,0,0,0.06)] ring-1 ring-black/[0.04]",
+            "transition-shadow duration-300 ease-out focus-within:shadow-[0_4px_16px_rgba(0,0,0,0.08)]"
           )}
           role="search"
         >
-          <Search
-            className="pointer-events-none size-[1.125rem] shrink-0 text-[var(--tg-theme-hint-color)]"
-            strokeWidth={2}
-            aria-hidden
-          />
+          <Search className="size-[1.125rem] shrink-0 text-[#aeaeb2]" strokeWidth={2.25} aria-hidden />
           <Input
             type="search"
             enterKeyHint="search"
             autoComplete="off"
-            placeholder={isOrders ? "Название или описание…" : "Платформа, ниша, ссылка…"}
+            placeholder="Поиск"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className={cn(
-              "app-field border-0 bg-transparent shadow-none",
-              "min-h-0 flex-1 rounded-none py-[var(--space-2)] pl-[var(--space-2)] pr-[var(--space-1)]",
-              "text-[length:var(--text-body)] leading-[var(--text-body--line)]",
-              "focus-visible:border-transparent focus-visible:shadow-none focus-visible:ring-0"
+              "h-11 min-h-0 flex-1 border-0 bg-transparent px-0 py-0 text-[0.9375rem] shadow-none",
+              "text-[#1a1a1a] placeholder:text-[#aeaeb2]",
+              "focus-visible:border-transparent focus-visible:ring-0",
+              "touch-manipulation"
             )}
             aria-label="Поиск"
           />
@@ -77,104 +116,107 @@ export function SearchFiltersToolbar({
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="tap-compact app-motion flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-app-sm)] text-[var(--tg-theme-hint-color)] transition-colors hover:bg-[color-mix(in_oklab,var(--tg-theme-hint-color)_10%,transparent)]"
+              className={cn(
+                "flex size-9 shrink-0 items-center justify-center rounded-full text-[#8e8e93]",
+                "transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+                "active:scale-90 active:bg-black/[0.06]"
+              )}
               aria-label="Очистить поиск"
             >
-              <X className="size-4" strokeWidth={2} />
+              <X className="size-4" strokeWidth={2.25} />
             </button>
           ) : null}
-          <button
-            type="button"
-            onClick={() => setSheetOpen((o) => !o)}
-            aria-expanded={sheetOpen}
-            aria-controls={sheetOpen ? titleId : undefined}
-            className={cn(
-              "tap-compact app-motion relative flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-app-sm)]",
-              "border border-[color-mix(in_oklab,var(--tg-theme-text-color)_10%,transparent)]",
-              "text-[var(--tg-theme-button-text-color)] transition-[transform,box-shadow] duration-[var(--app-duration)] active:scale-95"
-            )}
-            style={{ backgroundColor: "var(--tg-theme-button-color)" }}
-            aria-label={sheetOpen ? "Закрыть фильтры" : "Фильтры"}
-          >
-            {hasActiveUi ? (
-              <span
-                className="absolute right-1.5 top-1.5 size-2 rounded-full bg-[var(--tg-theme-button-text-color)] ring-2 ring-[var(--tg-theme-button-color)]"
-                aria-hidden
-              />
-            ) : null}
-            <SlidersHorizontal className={cn("size-[1.25rem]", sheetOpen && "rotate-90")} strokeWidth={2} aria-hidden />
-          </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setSheetOpen((o) => !o)}
+          aria-expanded={sheetOpen}
+          aria-controls={sheetOpen ? titleId : undefined}
+          className={cn(
+            "tap-compact relative flex size-12 shrink-0 touch-manipulation items-center justify-center rounded-full bg-white",
+            "shadow-[0_2px_12px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.05]",
+            "transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+            "active:scale-[0.93] motion-reduce:transition-none",
+            sheetOpen && "shadow-[0_4px_18px_rgba(231,83,160,0.25)] ring-[#e753a0]/30"
+          )}
+          aria-label={sheetOpen ? "Закрыть фильтры" : "Фильтры"}
+        >
+          {hasActiveUi ? (
+            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-gradient-to-br from-[#ff9b71] to-[#e753a0] ring-2 ring-white" />
+          ) : null}
+          <SlidersHorizontal className="size-[1.35rem] text-[#1a1a1a]" strokeWidth={2.1} aria-hidden />
+        </button>
       </div>
 
       <div
-        className={cn(
-          "mb-[var(--space-4)] flex gap-[var(--space-2)] overflow-x-auto pb-0.5",
-          "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        )}
-        role="toolbar"
-        aria-label={isOrders ? "Быстрый фильтр по бюджету" : "Быстрый фильтр по платформе"}
+        className="relative mb-4 rounded-[14px] bg-[#e5e5ea] p-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)]"
+        role="tablist"
+        aria-label="Сортировка"
       >
-        {isOrders ? (
-          (
-            [
-              { id: "all" as const, label: "Все" },
-              { id: "money" as const, label: "Деньги" },
-              { id: "barter" as const, label: "Бартер" },
-            ] as const
-          ).map(({ id, label }) => {
-            const active = (filters.budgetType ?? "all") === id;
+        <div className="relative grid grid-cols-3">
+          <div className="pointer-events-none absolute inset-[3px]" aria-hidden>
+            <div
+              className={cn(
+                "absolute top-0 bottom-0 w-1/3 rounded-[11px] bg-white",
+                "shadow-[0_2px_10px_rgba(0,0,0,0.1)]",
+                "transition-transform duration-[380ms] ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+                "motion-reduce:transition-none"
+              )}
+              style={{ transform: `translateX(calc(${sortIdx} * 100%))` }}
+            />
+          </div>
+          {SORT_TABS.map(({ id, label }) => {
+            const active = searchSort === id;
             return (
               <button
                 key={id}
                 type="button"
-                className="app-chip shrink-0"
-                aria-pressed={active}
-                onClick={() =>
-                  patch({
-                    budgetType: id,
-                    ...(id === "barter" ? { budgetMin: "" } : {}),
-                  })
-                }
+                role="tab"
+                aria-selected={active}
+                className={cn(
+                  "relative z-10 flex min-h-[2.75rem] items-center justify-center px-1 py-2",
+                  "touch-manipulation transition-[color,transform] duration-300 ease-out",
+                  "active:scale-[0.97] motion-reduce:active:scale-100",
+                  active ? "font-bold text-[#1a1a1a]" : "font-medium text-[#8e8e93]"
+                )}
+                onClick={() => onSelectSortTab(id)}
               >
-                {label}
+                <span className="max-w-full text-center text-[0.68rem] leading-tight tracking-tight sm:text-[0.72rem]">
+                  {label}
+                </span>
               </button>
             );
-          })
-        ) : (
-          <>
-            <button
-              type="button"
-              className="app-chip shrink-0"
-              aria-pressed={!filters.platform}
-              onClick={() => patch({ platform: "" })}
-            >
-              Все
-            </button>
-            {(["Instagram", "TikTok", "YouTube", "Telegram"] as const).map((p) => {
-              const active = filters.platform === p;
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  className="app-chip shrink-0 gap-[var(--space-1)]"
-                  aria-pressed={active}
-                  onClick={() => patch({ platform: p })}
-                >
-                  <span aria-hidden>{emojiForSocialPlatform(p)}</span>
-                  {p}
-                </button>
-              );
-            })}
-          </>
-        )}
+          })}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={searchSort === "price"}
+            className={cn(
+              "relative z-10 flex min-h-[2.75rem] items-center justify-center gap-0.5 px-1 py-2",
+              "touch-manipulation transition-[color,transform] duration-300 ease-out",
+              "active:scale-[0.97] motion-reduce:active:scale-100",
+              searchSort === "price" ? "font-bold text-[#1a1a1a]" : "font-medium text-[#8e8e93]"
+            )}
+            onClick={() => onSelectSortTab("price")}
+          >
+            <span className="text-[0.68rem] leading-tight tracking-tight sm:text-[0.72rem]">{priceTabLabel}</span>
+            <ArrowDownUp
+              className={cn(
+                "size-3 shrink-0 opacity-80 transition-transform duration-300 ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+                searchSort === "price" && !priceHighFirst && "rotate-180"
+              )}
+              strokeWidth={2.5}
+              aria-hidden
+            />
+          </button>
+        </div>
       </div>
 
       {sheetOpen ? (
         <>
           <button
             type="button"
-            className="app-motion fixed inset-x-0 top-0 z-[950] bg-[color-mix(in_oklab,var(--tg-theme-text-color)_45%,transparent)] backdrop-blur-sm transition-opacity duration-[var(--app-duration)]"
+            className="app-motion fixed inset-x-0 top-0 z-[950] animate-in fade-in-0 duration-200 bg-[color-mix(in_oklab,#1c1c1e_42%,transparent)] backdrop-blur-[3px]"
             style={{ bottom: "var(--app-tabbar-total)" }}
             aria-label="Закрыть"
             onClick={() => setSheetOpen(false)}
@@ -184,32 +226,60 @@ export function SearchFiltersToolbar({
             aria-modal="true"
             aria-labelledby={titleId}
             className={cn(
-              "app-sheet-panel fixed inset-x-0 z-[960] max-h-[min(78vh,34rem)] overflow-y-auto rounded-t-[var(--radius-app-xl)] border-x border-t border-[var(--app-border)]",
-              "bg-[var(--tg-theme-bg-color)] shadow-[var(--app-shadow-sheet)]"
+              "app-sheet-panel fixed inset-x-0 z-[960] max-h-[min(82vh,36rem)] overflow-y-auto rounded-t-[1.75rem]",
+              "border-x border-t border-white/40 bg-[color-mix(in_oklab,var(--tg-theme-bg-color)_92%,#ffffff)]",
+              "shadow-[0_-12px_48px_-16px_rgba(0,0,0,0.18)] backdrop-blur-2xl",
+              "animate-in slide-in-from-bottom-6 duration-300 ease-out"
             )}
             style={{
               bottom: "var(--app-tabbar-total)",
               paddingBottom: "max(var(--space-4), env(safe-area-inset-bottom))",
             }}
           >
-            <div className="mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)] pb-[var(--space-4)] pt-[var(--space-2)]">
+            <div className="mx-auto w-full max-w-[var(--app-content-max)] px-[var(--app-page-gutter)] pb-[var(--space-5)] pt-3">
               <div
-                className="mx-auto mb-[var(--space-4)] h-1 w-10 rounded-[var(--radius-app-pill)] bg-[var(--app-border-strong)]"
+                className="mx-auto mb-5 h-1 w-11 rounded-full bg-[#c7c7cc]/90"
                 aria-hidden
               />
-              <h2 id={titleId} className="app-title-screen mb-[var(--space-5)]">
+              <h2 id={titleId} className="mb-6 text-center text-xl font-bold tracking-tight text-[#1c1c1e]">
                 Фильтры
               </h2>
 
               {isOrders ? (
-                <div className="flex flex-col gap-[var(--space-6)]">
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label>Категория</Label>
+                <div className="flex flex-col gap-7">
+                  <div className="flex flex-col gap-3">
+                    <Label className="text-[0.8125rem] font-semibold text-[#636366]">Тип бюджета</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {(
+                        [
+                          { id: "all", label: "Все" },
+                          { id: "money", label: "Деньги" },
+                          { id: "barter", label: "Бартер" },
+                        ] as const
+                      ).map(({ id, label }) => (
+                        <SheetPillButton
+                          key={id}
+                          selected={(filters.budgetType ?? "all") === id}
+                          onClick={() =>
+                            patch({
+                              budgetType: id,
+                              ...(id === "barter" ? { budgetMin: "" } : {}),
+                            })
+                          }
+                        >
+                          {label}
+                        </SheetPillButton>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <Label className="text-[0.8125rem] font-semibold text-[#636366]">Категория</Label>
                     <Select
                       value={filters.category ? filters.category : "_all"}
                       onValueChange={(v) => patch({ category: v === "_all" ? "" : v })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger variant="pill" size="default" className="h-12 rounded-2xl border-0 bg-[#f2f2f7] shadow-inner">
                         <SelectValue placeholder="Все категории" />
                       </SelectTrigger>
                       <SelectContent>
@@ -223,44 +293,10 @@ export function SearchFiltersToolbar({
                     </Select>
                   </div>
 
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label>Тип бюджета</Label>
-                    <div className="flex flex-wrap gap-[var(--space-2)]">
-                      {(
-                        [
-                          { id: "all", label: "Все" },
-                          { id: "money", label: "Деньги" },
-                          { id: "barter", label: "Бартер" },
-                        ] as const
-                      ).map(({ id, label }) => (
-                        <Button
-                          key={id}
-                          type="button"
-                          variant={(filters.budgetType ?? "all") === id ? "default" : "outline"}
-                          className="tap-compact min-h-10 flex-1 rounded-[var(--radius-app-pill)] sm:flex-none"
-                          style={
-                            (filters.budgetType ?? "all") === id
-                              ? {
-                                  backgroundColor: "var(--tg-theme-button-color)",
-                                  color: "var(--tg-theme-button-text-color)",
-                                }
-                              : undefined
-                          }
-                          onClick={() =>
-                            patch({
-                              budgetType: id,
-                              ...(id === "barter" ? { budgetMin: "" } : {}),
-                            })
-                          }
-                        >
-                          {label}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label htmlFor="filter-budget-min">Минимальный бюджет, ₽</Label>
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="filter-budget-min" className="text-[0.8125rem] font-semibold text-[#636366]">
+                      Минимальный бюджет, ₽
+                    </Label>
                     <Input
                       id="filter-budget-min"
                       type="number"
@@ -270,23 +306,24 @@ export function SearchFiltersToolbar({
                       disabled={(filters.budgetType ?? "all") === "barter"}
                       value={filters.budgetMin ?? ""}
                       onChange={(e) => patch({ budgetMin: e.target.value })}
+                      className="h-12 rounded-2xl border-0 bg-[#f2f2f7] text-base shadow-inner placeholder:text-[#aeaeb2] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,#ff9b71_40%,transparent)]"
                     />
                     {(filters.budgetType ?? "all") === "barter" ? (
-                      <p className="text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
+                      <p className="text-[0.8125rem] leading-snug text-[#8e8e93]">
                         Для бартера сумма не учитывается
                       </p>
                     ) : null}
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-[var(--space-6)]">
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label>Платформа</Label>
+                <div className="flex flex-col gap-7">
+                  <div className="flex flex-col gap-3">
+                    <Label className="text-[0.8125rem] font-semibold text-[#636366]">Платформа</Label>
                     <Select
                       value={filters.platform ? filters.platform : "_all"}
                       onValueChange={(v) => patch({ platform: v === "_all" ? "" : v })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger variant="pill" size="default" className="h-12 rounded-2xl border-0 bg-[#f2f2f7] shadow-inner">
                         <SelectValue placeholder="Все платформы" />
                       </SelectTrigger>
                       <SelectContent>
@@ -300,18 +337,23 @@ export function SearchFiltersToolbar({
                     </Select>
                   </div>
 
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label htmlFor="filter-niche">Ниша</Label>
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="filter-niche" className="text-[0.8125rem] font-semibold text-[#636366]">
+                      Ниша
+                    </Label>
                     <Input
                       id="filter-niche"
                       placeholder="Например: красота"
                       value={filters.niche ?? ""}
                       onChange={(e) => patch({ niche: e.target.value })}
+                      className="h-12 rounded-2xl border-0 bg-[#f2f2f7] text-base shadow-inner placeholder:text-[#aeaeb2] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,#ff9b71_40%,transparent)]"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-[var(--space-2)]">
-                    <Label htmlFor="filter-followers">Минимум подписчиков</Label>
+                  <div className="flex flex-col gap-3">
+                    <Label htmlFor="filter-followers" className="text-[0.8125rem] font-semibold text-[#636366]">
+                      Минимум подписчиков
+                    </Label>
                     <Input
                       id="filter-followers"
                       type="number"
@@ -320,33 +362,34 @@ export function SearchFiltersToolbar({
                       placeholder="Без ограничения"
                       value={filters.followersMin ?? ""}
                       onChange={(e) => patch({ followersMin: e.target.value })}
+                      className="h-12 rounded-2xl border-0 bg-[#f2f2f7] text-base shadow-inner placeholder:text-[#aeaeb2] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,#ff9b71_40%,transparent)]"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="mt-[var(--space-6)] flex flex-col gap-[var(--space-2)] sm:flex-row sm:gap-[var(--space-3)]">
-                <Button
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
                   type="button"
-                  variant="outline"
-                  className="h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)]"
-                  onClick={() => {
-                    onResetAll();
-                  }}
+                  className={cn(
+                    "tap-compact h-[3.25rem] min-h-[3.25rem] flex-1 rounded-2xl text-base font-semibold",
+                    "touch-manipulation border-2 border-[#e5e5ea] bg-white text-[#1c1c1e] shadow-sm",
+                    "transition-[transform,background-color] duration-150 active:scale-[0.98] active:bg-[#f9f9f9]"
+                  )}
+                  onClick={() => onResetAll()}
                 >
                   Сбросить всё
-                </Button>
-                <Button
+                </button>
+                <button
                   type="button"
-                  className="h-12 min-h-12 flex-1 rounded-[var(--radius-app-sm)]"
-                  style={{
-                    backgroundColor: "var(--tg-theme-button-color)",
-                    color: "var(--tg-theme-button-text-color)",
-                  }}
+                  className={cn(
+                    "app-btn-primary-gradient tap-compact h-[3.25rem] min-h-[3.25rem] flex-1 rounded-2xl border-0 text-base font-semibold",
+                    "touch-manipulation transition-transform duration-150 active:scale-[0.98]"
+                  )}
                   onClick={() => setSheetOpen(false)}
                 >
                   Готово
-                </Button>
+                </button>
               </div>
             </div>
           </div>

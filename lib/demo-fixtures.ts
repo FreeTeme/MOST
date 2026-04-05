@@ -12,6 +12,7 @@ import type {
   User,
   UserType,
 } from "@/types";
+import type { SearchSortTab } from "@/config/search-sort.config";
 
 const iso = (daysAgo: number) => new Date(Date.now() - daysAgo * 86400000).toISOString();
 
@@ -140,7 +141,7 @@ export const demoSocials: SocialAccount[] = [
     profile_url: "https://instagram.com/demo_alex_beauty",
     followers: 18400,
     niche: "Красота и уход",
-    analytics: {},
+    analytics: { reels_avg_reach: 9200 },
     status: "active",
     created_at: iso(30),
     updated_at: iso(5),
@@ -152,7 +153,7 @@ export const demoSocials: SocialAccount[] = [
     profile_url: "https://tiktok.com/@demo_alex",
     followers: 52000,
     niche: "Лайфстайл",
-    analytics: {},
+    analytics: { avg_reach: 41000 },
     status: "active",
     created_at: iso(20),
     updated_at: iso(2),
@@ -241,11 +242,52 @@ function parsePositiveInt(s: string): number | null {
   return n;
 }
 
+function sortDemoOrders(list: Order[], sort: SearchSortTab, priceHighFirst: boolean): Order[] {
+  const out = [...list];
+  if (sort === "recommended") {
+    return out.sort((a, b) => {
+      const ac = a.applications_count ?? 0;
+      const bc = b.applications_count ?? 0;
+      if (bc !== ac) return bc - ac;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  }
+  if (sort === "new") {
+    return out.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }
+  return out.sort((a, b) => {
+    const hasA = a.budget_type === "money" && a.budget_amount != null;
+    const hasB = b.budget_type === "money" && b.budget_amount != null;
+    if (!hasA && !hasB) {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+    if (!hasA) return 1;
+    if (!hasB) return -1;
+    const na = Number(a.budget_amount);
+    const nb = Number(b.budget_amount);
+    if (na === nb) return 0;
+    return priceHighFirst ? nb - na : na - nb;
+  });
+}
+
+function sortDemoSocials(list: SocialAccount[], sort: SearchSortTab, priceHighFirst: boolean): SocialAccount[] {
+  const out = [...list];
+  if (sort === "recommended") {
+    return out.sort((a, b) => b.followers - a.followers);
+  }
+  if (sort === "new") {
+    return out.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }
+  return out.sort((a, b) => (priceHighFirst ? b.followers - a.followers : a.followers - b.followers));
+}
+
 /** Поиск — те же фильтры, что в useSearch (упрощённо в памяти). */
 export function getDemoSearchItems(
   role: UserType,
   filters: Record<string, string>,
-  searchRaw: string
+  searchRaw: string,
+  sort: SearchSortTab = "recommended",
+  priceHighFirst = true
 ): Order[] | SocialAccount[] {
   const term = sanitizeIlikeFragment(searchRaw).toLowerCase();
 
@@ -271,7 +313,7 @@ export function getDemoSearchItems(
           o.budget_type === "money" && o.budget_amount != null && Number(o.budget_amount) >= minB
       );
     }
-    return [...list].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return sortDemoOrders(list, sort, priceHighFirst);
   }
 
   let list = demoSocials.filter((s) => s.status === "active");
@@ -294,7 +336,7 @@ export function getDemoSearchItems(
   if (minF !== null && minF > 0) {
     list = list.filter((s) => s.followers >= minF);
   }
-  return [...list].sort((a, b) => b.followers - a.followers);
+  return sortDemoSocials(list, sort, priceHighFirst);
 }
 
 export function getDemoUser(telegramId: number): User | undefined {

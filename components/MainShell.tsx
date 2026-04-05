@@ -17,7 +17,16 @@ export function MainShell({ children }: { children: React.ReactNode }) {
           showTabBar ? "pb-[var(--app-tabbar-total)]" : "pb-[max(1rem,env(safe-area-inset-bottom))]"
         )}
       >
-        <div className="app-shell-gradient flex min-h-0 flex-1 flex-col">
+        <div
+          className={cn(
+            "flex min-h-0 flex-1 flex-col",
+            pathname === "/search"
+              ? "bg-[#f5f5f5]"
+              : pathname.startsWith("/profile")
+                ? "bg-[#f2f2f7]"
+                : "app-shell-gradient"
+          )}
+        >
           {children}
         </div>
       </div>

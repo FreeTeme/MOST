@@ -79,8 +79,8 @@ export default function PublicProfilePage() {
     <div className="flex min-h-0 flex-1 flex-col">
       <MobileScreen className="pt-2">
         {showReviewForm ? (
-          <Card className="overflow-hidden">
-            <CardContent>
+          <Card className="overflow-hidden rounded-[1.5rem] border-black/[0.04] bg-white shadow-[0_8px_32px_-16px_rgba(0,0,0,0.12)]">
+            <CardContent className="p-4 sm:p-5">
               <ReviewForm
                 onSubmit={submitReview}
                 loading={reviewLoading}

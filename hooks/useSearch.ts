@@ -11,6 +11,7 @@ import type { Order, SocialAccount } from "@/types";
 import type { UserType } from "@/types";
 import { isForceDemoData } from "@/lib/dev";
 import { getDemoSearchItems } from "@/lib/demo-fixtures";
+import type { SearchSortTab } from "@/config/search-sort.config";
 
 type SearchItem = Order | SocialAccount;
 
@@ -77,6 +78,9 @@ export function useSearch() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<Record<string, string>>(() => ({ ...EMPTY_FILTERS }));
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchSort, setSearchSort] = useState<SearchSortTab>("recommended");
+  /** Для вкладки «Цена»: true — сначала дороже / больше подписчиков */
+  const [priceHighFirst, setPriceHighFirst] = useState(true);
   const debouncedSearch = useDebouncedValue(searchQuery, 320);
 
   const config = role ? SEARCH_CONFIG[role] : null;
@@ -100,7 +104,9 @@ export function useSearch() {
     setLoading(true);
     try {
       if (isForceDemoData()) {
-        setItems(getDemoSearchItems(role, filters, debouncedSearch) as SearchItem[]);
+        setItems(
+          getDemoSearchItems(role, filters, debouncedSearch, searchSort, priceHighFirst) as SearchItem[]
+        );
         return;
       }
 
@@ -137,7 +143,18 @@ export function useSearch() {
           q = q.eq("budget_type", "money").gte("budget_amount", minB);
         }
 
-        q = q.order("created_at", { ascending: false });
+        if (searchSort === "recommended") {
+          q = q
+            .order("applications_count", { ascending: false })
+            .order("created_at", { ascending: false });
+        } else if (searchSort === "new") {
+          q = q.order("created_at", { ascending: false });
+        } else {
+          q = q.order("budget_amount", {
+            ascending: !priceHighFirst,
+            nullsFirst: false,
+          });
+        }
         const { data, error } = await q;
         if (error) throw error;
         setItems((data as Order[]) ?? []);
@@ -163,7 +180,13 @@ export function useSearch() {
           q = q.gte("followers", minF);
         }
 
-        q = q.order("followers", { ascending: false });
+        if (searchSort === "recommended") {
+          q = q.order("followers", { ascending: false });
+        } else if (searchSort === "new") {
+          q = q.order("created_at", { ascending: false });
+        } else {
+          q = q.order("followers", { ascending: !priceHighFirst });
+        }
         const { data, error } = await q;
         if (error) throw error;
         setItems((data as SocialAccount[]) ?? []);
@@ -174,7 +197,7 @@ export function useSearch() {
     } finally {
       setLoading(false);
     }
-  }, [config, role, debouncedSearch, filters]);
+  }, [config, role, debouncedSearch, filters, searchSort, priceHighFirst]);
 
   useEffect(() => {
     fetchItems();
@@ -183,6 +206,21 @@ export function useSearch() {
   const resetFiltersAndSearch = useCallback(() => {
     setFilters({ ...EMPTY_FILTERS });
     setSearchQuery("");
+  }, []);
+
+  const selectSortTab = useCallback((tab: SearchSortTab) => {
+    if (tab === "recommended" || tab === "new") {
+      setSearchSort(tab);
+      return;
+    }
+    setSearchSort((prev) => {
+      if (prev === "price") {
+        setPriceHighFirst((p) => !p);
+        return prev;
+      }
+      setPriceHighFirst(true);
+      return "price";
+    });
   }, []);
 
   const handleAction = useCallback(
@@ -217,5 +255,8 @@ export function useSearch() {
     handleAction,
     config,
     telegramId: dbUser?.telegram_id ?? null,
+    searchSort,
+    selectSortTab,
+    priceHighFirst,
   };
 }

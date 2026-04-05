@@ -1,12 +1,15 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { ChevronLeft, Flame } from "lucide-react";
 import type { User, SocialAccount, Order, Review } from "@/types";
-import { SocialCard } from "@/components/cards/SocialCard";
 import { OrderCard } from "@/components/cards/OrderCard";
 import { ReviewList } from "./ReviewList";
 import { cn } from "@/lib/utils";
 import { openTelegramLink } from "@/lib/telegram";
+import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
+import { ProfileSocialGrouped } from "@/components/profile/profile-social-grouped";
 
 interface ProfileConfigShape {
   title: string;
@@ -24,7 +27,6 @@ export interface ProfileViewProps {
   reviews: Review[];
   config: ProfileConfigShape | null;
   isOwnProfile: boolean;
-  /** Зарезервировано для экрана редактирования профиля */
   onUpdateProfile?: (updates: Partial<User>) => Promise<void>;
   onEditItem?: (item: SocialAccount | Order) => void;
   onDeleteItem?: (item: SocialAccount | Order) => void;
@@ -57,18 +59,10 @@ function computeProfileCompleteness(profile: User): number {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
-function Section({
-  title,
-  children,
-  className,
-}: {
-  title?: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
+function SectionCaps({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("flex flex-col gap-[var(--space-4)]", className)}>
-      {title ? <h2 className="app-overline">{title}</h2> : null}
+    <section className={cn("flex flex-col gap-3", className)}>
+      <h2 className="px-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#8e8e93]">{title}</h2>
       {children}
     </section>
   );
@@ -84,13 +78,7 @@ function AvatarBlock({
   ringClass?: string;
 }) {
   if (profile.photo_url) {
-    return (
-      <img
-        src={profile.photo_url}
-        alt=""
-        className={cn("object-cover", className)}
-      />
-    );
+    return <img src={profile.photo_url} alt="" className={cn("object-cover", className)} />;
   }
   return (
     <div
@@ -101,10 +89,32 @@ function AvatarBlock({
         "bg-[var(--tg-theme-button-color)] text-[var(--tg-theme-button-text-color)]"
       )}
     >
-      <span className="text-[length:var(--text-title)] leading-none">
+      <span className="text-lg leading-none">
         {(profile.first_name?.[0] || profile.company_name?.[0] || "?").toUpperCase()}
       </span>
     </div>
+  );
+}
+
+function ProfileStatusSwitch({ active, onToggle }: { active: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={active}
+      onClick={onToggle}
+      className={cn(
+        "relative h-7 w-[3.25rem] shrink-0 rounded-full transition-colors duration-200 touch-manipulation",
+        active ? "bg-[#34c759]" : "bg-[#e9e9ea]"
+      )}
+    >
+      <span
+        className={cn(
+          "absolute top-0.5 size-6 rounded-full bg-white shadow-md transition-transform duration-200 ease-[cubic-bezier(0.34,1.45,0.64,1)]",
+          active ? "translate-x-[1.375rem]" : "translate-x-0.5"
+        )}
+      />
+    </button>
   );
 }
 
@@ -114,14 +124,27 @@ export function ProfileView({
   reviews,
   config,
   isOwnProfile,
+  onUpdateProfile,
   onEditItem,
   onDeleteItem,
   onWriteReview,
 }: ProfileViewProps) {
+  const [editing, setEditing] = useState(false);
+  const [statusOn, setStatusOn] = useState(true);
+
   if (!config) return null;
 
   const isBlogger = profile.user_type === "blogger";
   const completeness = computeProfileCompleteness(profile);
+  const canEditProfile = Boolean(config.canEdit && onUpdateProfile);
+
+  const socialItems = useMemo(
+    () => (isBlogger ? (items as SocialAccount[]).filter(Boolean) : []),
+    [isBlogger, items]
+  );
+
+  const firstSocial = socialItems[0];
+  const yearJoined = new Date(profile.created_at).getFullYear();
 
   const getFieldValue = (field: string): string => {
     switch (field) {
@@ -143,175 +166,236 @@ export function ProfileView({
   };
 
   const primaryTitle = isBlogger ? getFieldValue("full_name") : getFieldValue("company_name");
-  const heroSubtitle = isBlogger
-    ? profile.telegram_username
-      ? `@${profile.telegram_username}`
-      : getFieldValue("category") !== "—"
-        ? getFieldValue("category")
-        : "Блогер"
+  const locationLine = isBlogger
+    ? firstSocial?.niche?.trim() ||
+      (profile.telegram_username ? `@${profile.telegram_username}` : "Блогер")
     : profile.company_category || (profile.telegram_username ? `@${profile.telegram_username}` : "Компания");
+  const metaLine = `на платформе с ${yearJoined}`;
+
+  const showTelegramCta = !isOwnProfile && Boolean(profile.telegram_username);
 
   return (
-    <div className="flex flex-col gap-[var(--space-6)]">
-      {/* Hero: референс — фото или мягкий градиент + затемнение снизу */}
+    <div className={cn("flex flex-col gap-5", showTelegramCta && "pb-[5.75rem]")}>
       <div className="-mx-[var(--app-page-gutter)]">
-        <div
-          className={cn(
-            "relative min-h-[14rem] w-full overflow-hidden",
-            "rounded-b-[var(--radius-app-xl)] sm:min-h-[15rem]"
-          )}
-        >
+        <div className="relative min-h-[min(52vw,17.5rem)] w-full max-h-[20rem] overflow-hidden rounded-b-[1.75rem] sm:min-h-[15.5rem]">
           {profile.photo_url ? (
             <>
-              <img
-                src={profile.photo_url}
-                alt=""
-                className="absolute inset-0 size-full object-cover"
-              />
+              <img src={profile.photo_url} alt="" className="absolute inset-0 size-full object-cover" />
               <div
-                className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_oklab,var(--tg-theme-text-color)_78%,transparent)] via-[color-mix(in_oklab,var(--tg-theme-text-color)_35%,transparent)] to-transparent"
+                className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/10"
                 aria-hidden
               />
             </>
           ) : (
             <>
               <div
-                className="absolute inset-0 bg-[color-mix(in_oklab,var(--app-gradient-peach)_42%,var(--app-canvas))]"
+                className="absolute inset-0 bg-gradient-to-br from-[#ffd4c4] via-[#ffe8f0] to-[#f0b8d8]"
                 aria-hidden
               />
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-[color-mix(in_oklab,var(--app-gradient-rose)_28%,transparent)] to-transparent"
-                aria-hidden
-              />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_oklab,var(--tg-theme-text-color)_55%,transparent)] via-transparent to-transparent"
-                aria-hidden
-              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/5" aria-hidden />
             </>
           )}
 
-          <div className="relative flex min-h-[14rem] flex-col justify-end p-[var(--space-4)] pb-[var(--space-5)] sm:min-h-[15rem]">
-            <div className="flex items-end gap-[var(--space-3)]">
+          {canEditProfile && !editing ? (
+            <div className="absolute left-3 top-3 right-3 z-10 flex items-center justify-between gap-2">
+              <span className="size-10" aria-hidden />
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className={cn(
+                  "rounded-full border border-white/40 bg-white/25 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md",
+                  "shadow-lg transition-[transform,background-color] active:scale-95 active:bg-white/35",
+                  "touch-manipulation"
+                )}
+              >
+                Изм.
+              </button>
+            </div>
+          ) : null}
+
+          {editing ? (
+            <div className="absolute left-3 top-3 z-10">
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                className={cn(
+                  "flex size-10 items-center justify-center rounded-full border border-white/40 bg-white/25 text-white backdrop-blur-md",
+                  "transition-[transform,background-color] active:scale-95",
+                  "touch-manipulation"
+                )}
+                aria-label="Назад"
+              >
+                <ChevronLeft className="size-5" strokeWidth={2.25} />
+              </button>
+            </div>
+          ) : null}
+
+          <div className="relative flex min-h-[min(52vw,17.5rem)] max-h-[20rem] flex-col justify-end p-4 pb-5 sm:min-h-[15.5rem]">
+            <div className="flex items-end gap-3">
               <AvatarBlock
                 profile={profile}
-                className="size-14 shrink-0 rounded-[var(--radius-app-md)] ring-2 ring-white/90"
+                className="size-[3.25rem] shrink-0 rounded-xl ring-2 ring-white/95 shadow-lg"
               />
-              <div className="min-w-0 pb-0.5">
-                <p className="truncate text-[length:var(--text-title)] font-bold leading-[var(--text-title--line)] text-white drop-shadow-md">
+              <div className="min-w-0 flex-1 pb-0.5">
+                <p className="truncate text-lg font-bold leading-tight tracking-tight text-white drop-shadow-md">
                   {primaryTitle}
                 </p>
-                <p className="mt-0.5 truncate text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)] text-white/90 drop-shadow">
-                  {heroSubtitle}
-                </p>
+                <p className="mt-0.5 truncate text-sm font-medium text-white/95 drop-shadow">{locationLine}</p>
+                <p className="mt-0.5 truncate text-xs text-white/80 drop-shadow">{metaLine}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {isOwnProfile ? (
-        <Section title="Мой профиль">
-          <div className="app-card-elevated p-[var(--space-4)]">
-            <div className="mb-[var(--space-3)] flex items-center justify-between gap-[var(--space-3)]">
-              <span
-                className={cn(
-                  "rounded-[var(--radius-app-pill)] px-[var(--space-3)] py-1",
-                  "text-[length:var(--text-caption)] font-semibold leading-[var(--text-caption--line)]",
-                  "bg-[color-mix(in_oklab,#22c55e_22%,var(--app-surface-elevated))]",
-                  "text-[color-mix(in_oklab,#166534_90%,var(--tg-theme-text-color))]"
-                )}
-              >
+      {editing && onUpdateProfile ? (
+        <div className="rounded-[1.5rem] border border-black/[0.04] bg-white px-4 py-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.12)]">
+          <ProfileEditForm profile={profile} onSave={onUpdateProfile} onCancel={() => setEditing(false)} />
+        </div>
+      ) : null}
+
+      {!editing && isOwnProfile ? (
+        <SectionCaps title="Мой профиль">
+          <div className="rounded-[1.5rem] border border-black/[0.04] bg-white px-4 py-4 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.1)]">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <span className="rounded-full bg-[#e8f8ec] px-3 py-1.5 text-xs font-semibold text-[#1a7f37]">
                 Активен
               </span>
-              <span className="text-[length:var(--text-title)] font-bold tabular-nums text-[var(--app-gradient-rose)]">
-                {completeness}%
-              </span>
+              <ProfileStatusSwitch active={statusOn} onToggle={() => setStatusOn((v) => !v)} />
             </div>
-            <p className="app-form-label mb-[var(--space-2)]">Заполненность профиля</p>
-            <div className="h-2.5 w-full overflow-hidden rounded-[var(--radius-app-pill)] bg-[var(--app-surface-elevated)]">
+            <div className="mb-2 flex items-baseline justify-between gap-2">
+              <p className="text-sm font-semibold text-[#1c1c1e]">Заполненность профиля</p>
+              <span className="text-lg font-bold tabular-nums text-[#34c759]">{completeness}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#ececec]">
               <div
-                className="h-full min-w-0 rounded-[var(--radius-app-pill)] transition-[width] duration-[var(--app-duration)] ease-out"
+                className="h-full min-w-0 rounded-full transition-[width] duration-500 ease-out"
                 style={{
                   width: `${completeness}%`,
                   background: "var(--app-gradient-primary)",
                 }}
               />
             </div>
-            <p className="mt-[var(--space-3)] text-[length:var(--text-caption)] leading-[var(--text-caption--line)] text-[var(--tg-theme-hint-color)]">
-              Заполните профиль — так заказчикам и блогерам проще доверять и договариваться.
+            <p className="mt-3 text-xs leading-relaxed text-[#8e8e93]">
+              Чем выше заполненность, тем больше доверия у партнёров и шансов на сотрудничество.
             </p>
           </div>
-        </Section>
+        </SectionCaps>
       ) : null}
 
-      <Section title="Основное">
-        <div className="app-card divide-y divide-[var(--app-border)] overflow-hidden p-0">
-          {config.fields.map((field) => (
-            <div key={field} className="px-[var(--space-4)] py-[var(--space-4)] sm:px-[var(--space-5)]">
-              <p className="app-form-label">{fieldLabels[field] ?? field}</p>
-              <p className="mt-[var(--space-2)] text-[length:var(--text-body-sm)] leading-[var(--text-body-sm--line)] text-[var(--tg-theme-text-color)]">
-                {getFieldValue(field)}
-              </p>
+      {!editing ? (
+        <>
+          <SectionCaps title="Основное">
+            <div className="overflow-hidden rounded-[1.5rem] border border-black/[0.04] bg-white shadow-[0_8px_32px_-16px_rgba(0,0,0,0.1)]">
+              {config.fields.map((field, i) => (
+                <div
+                  key={field}
+                  className={cn(
+                    "px-4 py-4",
+                    i > 0 && "border-t border-[#f2f2f7]"
+                  )}
+                >
+                  <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-[#aeaeb2]">
+                    {fieldLabels[field] ?? field}
+                  </p>
+                  <p className="mt-2 text-[0.9375rem] leading-snug text-[#1c1c1e]">{getFieldValue(field)}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Section>
+          </SectionCaps>
 
-      {items.length > 0 && (
-        <Section title={isBlogger ? "Соцсети" : "Заказы"}>
-          <div className="flex flex-col gap-[var(--app-list-gap)]">
-            {items.map((item) =>
-              isBlogger ? (
-                <SocialCard
-                  key={(item as SocialAccount).id}
-                  social={item as SocialAccount}
-                  blogger={profile}
-                  variant={config.cardVariant as "compact" | "detailed" | "editable"}
-                  onEdit={onEditItem ? () => onEditItem(item) : undefined}
-                  onDelete={onDeleteItem ? () => onDeleteItem(item) : undefined}
-                />
-              ) : (
-                <OrderCard
-                  key={(item as Order).id}
-                  order={item as Order}
-                  client={profile}
-                  variant={config.cardVariant as "compact" | "detailed" | "editable"}
-                  onEdit={onEditItem ? () => onEditItem(item) : undefined}
-                  onClose={onDeleteItem ? () => onDeleteItem(item) : undefined}
-                />
-              )
-            )}
-          </div>
-        </Section>
-      )}
+          {isBlogger && socialItems.length > 0 ? (
+            <SectionCaps title="Соцсети">
+              <ProfileSocialGrouped items={socialItems} />
+              {isOwnProfile ? (
+                <Link
+                  href="/items"
+                  className="mt-2 block text-center text-sm font-semibold text-[#ff9b71] active:opacity-70"
+                >
+                  Управлять соцсетями
+                </Link>
+              ) : null}
+            </SectionCaps>
+          ) : null}
 
-      {config.showReviews && (
-        <section className="flex flex-col gap-[var(--space-4)]">
-          <div className="flex items-center justify-between gap-[var(--space-3)]">
-            <h2 className="app-overline">Отзывы</h2>
-            {!isOwnProfile && config.actions?.includes("write_review") && onWriteReview ? (
-              <button
-                type="button"
-                onClick={onWriteReview}
-                className="tap-compact shrink-0 text-[length:var(--text-caption)] font-semibold text-[var(--tg-theme-button-color)]"
+          {!isBlogger && items.length > 0 ? (
+            <SectionCaps title="Заказы">
+              <div className="flex flex-col gap-3">
+                {(items as Order[]).map((item) => (
+                  <OrderCard
+                    key={item.id}
+                    order={item}
+                    client={profile}
+                    variant={config.cardVariant as "compact" | "detailed" | "editable"}
+                    onEdit={onEditItem ? () => onEditItem(item) : undefined}
+                    onClose={onDeleteItem ? () => onDeleteItem(item) : undefined}
+                  />
+                ))}
+              </div>
+            </SectionCaps>
+          ) : null}
+
+          {isBlogger && isOwnProfile && socialItems.length === 0 ? (
+            <SectionCaps title="Соцсети">
+              <Link
+                href="/social/new"
+                className={cn(
+                  "flex items-center justify-center rounded-[1.5rem] border border-dashed border-[#c7c7cc] bg-white/80 py-10 text-sm font-semibold text-[#ff9b71]",
+                  "shadow-sm touch-manipulation active:scale-[0.99]"
+                )}
               >
-                Написать отзыв
-              </button>
-            ) : null}
-          </div>
-          <ReviewList reviews={reviews} />
-        </section>
-      )}
+                Добавить соцсеть
+              </Link>
+            </SectionCaps>
+          ) : null}
 
-      {!isOwnProfile && profile.telegram_username ? (
-        <button
-          type="button"
-          className="app-btn-primary-gradient tap-compact w-full gap-[var(--space-2)]"
-          onClick={() => openTelegramLink(`https://t.me/${profile.telegram_username}`)}
-        >
-          <MessageCircle className="size-5 shrink-0" strokeWidth={2} aria-hidden />
-          Написать в Telegram
-        </button>
+          {config.showReviews ? (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3 px-0.5">
+                <h2 className="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#8e8e93]">
+                  Отзывы
+                </h2>
+                {!isOwnProfile && config.actions?.includes("write_review") && onWriteReview ? (
+                  <button
+                    type="button"
+                    onClick={onWriteReview}
+                    className="text-xs font-semibold text-[#e753a0] active:opacity-70"
+                  >
+                    Написать отзыв
+                  </button>
+                ) : null}
+              </div>
+              <div className="rounded-[1.5rem] border border-black/[0.04] bg-white p-3 shadow-[0_6px_24px_-12px_rgba(0,0,0,0.08)]">
+                <ReviewList reviews={reviews} />
+              </div>
+            </section>
+          ) : null}
+
+          {!isOwnProfile ? (
+            <SectionCaps title="О сервисе">
+              <p className="rounded-[1.25rem] bg-white/90 px-4 py-3.5 text-xs leading-relaxed text-[#8e8e93] shadow-sm">
+                Аккаунт Telegram создан ~ {yearJoined} г. Убедитесь, что общаетесь с реальным человеком. Платформа не
+                несёт ответственности за действия третьих лиц.
+              </p>
+            </SectionCaps>
+          ) : null}
+        </>
+      ) : null}
+
+      {showTelegramCta ? (
+        <div className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[40] mx-auto flex w-full max-w-[var(--app-content-max)] justify-center px-[var(--app-page-gutter)]">
+          <button
+            type="button"
+            className={cn(
+              "app-btn-primary-gradient flex w-full max-w-md items-center justify-center gap-2 rounded-full py-3.5 text-base font-bold shadow-[0_8px_28px_-8px_rgba(231,83,160,0.45)]",
+              "touch-manipulation transition-transform active:scale-[0.98]"
+            )}
+            onClick={() => openTelegramLink(`https://t.me/${profile.telegram_username}`)}
+          >
+            <Flame className="size-5 shrink-0" strokeWidth={2.2} aria-hidden />
+            Написать в Telegram
+          </button>
+        </div>
       ) : null}
     </div>
   );
