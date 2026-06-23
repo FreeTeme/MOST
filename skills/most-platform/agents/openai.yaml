@@ -1,0 +1,4 @@
+interface:
+  display_name: "MOST Platform"
+  short_description: "Product blueprint for MOST marketplace"
+  default_prompt: "Use $most-platform to plan or implement MOST platform features consistently."
